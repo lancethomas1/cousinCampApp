@@ -1,0 +1,15 @@
+rules_version = '2';
+
+// Cousin Camp security rules.
+// The whole camp lives in a single document at /camps/{campId}, where campId
+// is derived from a SHA-256 hash of the family passcode. Because the id can't
+// be guessed without the passcode, only people who know it can read or write
+// the camp. Listing and deleting are disabled so nobody can enumerate camps.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /camps/{campId} {
+      allow get, create, update: if true;
+      allow list, delete: if false;
+    }
+  }
+}

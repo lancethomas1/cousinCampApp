@@ -95,5 +95,10 @@ const STORE = [
   { id: "r-smore",     emoji: "🍫", name: "S'more Master",          cost: 25, desc: "Unlimited s'mores at the next bonfire. Yes, unlimited." },
 ];
 
+// Shared Google Photos album link. Paste the "share" link to your camp's
+// Google Photos album here and the Photos tab will open it. Leave blank to
+// show a "coming soon" placeholder.
+const PHOTO_ALBUM_URL = "";
+
 // Make available to app.js
-window.CAMP_DATA = { CAMPERS, SCHEDULE, STORE };
+window.CAMP_DATA = { CAMPERS, SCHEDULE, STORE, PHOTO_ALBUM_URL };

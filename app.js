@@ -6,15 +6,15 @@
 (function () {
   "use strict";
 
-  const { CAMPERS, SCHEDULE, STORE } = window.CAMP_DATA;
+  const { CAMPERS, SCHEDULE, STORE, PHOTO_ALBUM_URL } = window.CAMP_DATA;
   const view = document.getElementById("view");
 
   // ---- Storage helpers ----------------------------------------------------
   const LS = {
-    me: "cc.me",                 // current camper id
+    me: "cc.me",                 // current camper id (stays local to each device)
     done: "cc.done",             // { camperId: { activityId: true } }
-    photos: "cc.photos",         // [ { id, date, src, camper } ]
     claims: "cc.claims",         // { rewardId: camperId } — one prize per camper
+    pass: "cc.pass",             // remembered family passcode (shared mode)
   };
   const load = (k, fallback) => {
     try { return JSON.parse(localStorage.getItem(k)) ?? fallback; }
@@ -26,11 +26,161 @@
   const state = {
     me: load(LS.me, null),
     done: load(LS.done, {}),
-    photos: load(LS.photos, []),
     claims: load(LS.claims, {}),
     route: "today",
-    photoFilter: "all",
   };
+
+  // ---- Shared sync (Firebase Firestore) or local fallback -----------------
+  // In shared mode the whole camp's `done` + `claims` live in one Firestore
+  // doc whose id is derived from the family passcode, and every device gets
+  // live updates. In local mode everything stays in this browser.
+  const Sync = { mode: "local", app: null, db: null, ref: null };
+
+  const firebaseConfigured = () => {
+    const c = window.FIREBASE_CONFIG;
+    return !!(c && c.apiKey && c.projectId && window.firebase);
+  };
+
+  async function passToCampId(passcode) {
+    const data = new TextEncoder().encode("cousincamp::" + passcode);
+    const buf = await crypto.subtle.digest("SHA-256", data);
+    return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 40);
+  }
+
+  // Connect to the shared camp for a passcode. Returns true once subscribed.
+  async function startShared(passcode) {
+    if (!firebaseConfigured()) return false;
+    try {
+      if (!Sync.app) Sync.app = firebase.initializeApp(window.FIREBASE_CONFIG);
+      Sync.db = firebase.firestore();
+      const campId = await passToCampId(passcode);
+      Sync.ref = Sync.db.collection("camps").doc(campId);
+      Sync.mode = "shared";
+      // Start from a clean slate; live data arrives via the snapshot below.
+      state.done = {};
+      state.claims = {};
+      Sync.ref.onSnapshot(
+        (snap) => {
+          const d = snap.data() || {};
+          state.done = d.done || {};
+          state.claims = d.claims || {};
+          render();
+        },
+        (err) => { console.error("sync error", err); toast("Sync error — check connection"); }
+      );
+      return true;
+    } catch (e) {
+      console.error("startShared failed", e);
+      return false;
+    }
+  }
+
+  // Run a mutation against the shared doc atomically (read-modify-write).
+  // `mutate(next)` edits { done, claims } in place; throw to abort.
+  async function sharedWrite(mutate) {
+    await Sync.db.runTransaction(async (t) => {
+      const snap = await t.get(Sync.ref);
+      const d = snap.exists ? snap.data() : {};
+      const next = { done: d.done || {}, claims: d.claims || {} };
+      mutate(next);
+      t.set(Sync.ref, next);
+    });
+  }
+
+  // Persistence layer used by the UI — branches on mode.
+  const Store = {
+    async toggle(camperId, activityId, on) {
+      const dm = { ...(state.done[camperId] || {}) };
+      if (on) dm[activityId] = true; else delete dm[activityId];
+      state.done = { ...state.done, [camperId]: dm };
+      render(); // optimistic
+      if (Sync.mode === "shared") {
+        try {
+          await sharedWrite((n) => {
+            const m = { ...(n.done[camperId] || {}) };
+            if (on) m[activityId] = true; else delete m[activityId];
+            n.done[camperId] = m;
+          });
+        } catch (e) { toast("Couldn't save — try again"); }
+      } else {
+        save(LS.done, state.done);
+      }
+    },
+    async claim(camperId, rewardId) {
+      const r = rewardById(rewardId);
+      if (Sync.mode === "shared") {
+        try {
+          await sharedWrite((n) => {
+            const owner = n.claims[rewardId];
+            if (owner && owner !== camperId) throw new Error("taken");
+            for (const rid of Object.keys(n.claims)) if (n.claims[rid] === camperId) delete n.claims[rid];
+            n.claims[rewardId] = camperId;
+          });
+          toast(`Claimed ${r.emoji} ${r.name}!`);
+        } catch (e) {
+          toast(e.message === "taken" ? "Already claimed by another cousin!" : "Couldn't save — try again");
+        }
+      } else {
+        const prev = claimOf(camperId);
+        const claims = { ...state.claims };
+        if (prev) delete claims[prev.id];
+        claims[rewardId] = camperId;
+        state.claims = claims;
+        save(LS.claims, state.claims);
+        toast(`Claimed ${r.emoji} ${r.name}!`);
+        render();
+      }
+    },
+    async release(rewardId) {
+      if (Sync.mode === "shared") {
+        try { await sharedWrite((n) => { delete n.claims[rewardId]; }); toast("Prize released — pick another!"); }
+        catch (e) { toast("Couldn't save — try again"); }
+      } else {
+        const claims = { ...state.claims };
+        delete claims[rewardId];
+        state.claims = claims;
+        save(LS.claims, state.claims);
+        toast("Prize released — pick another!");
+        render();
+      }
+    },
+  };
+
+  // Full-screen passcode gate shown in shared mode before joining.
+  function showPasscodeGate() {
+    const gate = document.createElement("div");
+    gate.className = "gate";
+    gate.innerHTML = `
+      <div class="gate-card">
+        <div class="gate-emoji">🕰️🔒</div>
+        <h2>Cousin Camp</h2>
+        <p>Enter the family camp passcode to join the shared camp.</p>
+        <input id="gate-input" type="password" inputmode="text" autocomplete="off" autocapitalize="off" placeholder="Camp passcode" />
+        <button id="gate-go" class="btn" type="button">Enter camp 🚀</button>
+        <p class="gate-note" id="gate-note">Everyone in the family uses the same passcode.</p>
+      </div>`;
+    document.body.appendChild(gate);
+    const input = gate.querySelector("#gate-input");
+    const go = gate.querySelector("#gate-go");
+    const note = gate.querySelector("#gate-note");
+    const submit = async () => {
+      const pass = input.value.trim();
+      if (!pass) { input.focus(); return; }
+      go.disabled = true; note.textContent = "Connecting…";
+      const ok = await startShared(pass);
+      if (ok) {
+        save(LS.pass, pass);
+        gate.remove();
+        render();
+      } else {
+        go.disabled = false;
+        note.textContent = "Couldn't connect. Check your internet and try again.";
+      }
+    };
+    go.addEventListener("click", submit);
+    input.addEventListener("keydown", (e) => { if (e.key === "Enter") submit(); });
+    setTimeout(() => input.focus(), 80);
+  }
 
   const camperById = (id) => CAMPERS.find((c) => c.id === id) || null;
   const allActivities = () => SCHEDULE.flatMap((d) => d.activities.map((a) => ({ ...a, date: d.date })));
@@ -116,16 +266,9 @@
   // ---- Toggle an activity complete ---------------------------------------
   function toggleActivity(activityId, points, title) {
     if (!state.me) { openCamperModal(); toast("Pick your camper first!"); return; }
-    const dm = { ...doneMap(state.me) };
-    if (dm[activityId]) {
-      delete dm[activityId];
-    } else {
-      dm[activityId] = true;
-      toast(`+${points} pts — ${title} ✅`);
-    }
-    state.done = { ...state.done, [state.me]: dm };
-    save(LS.done, state.done);
-    render();
+    const turningOn = !isDone(state.me, activityId);
+    if (turningOn) toast(`+${points} pts — ${title} ✅`);
+    Store.toggle(state.me, activityId, turningOn);
   }
 
   // ---- Activity row markup -----------------------------------------------
@@ -208,119 +351,39 @@
   }
 
   // ---- PHOTOS view --------------------------------------------------------
+  // Photos live in a shared Google Photos album (set PHOTO_ALBUM_URL in data.js).
   function renderPhotos() {
+    const url = (PHOTO_ALBUM_URL || "").trim();
     const frag = document.createElement("div");
     const head = document.createElement("div");
     head.innerHTML = `<h2 class="view-title">Camp Photos 📸</h2>
-      <p class="view-sub">Share the memories from each day.</p>`;
+      <p class="view-sub">All our memories in one shared album.</p>`;
     frag.appendChild(head);
 
-    // Toolbar: add + filter
-    const toolbar = document.createElement("div");
-    toolbar.className = "photo-toolbar";
-
-    const addBtn = document.createElement("button");
-    addBtn.className = "btn";
-    addBtn.innerHTML = "➕ Add photos";
-    const fileInput = document.createElement("input");
-    fileInput.type = "file";
-    fileInput.accept = "image/*";
-    fileInput.multiple = true;
-    fileInput.hidden = true;
-    addBtn.addEventListener("click", () => fileInput.click());
-    fileInput.addEventListener("change", (e) => handlePhotoFiles(e.target.files));
-
-    const filter = document.createElement("select");
-    filter.className = "day-filter";
-    filter.innerHTML =
-      `<option value="all">All days</option>` +
-      SCHEDULE.map((d) => `<option value="${d.date}" ${state.photoFilter === d.date ? "selected" : ""}>${fmtDow(d.date)} ${dayNum(d.date)} — ${escapeHtml(d.title)}</option>`).join("");
-    filter.value = state.photoFilter;
-    filter.addEventListener("change", (e) => { state.photoFilter = e.target.value; render(); });
-
-    toolbar.append(addBtn, fileInput, filter);
-    frag.appendChild(toolbar);
-
-    // Grid
-    const shown = state.photos
-      .filter((p) => state.photoFilter === "all" || p.date === state.photoFilter)
-      .slice()
-      .reverse();
-
-    if (shown.length === 0) {
-      const empty = document.createElement("div");
-      empty.className = "empty";
-      empty.innerHTML = `<div class="big">📷</div>
-        <h3>No photos yet</h3>
-        <p>Tap “Add photos” to share your camp memories.</p>`;
-      frag.appendChild(empty);
+    const card = document.createElement("div");
+    card.className = "card album-card";
+    if (url) {
+      card.innerHTML = `
+        <div class="album-emoji">🖼️</div>
+        <h3>Cousin Camp Shared Album</h3>
+        <p>Add your pictures and see everyone else's in our shared Google Photos album.</p>`;
+      const a = document.createElement("a");
+      a.className = "btn album-btn";
+      a.href = url; a.target = "_blank"; a.rel = "noopener";
+      a.innerHTML = "📷 Open shared album";
+      card.appendChild(a);
+      const hint = document.createElement("p");
+      hint.className = "album-hint";
+      hint.textContent = "Tip: in Google Photos, tap Add photos to upload from your camera roll.";
+      card.appendChild(hint);
     } else {
-      const grid = document.createElement("div");
-      grid.className = "photo-grid";
-      shown.forEach((p) => {
-        const item = document.createElement("div");
-        item.className = "photo-item";
-        const dayTitle = SCHEDULE.find((d) => d.date === p.date)?.title || "";
-        item.innerHTML = `
-          <img src="${p.src}" alt="Camp photo from ${escapeHtml(dayTitle)}" loading="lazy" />
-          <span class="photo-tag">${fmtDow(p.date)} ${dayNum(p.date)}</span>
-          <button class="photo-del" type="button" aria-label="Delete photo">✕</button>
-        `;
-        item.querySelector(".photo-del").addEventListener("click", () => deletePhoto(p.id));
-        grid.appendChild(item);
-      });
-      frag.appendChild(grid);
+      card.innerHTML = `
+        <div class="album-emoji">📷</div>
+        <h3>Shared album coming soon</h3>
+        <p>Mimi will add the Google Photos album link here so everyone can share pictures.</p>`;
     }
+    frag.appendChild(card);
     view.replaceChildren(frag);
-  }
-
-  function handlePhotoFiles(fileList) {
-    const files = Array.from(fileList || []);
-    if (!files.length) return;
-    const date = state.photoFilter === "all" ? todayISO() : state.photoFilter;
-    let pending = files.length;
-    files.forEach((file) => {
-      if (!file.type.startsWith("image/")) { pending--; return; }
-      downscaleImage(file, 1024, (src) => {
-        state.photos.push({ id: uid(), date, src, camper: state.me });
-        if (--pending === 0) {
-          try {
-            save(LS.photos, state.photos);
-            toast(`${files.length} photo${files.length > 1 ? "s" : ""} added 📸`);
-          } catch (err) {
-            toast("Storage full — try fewer photos.");
-          }
-          render();
-        }
-      });
-    });
-  }
-
-  function deletePhoto(id) {
-    state.photos = state.photos.filter((p) => p.id !== id);
-    save(LS.photos, state.photos);
-    toast("Photo removed");
-    render();
-  }
-
-  // Downscale + compress to keep localStorage happy.
-  function downscaleImage(file, maxDim, cb) {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const img = new Image();
-      img.onload = () => {
-        let { width, height } = img;
-        if (width > height && width > maxDim) { height = Math.round(height * maxDim / width); width = maxDim; }
-        else if (height > maxDim) { width = Math.round(width * maxDim / height); height = maxDim; }
-        const canvas = document.createElement("canvas");
-        canvas.width = width; canvas.height = height;
-        canvas.getContext("2d").drawImage(img, 0, 0, width, height);
-        cb(canvas.toDataURL("image/jpeg", 0.7));
-      };
-      img.onerror = () => cb(reader.result);
-      img.src = reader.result;
-    };
-    reader.readAsDataURL(file);
   }
 
   // ---- AWARDS view --------------------------------------------------------
@@ -518,23 +581,10 @@
     if (claimedBy(rewardId)) { toast("Already claimed by another cousin!"); return; }
     const r = rewardById(rewardId);
     if (pointsFor(state.me) < r.cost) { toast(`Need ⭐ ${r.cost} — keep earning!`); return; }
-    // Release any reward this camper currently holds (one prize per camper).
-    const prev = claimOf(state.me);
-    const claims = { ...state.claims };
-    if (prev) delete claims[prev.id];
-    claims[rewardId] = state.me;
-    state.claims = claims;
-    save(LS.claims, state.claims);
-    toast(`Claimed ${r.emoji} ${r.name}!`);
-    render();
+    Store.claim(state.me, rewardId);
   }
   function releaseReward(rewardId) {
-    const claims = { ...state.claims };
-    delete claims[rewardId];
-    state.claims = claims;
-    save(LS.claims, state.claims);
-    toast("Prize released — pick another!");
-    render();
+    Store.release(rewardId);
   }
 
   // ---- Camper modal -------------------------------------------------------
@@ -603,7 +653,6 @@
   });
 
   // ---- Utils --------------------------------------------------------------
-  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, (c) =>
       ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])
@@ -615,5 +664,13 @@
   const initial = location.hash.replace("#", "");
   state.route = routes[initial] ? initial : "today";
   render();
+
+  // Shared mode if Firebase is configured; otherwise stay local.
+  if (firebaseConfigured()) {
+    const savedPass = load(LS.pass, null);
+    if (savedPass) startShared(savedPass);
+    else showPasscodeGate();
+  }
+
   if (!state.me) setTimeout(openCamperModal, 400);
 })();
