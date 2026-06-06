@@ -21,7 +21,7 @@
     me: "cc.me",                 // current camper id (stays local to each device)
     done: "cc.done",             // { camperId: { activityId: true } }
     claims: "cc.claims",         // { rewardId: camperId } — one prize per camper
-    awards: "cc.awards",         // { camperId: [ {id,type,refId,emoji,label,points,note,ts} ] }
+    awards: "cc.awards",         // { camperId: [ {id,type,refId,emoji,label,points,note,by,ts} ] }
     pass: "cc.pass",             // remembered family passcode (shared mode)
     target: "cc.target",         // camper a grown-up is awarding to (stays local)
     parent: "cc.parent",         // grown-up's first name in the parents app (local)
@@ -396,7 +396,7 @@
     const c = targetCamper(); if (!c || blockOwnKid(c)) return;
     const k = kudosById(kudosId); if (!k) return;
     toast(`${k.emoji} ${k.label} for ${c.name} +${k.points}`);
-    Store.award(c.id, { type: "kudos", refId: k.id, emoji: k.emoji, label: k.label, points: k.points });
+    Store.award(c.id, { type: "kudos", refId: k.id, emoji: k.emoji, label: k.label, points: k.points, by: state.parent || null });
   }
   // A cousin-to-cousin cheer from the campers' app. Recognition only — worth
   // 0 points so kids can't trade points to game the leaderboard. Recorded as
@@ -419,13 +419,13 @@
     if (!pts) { toast("Enter some points first"); return; }
     const clean = (note || "").trim();
     toast(`${pts > 0 ? "+" : ""}${pts} for ${c.name}${clean ? " — " + clean : ""}`);
-    Store.award(c.id, { type: "bonus", emoji: pts < 0 ? "➖" : "➕", label: "Bonus points", points: pts, note: clean });
+    Store.award(c.id, { type: "bonus", emoji: pts < 0 ? "➖" : "➕", label: "Bonus points", points: pts, note: clean, by: state.parent || null });
   }
   function toggleParentBadge(badgeId) {
     const c = targetCamper(); if (!c || blockOwnKid(c)) return;
     const b = parentBadgeById(badgeId); if (!b) return;
     toast(hasParentBadge(c.id, badgeId) ? `Took back ${b.emoji} ${b.label}` : `${b.emoji} ${b.label} for ${c.name}!`);
-    Store.toggleBadge(c.id, { type: "badge", refId: b.id, emoji: b.emoji, label: b.label, points: 0 });
+    Store.toggleBadge(c.id, { type: "badge", refId: b.id, emoji: b.emoji, label: b.label, points: 0, by: state.parent || null });
   }
   function undoAward(camperId, awardId) {
     toast("Award removed");
