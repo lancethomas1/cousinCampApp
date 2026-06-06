@@ -3,14 +3,14 @@
 A mobile-friendly web app for **Cousin Camp** — the family reunion where William's
 grandmother, **Mimi**, runs a week of daily activities for all the cousins.
 
-**2026 theme: Time Machine Travelers.** Each day Mimi's time machine lands in a
-different era — Launch Day → Dinosaur Days → Ancient Egypt → Knights & Castles →
-Pirate Seas → Wild West → Back to the Future (Awards Day).
+**2026 theme: Time Machine Travelers.** Camp runs **June 22–26, 2026**. The
+per-day themes are off for now — the schedule is a clean 5-day skeleton with
+placeholder activities ready for Mimi to fill in (edit `data.js`).
 
 ## Features
 
-- **📅 Today** — where the time machine lands today: the era, its activities, and your progress.
-- **🗓️ Schedule** — the whole journey through time, era by era.
+- **📅 Today** — today's activities and your progress.
+- **🗓️ Schedule** — all five days of camp.
 - **📸 Photos** — add photos from your phone and tag them to a camp day. Images
   are downscaled in the browser and stored locally on your device.
 - **🏆 Awards** — pick your camper, check off activities to earn points, climb the
