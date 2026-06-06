@@ -16,8 +16,11 @@ The project ships as **two separate apps that share the same camp data**:
   - **📅 Today / 🗓️ Schedule** — each activity shows every cousin's face; a kid taps
     their **own face** to check in (tap again to undo), so the whole crew can share
     one iPad without switching profiles.
-  - **📸 Photos** — opens the camp's shared **Google Photos** album (set
-    `PHOTO_ALBUM_URL` in `data.js`).
+  - **📸 Photos** — *Snapshots in Time*. Opens the camp's shared **Google Photos**
+    album / time capsule (set `PHOTO_ALBUM_URL` in `data.js`).
+  - **🎉 Cheers** — *Crew Cheers*, a friendly, **non-competitive** crew board. Shows
+    the whole crew's combined progress, then every traveler's stats side by side
+    (listed alphabetically, never ranked) — everybody's a winner.
   - **🏆 Awards** — the Camp Store is a kiosk: tap a prize, then tap which cousin is
     claiming it (one prize each). Tap any cousin to see their trophy case (badges
     earned *and* parent-granted) and print their Awards Day certificate.
