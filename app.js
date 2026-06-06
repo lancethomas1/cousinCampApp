@@ -93,7 +93,7 @@
     const hero = document.createElement("div");
     hero.className = "hero";
     hero.innerHTML = `
-      <div class="eyebrow">🕰️ Today at Cousin Camp</div>
+      <div class="eyebrow">🚂 Today at Cousin Camp</div>
       <h2>${escapeHtml(day.title)}</h2>
       <p>${day.era ? escapeHtml(day.era) + " · " : ""}${fmtLong(iso)}</p>
       <div class="hero-progress"><span style="width:${pct}%"></span></div>
@@ -134,6 +134,104 @@
     view.replaceChildren(frag);
   }
 
+  // ---- Import from Google Photos (Picker API) -----------------------------
+  // The only sanctioned way to read someone's Google Photos: they pick photos
+  // in Google's picker, we download the picks and store them in our gallery.
+  // Requires an OAuth Web client id (GOOGLE_PICKER.clientId) + Firebase Storage.
+  const PICKER_SCOPE = "https://www.googleapis.com/auth/photospicker.mediaitems.readonly";
+  const pickerCfg = () => window.GOOGLE_PICKER || {};
+  function pickerAvailable() {
+    return Photos.enabled() && !!pickerCfg().clientId &&
+      !!(window.google && google.accounts && google.accounts.oauth2);
+  }
+  function parseSeconds(v) {
+    const m = v && String(v).match(/([\d.]+)s/);
+    return m ? Math.round(parseFloat(m[1]) * 1000) : 0;
+  }
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+  // Get a short-lived access token for the picker scope (popup, user gesture).
+  function getPickerToken() {
+    return new Promise((resolve, reject) => {
+      try {
+        const tc = google.accounts.oauth2.initTokenClient({
+          client_id: pickerCfg().clientId,
+          scope: PICKER_SCOPE,
+          callback: (resp) => (resp && resp.access_token) ? resolve(resp.access_token) : reject(new Error("no token")),
+          error_callback: (err) => reject(err || new Error("oauth error")),
+        });
+        tc.requestAccessToken();
+      } catch (e) { reject(e); }
+    });
+  }
+  async function pickerApi(path, token, opts) {
+    const res = await fetch("https://photospicker.googleapis.com/v1/" + path, {
+      method: (opts && opts.method) || "GET",
+      headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" },
+      body: (opts && opts.body) ? JSON.stringify(opts.body) : undefined,
+    });
+    if (!res.ok) throw new Error("Picker API " + res.status);
+    return res.status === 204 ? {} : res.json();
+  }
+
+  async function importFromGooglePhotos(btn) {
+    // Pre-open a tab during the click gesture so the picker isn't popup-blocked.
+    const pickerWin = window.open("", "_blank");
+    let token;
+    try { token = await getPickerToken(); }
+    catch (e) { if (pickerWin) pickerWin.close(); toast("Google sign-in cancelled"); return; }
+
+    btn.disabled = true;
+    const label = btn.innerHTML;
+    try {
+      btn.innerHTML = "⏳ Opening Google Photos…";
+      const session = await pickerApi("sessions", token, { method: "POST", body: {} });
+      if (pickerWin) pickerWin.location.href = session.pickerUri;
+      else window.open(session.pickerUri, "_blank");
+      toast("Pick your photos in the Google Photos tab…");
+
+      const interval = parseSeconds(session.pollingConfig && session.pollingConfig.pollInterval) || 4000;
+      const timeoutMs = parseSeconds(session.pollingConfig && session.pollingConfig.timeoutIn) || 5 * 60 * 1000;
+      const start = Date.now();
+      let ready = false;
+      while (Date.now() - start < timeoutMs) {
+        await sleep(Math.max(2000, interval));
+        const s = await pickerApi("sessions/" + session.id, token);
+        if (s.mediaItemsSet) { ready = true; break; }
+      }
+      if (!ready) { toast("No photos picked — try again"); return; }
+
+      btn.innerHTML = "⬇️ Importing…";
+      const items = [];
+      let pageToken = "";
+      do {
+        const q = "mediaItems?sessionId=" + encodeURIComponent(session.id) + "&pageSize=100" +
+          (pageToken ? "&pageToken=" + encodeURIComponent(pageToken) : "");
+        const page = await pickerApi(q, token);
+        (page.mediaItems || []).forEach((m) => items.push(m));
+        pageToken = page.nextPageToken || "";
+      } while (pageToken);
+
+      let ok = 0;
+      for (const m of items) {
+        const mf = m.mediaFile || {};
+        if (!mf.baseUrl || (mf.mimeType && !mf.mimeType.startsWith("image/"))) continue;
+        try {
+          const resp = await fetch(mf.baseUrl + "=d", { headers: { Authorization: "Bearer " + token } });
+          if (!resp.ok) throw new Error("download " + resp.status);
+          if (await Photos.add(await resp.blob())) ok++;
+        } catch (e) { console.error("import item failed (likely CORS — needs a proxy)", e); }
+      }
+      try { await pickerApi("sessions/" + session.id, token, { method: "DELETE" }); } catch (_) {}
+      toast(ok ? `Imported ${ok} photo${ok > 1 ? "s" : ""} 📥` : "Couldn't download picks — see console (may need a proxy)");
+    } catch (e) {
+      console.error("Google Photos import failed", e);
+      toast("Import failed — check setup / console");
+    } finally {
+      btn.disabled = false; btn.innerHTML = label;
+    }
+  }
+
   // ---- PHOTOS view --------------------------------------------------------
   // A live, shared in-app gallery (Firebase Storage). Everyone's photos stream
   // in here. The Google Photos album link stays as a backup.
@@ -171,6 +269,17 @@
         // gallery refreshes itself via the live snapshot
       });
       bar.append(addBtn, input);
+
+      // Optional: import existing pictures straight from Google Photos.
+      if (pickerAvailable()) {
+        const importBtn = document.createElement("button");
+        importBtn.className = "btn-ghost";
+        importBtn.type = "button";
+        importBtn.innerHTML = "📥 Import from Google Photos";
+        importBtn.addEventListener("click", () => importFromGooglePhotos(importBtn));
+        bar.append(importBtn);
+      }
+
       frag.appendChild(bar);
     }
 
@@ -400,7 +509,7 @@
     const cert = document.createElement("div");
     cert.className = "certificate";
     cert.innerHTML = `
-      <div class="cert-top">🕰️ Cousin Camp 2026 🕰️</div>
+      <div class="cert-top">🚂 Cousin Camp 2026 🚂</div>
       <div class="cert-award">Time Machine Travelers · Official Certificate</div>
       <div class="cert-name">${escapeHtml(camper.name)}</div>
       <div class="cert-title">${superl.emoji} ${escapeHtml(superl.title)}</div>
@@ -615,21 +724,8 @@
     awards: renderAwards,
   };
 
-  // A small persistent link to the separate grown-ups' award app.
-  function grownupsFooter() {
-    const f = document.createElement("div");
-    f.className = "app-footer";
-    const a = document.createElement("a");
-    a.className = "grownups-link";
-    a.href = "parent.html";
-    a.innerHTML = `<span class="gl-emoji">🎖️</span> Grown-ups: open the Award app`;
-    f.appendChild(a);
-    return f;
-  }
-
   function render() {
     (routes[state.route] || renderToday)();
-    view.appendChild(grownupsFooter());
     document.querySelectorAll(".tab").forEach((t) =>
       t.classList.toggle("active", t.dataset.route === state.route)
     );
