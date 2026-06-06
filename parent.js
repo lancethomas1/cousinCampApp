@@ -16,7 +16,7 @@
     pointsFor, kudosCountFor, parentBadgesFor, hasParentBadge, awardsFor,
     camperById, claimedBy, claimOf,
     targetCamper, setTarget, giveKudos, giveBonus, toggleParentBadge, undoAward,
-    allParentNames, currentParent, ownKidIds, isOwnKid, setParent, clearParent,
+    allParentNames, grownupRoster, currentParent, ownKidIds, isOwnKid, setParent, clearParent,
     toast, escapeHtml, camperFace, timeAgo,
   } = C;
   const view = document.getElementById("view");
@@ -53,16 +53,18 @@
     input.addEventListener("keydown", (e) => { if (e.key === "Enter") submit(); });
     card.append(input, go);
 
-    // Quick-pick buttons for the grown-ups we already know about.
-    const known = allParentNames();
+    // Quick-pick buttons for the grown-ups we already know about (parents plus
+    // grandparents & other helpers). The chip shows a friendly label but signs
+    // in under the grown-up's name.
+    const known = grownupRoster();
     if (known.length) {
       const quick = document.createElement("div");
       quick.className = "name-quick";
-      known.forEach((name) => {
+      known.forEach(({ name, label }) => {
         const b = document.createElement("button");
         b.type = "button";
         b.className = "btn-ghost name-chip";
-        b.textContent = name;
+        b.textContent = label;
         b.addEventListener("click", () => enterAs(name));
         quick.appendChild(b);
       });

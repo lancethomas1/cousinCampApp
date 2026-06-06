@@ -14,6 +14,7 @@
   "use strict";
 
   const { CAMPERS, SCHEDULE, STORE, PHOTO_ALBUM_URL, KUDOS, BONUS_QUICK, PARENT_BADGES } = window.CAMP_DATA;
+  const GROWNUPS = window.CAMP_DATA.GROWNUPS || [];
 
   // ---- Storage helpers ----------------------------------------------------
   const LS = {
@@ -343,15 +344,22 @@
   function camperParents(c) {
     return String((c && c.parents) || "").split(/[,&]|\band\b/i).map((s) => s.trim()).filter(Boolean);
   }
-  // Every distinct grown-up name across all campers, in first-seen order.
-  function allParentNames() {
+  // The full grown-up roster for the parents' app sign-in: every parent derived
+  // from the campers, plus the extra GROWNUPS (grandparents, etc.). Each entry
+  // has the `name` they sign in with and a `label` shown on the sign-in chip.
+  // Grown-ups with no kids of their own can award any cousin.
+  function grownupRoster() {
     const out = [], seen = new Set();
-    CAMPERS.forEach((c) => camperParents(c).forEach((n) => {
-      const k = n.toLowerCase();
-      if (!seen.has(k)) { seen.add(k); out.push(n); }
-    }));
+    const add = (name, label) => {
+      const k = name.toLowerCase();
+      if (!seen.has(k)) { seen.add(k); out.push({ name, label: label || name }); }
+    };
+    CAMPERS.forEach((c) => camperParents(c).forEach((n) => add(n)));
+    GROWNUPS.forEach((g) => add(g.name, g.nickname ? `${g.nickname} (${g.name})` : g.name));
     return out;
   }
+  // Every distinct grown-up name (parents + extra grown-ups), in first-seen order.
+  function allParentNames() { return grownupRoster().map((g) => g.name); }
   // Is the signed-in name a recognized parent? Returns the name, or null.
   function currentParent() {
     const name = state.parent;
@@ -632,7 +640,7 @@
 
   // ---- Public surface -----------------------------------------------------
   window.CampCore = {
-    data: { CAMPERS, SCHEDULE, STORE, KUDOS, BONUS_QUICK, PARENT_BADGES, PHOTO_ALBUM_URL },
+    data: { CAMPERS, GROWNUPS, SCHEDULE, STORE, KUDOS, BONUS_QUICK, PARENT_BADGES, PHOTO_ALBUM_URL },
     state, LS, load, save,
     setRender, initShared, startShared, Store, Photos,
     // campers & activities
@@ -645,7 +653,7 @@
     kudosById, parentBadgeById, awardsFor, kudosCountFor, cheersCountFor, parentBadgesFor, hasParentBadge,
     targetCamper, setTarget, giveKudos, giveCheer, giveBonus, toggleParentBadge, undoAward,
     // parent identity & fairness rule
-    allParentNames, currentParent, ownKidIds, isOwnKid, setParent, clearParent,
+    allParentNames, grownupRoster, currentParent, ownKidIds, isOwnKid, setParent, clearParent,
     // formatting & utils
     todayISO, fmtDow, dayNum, fmtLong, toast, escapeHtml, camperFace, uid, timeAgo,
     initPullToRefresh,
