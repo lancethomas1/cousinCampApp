@@ -816,7 +816,7 @@
       row.innerHTML = `
         <div class="lb-avatar" style="background:${c.color}22">${c.emoji}</div>
         <div class="ros-name">${escapeHtml(c.name)}
-          <small>${badgesEarned(c.id).length + parentBadgesFor(c.id).length} badges · ${r ? r.emoji + " " + escapeHtml(r.name) : "no prize yet"}</small></div>
+          <small>${c.parents ? "👪 " + escapeHtml(c.parents) + " · " : ""}${badgesEarned(c.id).length + parentBadgesFor(c.id).length} badges · ${r ? r.emoji + " " + escapeHtml(r.name) : "no prize yet"}</small></div>
         <div class="ros-pts">⭐ ${pointsFor(c.id)}</div>`;
       row.addEventListener("click", () => {
         state.me = c.id; save(LS.me, c.id); updateWhoami(); render();
