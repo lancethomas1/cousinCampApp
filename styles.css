@@ -530,6 +530,8 @@ select.day-filter {
 .camper-pick.active { border-color: var(--sun); background: #fff2ec; }
 .camper-pick .ce { font-size: 30px; display: block; margin-bottom: 4px; }
 .camper-pick .cp-age { display: block; font-weight: 700; font-size: 11px; color: var(--ink-soft); margin-top: 2px; }
+.camper-pick .cp-pts { display: block; font-weight: 700; font-size: 11px; color: var(--ink-soft); margin-top: 2px; }
+.camper-pick.disabled, .camper-pick:disabled { opacity: .42; cursor: not-allowed; }
 
 /* ---------- Camper photo avatars ---------- */
 /* A real headshot used in place of a cousin's emoji (see camperFace in core.js).
@@ -667,6 +669,7 @@ select.day-filter {
 .store-tile:active { transform: scale(.97); }
 .store-tile.mine { border-color: var(--grass); background: #effbf4; }
 .store-tile.taken { opacity: .55; cursor: not-allowed; background: #f4f0ea; }
+.store-tile.claimed { border-color: var(--grass); background: #effbf4; }
 .st-emoji { font-size: 30px; }
 .st-name { font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 16px; }
 .st-desc { color: var(--ink-soft); font-weight: 600; font-size: 12.5px; flex: 1; }
