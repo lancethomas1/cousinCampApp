@@ -140,21 +140,5 @@ const PARENT_BADGES = [
   { id: "pb-peace",    emoji: "🕊️", label: "Peacemaker",        desc: "Helped the cousins get along." },
 ];
 
-// PARENTS — the grown-ups' app sign-in + fairness rule.
-// Each parent types their first name to open the grown-ups' app. A parent may
-// give kudos/points/badges to every cousin EXCEPT their own kids (listed here),
-// so nobody can pad their own kids' scores. Names are matched case-insensitively.
-// Grown-ups whose name isn't listed (e.g. Mimi, aunts, uncles) can award everyone.
-// Add one entry per parent. Two parents of the same kids? Add two entries.
-const PARENTS = [
-  { name: "Lance", kids: ["william", "samuel", "leo"] },
-
-  // Fill in the rest of the family — kid ids for convenience:
-  //   Inman kids:    "laila", "sophie"
-  //   Hines kids:    "logan", "zoe", "noel"
-  //   Quinones kids: "ava"
-  // e.g. { name: "Mom", kids: ["laila", "sophie"] },
-];
-
 // Make available to app.js
-window.CAMP_DATA = { CAMPERS, SCHEDULE, STORE, PHOTO_ALBUM_URL, KUDOS, BONUS_QUICK, PARENT_BADGES, PARENTS };
+window.CAMP_DATA = { CAMPERS, SCHEDULE, STORE, PHOTO_ALBUM_URL, KUDOS, BONUS_QUICK, PARENT_BADGES };

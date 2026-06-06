@@ -14,7 +14,6 @@
   "use strict";
 
   const { CAMPERS, SCHEDULE, STORE, PHOTO_ALBUM_URL, KUDOS, BONUS_QUICK, PARENT_BADGES } = window.CAMP_DATA;
-  const PARENTS = window.CAMP_DATA.PARENTS || [];
 
   // ---- Storage helpers ----------------------------------------------------
   const LS = {
@@ -323,17 +322,33 @@
   }
 
   // ---- Parent identity & fairness rule ------------------------------------
-  // A grown-up signs in with their first name in the parents app. If their name
-  // matches a PARENTS entry, they cannot give awards to their own kids.
-  function parentByName(name) {
-    if (!name) return null;
-    const n = String(name).trim().toLowerCase();
-    return PARENTS.find((p) => String(p.name).trim().toLowerCase() === n) || null;
+  // A grown-up signs in with their first name in the parents app. The parent →
+  // kids link is derived from each camper's `parents` field in data.js (e.g.
+  // "Lance & Betsy"), so a parent can't give awards to their own kids.
+  function sameName(a, b) { return String(a).trim().toLowerCase() === String(b).trim().toLowerCase(); }
+  // Parse a camper's `parents` string ("Lance & Betsy") into first names.
+  function camperParents(c) {
+    return String((c && c.parents) || "").split(/[,&]|\band\b/i).map((s) => s.trim()).filter(Boolean);
   }
-  function currentParent() { return parentByName(state.parent); }
+  // Every distinct grown-up name across all campers, in first-seen order.
+  function allParentNames() {
+    const out = [], seen = new Set();
+    CAMPERS.forEach((c) => camperParents(c).forEach((n) => {
+      const k = n.toLowerCase();
+      if (!seen.has(k)) { seen.add(k); out.push(n); }
+    }));
+    return out;
+  }
+  // Is the signed-in name a recognized parent? Returns the name, or null.
+  function currentParent() {
+    const name = state.parent;
+    return name && allParentNames().some((n) => sameName(n, name)) ? name : null;
+  }
+  // The signed-in grown-up's own kids (camper ids).
   function ownKidIds() {
-    const p = currentParent();
-    return p ? (p.kids || []) : [];
+    const name = state.parent;
+    if (!name) return [];
+    return CAMPERS.filter((c) => camperParents(c).some((n) => sameName(n, name))).map((c) => c.id);
   }
   function isOwnKid(camperId) { return ownKidIds().includes(camperId); }
   function setParent(name) {
@@ -435,7 +450,7 @@
 
   // ---- Public surface -----------------------------------------------------
   window.CampCore = {
-    data: { CAMPERS, SCHEDULE, STORE, KUDOS, BONUS_QUICK, PARENT_BADGES, PARENTS, PHOTO_ALBUM_URL },
+    data: { CAMPERS, SCHEDULE, STORE, KUDOS, BONUS_QUICK, PARENT_BADGES, PHOTO_ALBUM_URL },
     state, LS, load, save,
     setRender, initShared, startShared, Store,
     // campers & activities
@@ -448,7 +463,7 @@
     kudosById, parentBadgeById, awardsFor, kudosCountFor, parentBadgesFor, hasParentBadge,
     targetCamper, setTarget, giveKudos, giveBonus, toggleParentBadge, undoAward,
     // parent identity & fairness rule
-    parentByName, currentParent, ownKidIds, isOwnKid, setParent, clearParent,
+    allParentNames, currentParent, ownKidIds, isOwnKid, setParent, clearParent,
     // formatting & utils
     todayISO, fmtDow, dayNum, fmtLong, toast, escapeHtml, uid, timeAgo,
   };

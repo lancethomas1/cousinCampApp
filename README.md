@@ -74,7 +74,9 @@ or any static host.
 
 All the camp content lives in [`data.js`](./data.js):
 
-- **`CAMPERS`** — the list of cousins (name, emoji, color).
+- **`CAMPERS`** — the list of cousins (name, emoji, color, `parents`). The
+  `parents` string (e.g. `"Lance & Betsy"`) also powers the parents app: a
+  grown-up who signs in with one of those first names can't award that cousin.
 - **`SCHEDULE`** — each day's title and activities
   (time, title, emoji, location, point value, description).
 - **`STORE`** — the nine one-of-a-kind Camp Store prizes.
@@ -82,12 +84,10 @@ All the camp content lives in [`data.js`](./data.js):
 - **`KUDOS`** — the kudos cards grown-ups can award (emoji, label, point value).
 - **`BONUS_QUICK`** — the quick-tap bonus point amounts in the parents app.
 - **`PARENT_BADGES`** — the special badges grown-ups can grant or take back.
-- **`PARENTS`** — the grown-ups' sign-in + fairness rule: `{ name, kids: [...] }`
-  per parent. A parent can't award the camper ids listed under their name. Names
-  are matched case-insensitively; only `"Lance"` is filled in — add the rest of
-  the family (kid ids are listed in a comment in `data.js`).
 
-Edit those to match your real reunion — dates are ISO `YYYY-MM-DD`.
+The parents app's fairness rule needs no extra config — it reads the `parents`
+field on each camper above. Edit those to match your real reunion — dates are
+ISO `YYYY-MM-DD`.
 
 ## Files
 

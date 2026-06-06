@@ -10,12 +10,12 @@
   "use strict";
 
   const C = window.CampCore;
-  const { CAMPERS, KUDOS, BONUS_QUICK, PARENT_BADGES, PARENTS } = C.data;
+  const { CAMPERS, KUDOS, BONUS_QUICK, PARENT_BADGES } = C.data;
   const {
     state, setRender, initShared,
     pointsFor, kudosCountFor, parentBadgesFor, hasParentBadge, awardsFor,
     targetCamper, setTarget, giveKudos, giveBonus, toggleParentBadge, undoAward,
-    currentParent, ownKidIds, isOwnKid, setParent, clearParent,
+    allParentNames, currentParent, ownKidIds, isOwnKid, setParent, clearParent,
     toast, escapeHtml, timeAgo,
   } = C;
   const view = document.getElementById("view");
@@ -52,16 +52,17 @@
     input.addEventListener("keydown", (e) => { if (e.key === "Enter") submit(); });
     card.append(input, go);
 
-    // Quick-pick buttons for the parents we already know about.
-    if (PARENTS.length) {
+    // Quick-pick buttons for the grown-ups we already know about.
+    const known = allParentNames();
+    if (known.length) {
       const quick = document.createElement("div");
       quick.className = "name-quick";
-      PARENTS.forEach((p) => {
+      known.forEach((name) => {
         const b = document.createElement("button");
         b.type = "button";
         b.className = "btn-ghost name-chip";
-        b.textContent = p.name;
-        b.addEventListener("click", () => enterAs(p.name));
+        b.textContent = name;
+        b.addEventListener("click", () => enterAs(name));
         quick.appendChild(b);
       });
       const lbl = document.createElement("p");
