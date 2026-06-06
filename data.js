@@ -21,84 +21,59 @@ const CAMPERS = [
   { id: "noel",    name: "Noel",    last: "Hines",     age:  3, emoji: "🐥", color: "#00b894" },
 ];
 
-// The journey through time. Each day the machine lands in a new era.
-// `era` is the destination label; `points` are awarded on completion.
+// The camp schedule. Camp runs five days, June 22–26, 2026.
+// Day themes are off for now — these are neutral placeholder slots.
+// Edit the titles, times, locations, points, and descriptions to match
+// Mimi's real plans. You can add or remove activities freely.
 const SCHEDULE = [
   {
-    date: "2026-06-06",
-    title: "Launch Day",
-    era: "Present Day · Year 2026",
+    date: "2026-06-22",
+    title: "Day 1",
     activities: [
-      { id: "d1-a1", time: "9:00 AM",  title: "Blast-Off Breakfast",      emoji: "🥞", location: "Mission Control (Kitchen)", points: 10, desc: "Fuel up with Mimi's pancakes before the very first jump through time." },
-      { id: "d1-a2", time: "11:00 AM", title: "Build Your Time-Travel Gear", emoji: "🥽", location: "Back Porch",            points: 15, desc: "Make your own time goggles and a wrist time-band for the journey." },
-      { id: "d1-a3", time: "2:00 PM",  title: "Decode the Time Map",       emoji: "🗺️", location: "The Whole Yard",          points: 20, desc: "A scavenger hunt for the lost coordinates that power the machine." },
-      { id: "d1-a4", time: "7:30 PM",  title: "Starlight Time Stories",    emoji: "🔥", location: "Fire Pit",                points: 10, desc: "Bonfire tales of all the eras we'll visit this week." },
+      { id: "d1-a1", time: "9:00 AM", title: "Breakfast",           emoji: "🥞", location: "Mimi's Kitchen", points: 5,  desc: "Start the day together." },
+      { id: "d1-a2", time: "11:00 AM", title: "Morning Activity",   emoji: "☀️", location: "TBD",            points: 10, desc: "To be announced!" },
+      { id: "d1-a3", time: "2:00 PM",  title: "Afternoon Activity", emoji: "🎨", location: "TBD",            points: 10, desc: "To be announced!" },
+      { id: "d1-a4", time: "7:00 PM",  title: "Evening Campfire",   emoji: "🔥", location: "Fire Pit",       points: 5,  desc: "Wind down together." },
     ],
   },
   {
-    date: "2026-06-07",
-    title: "Dinosaur Days",
-    era: "The Prehistoric Age",
+    date: "2026-06-23",
+    title: "Day 2",
     activities: [
-      { id: "d2-a1", time: "8:30 AM",  title: "Sunrise Dino Tracking",     emoji: "🦕", location: "Creek Trail",             points: 15, desc: "An early-morning hunt for giant 'dinosaur' footprints. Watch your step!" },
-      { id: "d2-a2", time: "10:30 AM", title: "Fossil Dig",                emoji: "🦴", location: "The Dig Pit",             points: 10, desc: "Excavate buried fossils with brushes, just like real paleontologists." },
-      { id: "d2-a3", time: "1:00 PM",  title: "Make-Your-Own Dinosaur",    emoji: "🦖", location: "Craft Table",             points: 15, desc: "Build a dino model from your fossil finds and name your new species." },
-      { id: "d2-a4", time: "4:00 PM",  title: "Erupting Volcano Science",  emoji: "🌋", location: "The Patio",               points: 20, desc: "Make a baking-soda volcano blow its top, prehistoric style." },
+      { id: "d2-a1", time: "9:00 AM", title: "Breakfast",           emoji: "🥞", location: "Mimi's Kitchen", points: 5,  desc: "Start the day together." },
+      { id: "d2-a2", time: "11:00 AM", title: "Morning Activity",   emoji: "☀️", location: "TBD",            points: 10, desc: "To be announced!" },
+      { id: "d2-a3", time: "2:00 PM",  title: "Afternoon Activity", emoji: "🎨", location: "TBD",            points: 10, desc: "To be announced!" },
+      { id: "d2-a4", time: "7:00 PM",  title: "Evening Campfire",   emoji: "🔥", location: "Fire Pit",       points: 5,  desc: "Wind down together." },
     ],
   },
   {
-    date: "2026-06-08",
-    title: "Ancient Egypt",
-    era: "3000 B.C. · Land of the Pharaohs",
+    date: "2026-06-24",
+    title: "Day 3",
     activities: [
-      { id: "d3-a1", time: "9:30 AM",  title: "Build the Great Pyramid",   emoji: "🔺", location: "Back Porch",              points: 20, desc: "Teams stack blocks and boxes into the tallest pyramid they can." },
-      { id: "d3-a2", time: "12:00 PM", title: "Decorate Mummy Cookies",    emoji: "🍪", location: "Mimi's Kitchen",          points: 15, desc: "Bake and wrap cookies to look like little mummies. Spooky and sweet!" },
-      { id: "d3-a3", time: "3:00 PM",  title: "Hieroglyphic Name Scrolls", emoji: "📜", location: "Craft Table",             points: 15, desc: "Write your name in ancient hieroglyphs on a rolled-up scroll." },
-      { id: "d3-a4", time: "6:00 PM",  title: "Pharaoh's Feast Pizza",     emoji: "🍕", location: "Backyard Oven",           points: 10, desc: "A royal pizza night fit for a king of the Nile." },
+      { id: "d3-a1", time: "9:00 AM", title: "Breakfast",           emoji: "🥞", location: "Mimi's Kitchen", points: 5,  desc: "Start the day together." },
+      { id: "d3-a2", time: "11:00 AM", title: "Morning Activity",   emoji: "☀️", location: "TBD",            points: 10, desc: "To be announced!" },
+      { id: "d3-a3", time: "2:00 PM",  title: "Afternoon Activity", emoji: "🎨", location: "TBD",            points: 10, desc: "To be announced!" },
+      { id: "d3-a4", time: "7:00 PM",  title: "Evening Campfire",   emoji: "🔥", location: "Fire Pit",       points: 5,  desc: "Wind down together." },
     ],
   },
   {
-    date: "2026-06-09",
-    title: "Knights & Castles",
-    era: "The Middle Ages · 1200 A.D.",
+    date: "2026-06-25",
+    title: "Day 4",
     activities: [
-      { id: "d4-a1", time: "10:00 AM", title: "Build a Cardboard Castle",  emoji: "🏰", location: "The Garage",              points: 20, desc: "Raise the walls and towers of Camp Castle from boxes and tape." },
-      { id: "d4-a2", time: "12:30 PM", title: "Royal Crown & Shield Craft", emoji: "👑", location: "Craft Table",            points: 10, desc: "Every knight and royal needs a crown and a coat of arms." },
-      { id: "d4-a3", time: "2:30 PM",  title: "Dragon Water Battle",       emoji: "🐉", location: "Side Yard",               points: 15, desc: "Defend the castle from the dragon with water balloons!" },
-      { id: "d4-a4", time: "4:00 PM",  title: "Knight Training Course",    emoji: "⚔️", location: "Front Lawn",              points: 15, desc: "Run the obstacle course to earn your knighthood from Queen Mimi." },
+      { id: "d4-a1", time: "9:00 AM", title: "Breakfast",           emoji: "🥞", location: "Mimi's Kitchen", points: 5,  desc: "Start the day together." },
+      { id: "d4-a2", time: "11:00 AM", title: "Morning Activity",   emoji: "☀️", location: "TBD",            points: 10, desc: "To be announced!" },
+      { id: "d4-a3", time: "2:00 PM",  title: "Afternoon Activity", emoji: "🎨", location: "TBD",            points: 10, desc: "To be announced!" },
+      { id: "d4-a4", time: "7:00 PM",  title: "Evening Campfire",   emoji: "🔥", location: "Fire Pit",       points: 5,  desc: "Wind down together." },
     ],
   },
   {
-    date: "2026-06-10",
-    title: "Pirate Seas",
-    era: "The Age of Sail · 1700s",
+    date: "2026-06-26",
+    title: "Day 5",
     activities: [
-      { id: "d5-a1", time: "9:00 AM",  title: "Walk-the-Plank Sprinklers", emoji: "💦", location: "Front Lawn",              points: 25, desc: "A soaking-wet obstacle course across the deck of the SS Mimi." },
-      { id: "d5-a2", time: "11:30 AM", title: "Buried Treasure Hunt",      emoji: "🪙", location: "The Whole Yard",          points: 15, desc: "Follow the map and dig up the buried treasure before the others." },
-      { id: "d5-a3", time: "2:00 PM",  title: "Cannonball Balloon Toss",   emoji: "🎈", location: "Side Yard",               points: 15, desc: "Don't let the water-balloon cannonball hit the deck!" },
-      { id: "d5-a4", time: "5:00 PM",  title: "Build-a-Boat Pool Races",   emoji: "⛵", location: "The Patio",               points: 20, desc: "Build a tiny pirate ship from foil and race it across the sea." },
-    ],
-  },
-  {
-    date: "2026-06-11",
-    title: "Wild West",
-    era: "The Frontier · 1850s",
-    activities: [
-      { id: "d6-a1", time: "10:00 AM", title: "Gold Rush Panning",         emoji: "🥇", location: "The Pond",                points: 10, desc: "Pan the creek for hidden gold nuggets, forty-niner style." },
-      { id: "d6-a2", time: "1:00 PM",  title: "Cowboy Hat & Bandana Craft", emoji: "🤠", location: "Craft Table",            points: 15, desc: "Gear up like a real cowpoke for tonight's hoedown." },
-      { id: "d6-a3", time: "3:30 PM",  title: "Stick-Horse Rodeo Races",   emoji: "🐎", location: "Backyard Corral",         points: 15, desc: "Saddle up your trusty stick-horse and race around the corral." },
-      { id: "d6-a4", time: "7:00 PM",  title: "Wild West Hoedown Show",    emoji: "⭐", location: "Garage Saloon Stage",      points: 30, desc: "The big talent show — sing, dance, or tell a tall tale!" },
-    ],
-  },
-  {
-    date: "2026-06-12",
-    title: "Back to the Future",
-    era: "Awards Day · The Year 3000",
-    activities: [
-      { id: "d7-a1", time: "9:00 AM",  title: "Return-Trip Breakfast",     emoji: "🍳", location: "Mission Control (Kitchen)", points: 10, desc: "One last big breakfast before the machine brings us home." },
-      { id: "d7-a2", time: "11:00 AM", title: "Time-Travel Slideshow",     emoji: "📸", location: "Living Room",             points: 10, desc: "Relive every era through everyone's photos from the trip." },
-      { id: "d7-a3", time: "1:00 PM",  title: "Time Travelers Awards",     emoji: "🏆", location: "Back Porch",              points: 25, desc: "Mimi hands out the official Time Traveler medals and certificates." },
-      { id: "d7-a4", time: "3:00 PM",  title: "Bury the Time Capsule",     emoji: "⏳", location: "Front Yard",              points: 10, desc: "Seal a capsule for next year's cousins, then big goodbye hugs." },
+      { id: "d5-a1", time: "9:00 AM", title: "Breakfast",           emoji: "🥞", location: "Mimi's Kitchen", points: 5,  desc: "Start the day together." },
+      { id: "d5-a2", time: "11:00 AM", title: "Morning Activity",   emoji: "☀️", location: "TBD",            points: 10, desc: "To be announced!" },
+      { id: "d5-a3", time: "1:00 PM",  title: "Awards Ceremony",    emoji: "🏆", location: "Back Porch",     points: 15, desc: "Mimi hands out the camp medals and certificates." },
+      { id: "d5-a4", time: "3:00 PM",  title: "Goodbye Hugs",       emoji: "🤗", location: "Front Yard",     points: 5,  desc: "Until next year!" },
     ],
   },
 ];
