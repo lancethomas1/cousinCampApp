@@ -11,14 +11,16 @@ placeholder activities ready for Mimi to fill in (edit `data.js`).
 
 The project ships as **two separate apps that share the same camp data**:
 
-- **Campers' app — [`index.html`](./index.html)** (the link the kids use)
-  - **📅 Today** — today's activities and your progress.
-  - **🗓️ Schedule** — all five days of camp.
+- **Campers' app — [`index.html`](./index.html)** (the link the kids use, built for
+  a shared iPad — no per-device login)
+  - **📅 Today / 🗓️ Schedule** — each activity shows every cousin's face; a kid taps
+    their **own face** to check in (tap again to undo), so the whole crew can share
+    one iPad without switching profiles.
   - **📸 Photos** — opens the camp's shared **Google Photos** album (set
     `PHOTO_ALBUM_URL` in `data.js`).
-  - **🏆 Awards** — pick your camper, check off activities to earn points, see your
-    badges (earned *and* parent-granted), claim one of nine one-of-a-kind prizes,
-    and print an Awards Day certificate.
+  - **🏆 Awards** — the Camp Store is a kiosk: tap a prize, then tap which cousin is
+    claiming it (one prize each). Tap any cousin to see their trophy case (badges
+    earned *and* parent-granted) and print their Awards Day certificate.
 - **Grown-ups' app — [`parent.html`](./parent.html)** (a separate link for parents)
   - **Lite sign-in:** grown-ups enter their **first name** to start (remembered on
     that device; tap **Switch** to change).
