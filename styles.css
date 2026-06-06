@@ -808,6 +808,7 @@ select.day-filter {
 .roster-row.me { outline: 3px solid var(--sun); }
 .ros-name { font-weight: 800; flex: 1; min-width: 0; }
 .ros-name small { display: block; font-weight: 700; color: var(--ink-soft); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ros-you { display: inline-block; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: var(--sun-dark); background: #ffe9df; padding: 1px 7px; border-radius: 999px; vertical-align: middle; }
 .ros-pts { font-weight: 800; color: #b8860b; background: #fff4cf; padding: 4px 10px; border-radius: 999px; font-size: 13px; flex: 0 0 auto; }
 
 /* ---------- Shared photo album card ---------- */

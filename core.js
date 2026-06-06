@@ -312,6 +312,10 @@
   function kudosCountFor(camperId) {
     return awardsFor(camperId).filter((a) => a.type === "kudos").length;
   }
+  // Cousin-to-cousin cheers a camper has received (recognition only, 0 points).
+  function cheersCountFor(camperId) {
+    return awardsFor(camperId).filter((a) => a.type === "cheer").length;
+  }
   // Special parent badges a camper currently holds.
   function parentBadgesFor(camperId) {
     const held = new Set(awardsFor(camperId).filter((a) => a.type === "badge").map((a) => a.refId));
@@ -385,6 +389,21 @@
     const k = kudosById(kudosId); if (!k) return;
     toast(`${k.emoji} ${k.label} for ${c.name} +${k.points}`);
     Store.award(c.id, { type: "kudos", refId: k.id, emoji: k.emoji, label: k.label, points: k.points });
+  }
+  // A cousin-to-cousin cheer from the campers' app. Recognition only — worth
+  // 0 points so kids can't trade points to game the leaderboard. Recorded as
+  // a "cheer" award on the recipient, tagged with who sent it. Returns whether
+  // the cheer was sent (false if it was a no-op, e.g. cheering yourself).
+  function giveCheer(fromId, toId, kudosId) {
+    const from = camperById(fromId), to = camperById(toId), k = kudosById(kudosId);
+    if (!from || !to || !k) return false;
+    if (from.id === to.id) { toast("Pick a different cousin to cheer! 😊"); return false; }
+    toast(`${k.emoji} ${from.name} cheered ${to.name}!`);
+    Store.award(to.id, {
+      type: "cheer", refId: k.id, emoji: k.emoji, label: k.label, points: 0,
+      from: from.id, note: `cheer from ${from.name}`,
+    });
+    return true;
   }
   function giveBonus(points, note) {
     const c = targetCamper(); if (!c || blockOwnKid(c)) return;
@@ -623,8 +642,8 @@
     // store
     rewardById, claimedBy, claimOf, spentBy, balanceFor,
     // parent awards
-    kudosById, parentBadgeById, awardsFor, kudosCountFor, parentBadgesFor, hasParentBadge,
-    targetCamper, setTarget, giveKudos, giveBonus, toggleParentBadge, undoAward,
+    kudosById, parentBadgeById, awardsFor, kudosCountFor, cheersCountFor, parentBadgesFor, hasParentBadge,
+    targetCamper, setTarget, giveKudos, giveCheer, giveBonus, toggleParentBadge, undoAward,
     // parent identity & fairness rule
     allParentNames, currentParent, ownKidIds, isOwnKid, setParent, clearParent,
     // formatting & utils
