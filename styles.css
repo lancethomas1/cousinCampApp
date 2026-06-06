@@ -1,20 +1,23 @@
 /* ============================================================
    Cousin Camp — styles
-   Mobile-first, summer-camp theme.
+   Mobile-first, "Train Time Travel" theme: a Ghibli-style steam
+   train crossing green cliffs under a cloud-dusted sky. Warm
+   copper/brass train livery, lush hillside greens, parchment
+   stone, and big soft clouds.
    ============================================================ */
 
 :root {
-  --sun: #ef6c4d;
-  --sun-dark: #d8542f;
-  --sky: #2c9bd6;
-  --grass: #2faa6a;
-  --sand: #fff7ec;
-  --cream: #fffdf8;
-  --ink: #3a2e25;
-  --ink-soft: #6f6357;
-  --gold: #f4b400;
-  --shadow: 0 6px 18px rgba(58, 46, 37, 0.12);
-  --shadow-lg: 0 14px 34px rgba(58, 46, 37, 0.18);
+  --sun: #c2703d;        /* warm copper — primary accent (train livery) */
+  --sun-dark: #a4561f;   /* deeper copper for text/active states */
+  --sky: #3f8fb8;        /* deep sky blue */
+  --grass: #3f9a5f;      /* lush hillside green */
+  --sand: #f4ead4;       /* warm parchment / sun-baked cliff stone */
+  --cream: #fdf9f0;      /* aged paper */
+  --ink: #2f2820;        /* dark earth */
+  --ink-soft: #6c5f4d;
+  --gold: #d4a52e;       /* polished brass */
+  --shadow: 0 6px 18px rgba(47, 40, 32, 0.12);
+  --shadow-lg: 0 14px 34px rgba(47, 40, 32, 0.18);
   --radius: 18px;
   --radius-sm: 12px;
   --tab-h: 64px;
@@ -31,8 +34,8 @@ body {
   font-family: "Nunito", system-ui, -apple-system, sans-serif;
   color: var(--ink);
   background:
-    radial-gradient(120% 80% at 50% -10%, #d9c8ff 0%, rgba(217,200,255,0) 55%),
-    linear-gradient(180deg, #efeaff 0%, var(--sand) 40%);
+    radial-gradient(120% 80% at 50% -10%, #bfe2f0 0%, rgba(191,226,240,0) 55%),
+    linear-gradient(180deg, #e3f1f4 0%, var(--sand) 60%);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 }
@@ -45,15 +48,25 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
   top: 0;
   z-index: 20;
   background:
-    radial-gradient(2px 2px at 18% 32%, rgba(255,255,255,.9), transparent),
-    radial-gradient(2px 2px at 68% 22%, rgba(255,255,255,.7), transparent),
-    radial-gradient(1.5px 1.5px at 42% 64%, rgba(255,255,255,.8), transparent),
-    radial-gradient(1.5px 1.5px at 88% 52%, rgba(255,255,255,.6), transparent),
-    radial-gradient(1.5px 1.5px at 30% 80%, rgba(255,255,255,.6), transparent),
-    linear-gradient(135deg, #5b3fa6 0%, #7e5bd6 58%, #4d8fd6 100%);
+    radial-gradient(58px 24px at 16% 76%, rgba(255,255,255,.55), transparent 70%),
+    radial-gradient(82px 30px at 64% 88%, rgba(255,255,255,.45), transparent 70%),
+    radial-gradient(46px 20px at 90% 58%, rgba(255,255,255,.4), transparent 70%),
+    linear-gradient(180deg, #4f9bc4 0%, #6fb4d6 55%, #8fcbd9 100%);
   color: #fff;
-  padding: calc(env(safe-area-inset-top) + 12px) 16px 14px;
+  padding: calc(env(safe-area-inset-top) + 12px) 16px 16px;
   box-shadow: var(--shadow);
+}
+/* A row of railway sleepers riding the bottom edge of the header. */
+.app-header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 5px;
+  background: repeating-linear-gradient(90deg,
+    rgba(47,40,32,.4) 0 9px, transparent 9px 18px);
+  opacity: .55;
 }
 .header-inner {
   max-width: 720px;
@@ -144,10 +157,10 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
 /* Hero banner (Today) */
 .hero {
   background:
-    radial-gradient(2px 2px at 22% 26%, rgba(255,255,255,.85), transparent),
-    radial-gradient(1.5px 1.5px at 62% 18%, rgba(255,255,255,.7), transparent),
-    radial-gradient(1.5px 1.5px at 80% 70%, rgba(255,255,255,.6), transparent),
-    linear-gradient(135deg, #6c3fb5 0%, #3f7fd6 55%, #18b6c4 100%);
+    radial-gradient(72px 26px at 22% 20%, rgba(255,255,255,.6), transparent 70%),
+    radial-gradient(96px 32px at 66% 12%, rgba(255,255,255,.45), transparent 70%),
+    radial-gradient(54px 22px at 86% 30%, rgba(255,255,255,.4), transparent 70%),
+    linear-gradient(180deg, #4f9bc4 0%, #74bcd2 45%, #5aa86d 112%);
   color: #fff;
   border-radius: var(--radius);
   padding: 20px;
@@ -157,13 +170,13 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
   overflow: hidden;
 }
 .hero::after {
-  content: "🕰️";
+  content: "🚂";
   position: absolute;
-  right: -2px;
-  bottom: -8px;
-  font-size: 88px;
-  opacity: .2;
-  transform: rotate(-8deg);
+  right: 2px;
+  bottom: -6px;
+  font-size: 84px;
+  opacity: .22;
+  transform: scaleX(-1) rotate(-4deg);
 }
 .hero .eyebrow { font-weight: 800; text-transform: uppercase; letter-spacing: 1px; font-size: 12px; opacity: .9; }
 .hero h2 { font-size: 28px; margin: 4px 0 6px; }
@@ -601,6 +614,17 @@ select.day-filter {
   display: flex;
   box-shadow: 0 -6px 18px rgba(58,46,37,.08);
 }
+/* Railway sleepers running along the top rail of the tab bar. */
+.tabbar::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 4px;
+  background: repeating-linear-gradient(90deg,
+    rgba(194,112,61,.45) 0 9px, transparent 9px 18px);
+}
 .tab {
   flex: 1;
   border: none;
@@ -834,11 +858,11 @@ select.day-filter {
   place-items: center;
   padding: 20px;
   background:
-    radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,.9), transparent),
-    radial-gradient(2px 2px at 70% 24%, rgba(255,255,255,.7), transparent),
-    radial-gradient(1.5px 1.5px at 44% 70%, rgba(255,255,255,.8), transparent),
-    radial-gradient(1.5px 1.5px at 85% 60%, rgba(255,255,255,.6), transparent),
-    linear-gradient(160deg, #5b3fa6 0%, #7e5bd6 55%, #4d8fd6 100%);
+    radial-gradient(70px 28px at 18% 26%, rgba(255,255,255,.55), transparent 70%),
+    radial-gradient(96px 34px at 72% 18%, rgba(255,255,255,.45), transparent 70%),
+    radial-gradient(60px 24px at 40% 74%, rgba(255,255,255,.4), transparent 70%),
+    radial-gradient(54px 22px at 86% 64%, rgba(255,255,255,.4), transparent 70%),
+    linear-gradient(165deg, #4f9bc4 0%, #6fb4d6 52%, #5aa86d 120%);
 }
 .gate-card {
   background: var(--cream);
@@ -871,10 +895,10 @@ select.day-filter {
 /* A green/gold grown-ups theme to tell the two apps apart at a glance. */
 .app-header--parent {
   background:
-    radial-gradient(2px 2px at 18% 32%, rgba(255,255,255,.9), transparent),
-    radial-gradient(2px 2px at 68% 22%, rgba(255,255,255,.7), transparent),
-    radial-gradient(1.5px 1.5px at 42% 64%, rgba(255,255,255,.8), transparent),
-    linear-gradient(135deg, #1f8f5f 0%, #2faa6a 55%, #f4b400 160%);
+    radial-gradient(58px 24px at 16% 76%, rgba(255,255,255,.5), transparent 70%),
+    radial-gradient(82px 30px at 64% 88%, rgba(255,255,255,.4), transparent 70%),
+    radial-gradient(46px 20px at 90% 58%, rgba(255,255,255,.35), transparent 70%),
+    linear-gradient(180deg, #2f8a63 0%, #5aa86d 58%, #d4a52e 132%);
 }
 .parent-app .whoami { text-decoration: none; }
 /* No bottom tab bar on the parents app, so trim the reserved space. */
