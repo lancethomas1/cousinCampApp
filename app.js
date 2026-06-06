@@ -440,8 +440,8 @@
 
   // ---- CAMP CHEERS view (a friendly, non-competitive crew board) ----------
   // A "leaderboard" that doesn't rank anyone: it celebrates the whole crew's
-  // progress together, then shows each traveler's stats side by side. Campers
-  // are listed alphabetically on purpose — everybody's a winner here.
+  // progress together, then shows each traveler's stats side by side, ranked
+  // by points from highest to lowest.
   function renderCheers() {
     const frag = document.createElement("div");
     const head = document.createElement("div");
@@ -471,11 +471,11 @@
       </div>`;
     frag.appendChild(totals);
 
-    // Everyone's board — alphabetical, so it never reads as a ranking.
+    // Everyone's board — ranked by points, highest to lowest (ties broken by name).
     const board = document.createElement("div");
     board.innerHTML = `<h3 class="section-title">🌟 Our Time Travelers</h3>
       <p class="section-note">Tap a cousin to cheer them on (and switch travelers).</p>`;
-    [...CAMPERS].sort((a, b) => a.name.localeCompare(b.name)).forEach((c) => {
+    [...CAMPERS].sort((a, b) => pointsFor(b.id) - pointsFor(a.id) || a.name.localeCompare(b.name)).forEach((c) => {
       const badges = badgesEarned(c.id).length + parentBadgesFor(c.id).length;
       const row = document.createElement("button");
       row.type = "button";
