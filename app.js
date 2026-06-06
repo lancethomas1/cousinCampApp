@@ -25,7 +25,7 @@
   // Each activity shows every cousin's face. A kid taps their own face to
   // check in (tap again to undo) — no "who am I" switching needed, so the
   // whole crew can share one iPad.
-  function activityRow(a) {
+  function activityRow(a, interactive = true) {
     const el = document.createElement("div");
     el.className = "activity-card";
 
@@ -43,6 +43,10 @@
         <div class="activity-loc">📍 ${escapeHtml(a.location)}</div>
       </div>`;
     el.appendChild(head);
+
+    // Check-in faces only appear on Today — activities can only be completed
+    // for the current day. On the Schedule tab the cards are informational.
+    if (!interactive) return el;
 
     const label = document.createElement("div");
     label.className = "kidrow-label";
@@ -107,7 +111,7 @@
     const frag = document.createElement("div");
     const head = document.createElement("div");
     head.innerHTML = `<h2 class="view-title">Journey Through Time 🗓️</h2>
-      <p class="view-sub">Five days of Cousin Camp — tap your face to check in!</p>`;
+      <p class="view-sub">Five days of Cousin Camp — head to Today to check in!</p>`;
     frag.appendChild(head);
 
     SCHEDULE.forEach((day) => {
@@ -124,7 +128,7 @@
         ${day.date === today ? '<span class="today-pill">TODAY</span>' : ""}
       `;
       block.appendChild(dh);
-      day.activities.forEach((a) => block.appendChild(activityRow({ ...a, date: day.date })));
+      day.activities.forEach((a) => block.appendChild(activityRow({ ...a, date: day.date }, false)));
       frag.appendChild(block);
     });
     view.replaceChildren(frag);
