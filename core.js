@@ -214,9 +214,9 @@
       <div class="gate-card">
         <div class="gate-emoji">🕰️🔒</div>
         <h2>Cousin Camp</h2>
-        <p>Enter the family camp passcode to join the shared camp.</p>
+        <p>Enter the family passcode to board the time machine.</p>
         <input id="gate-input" type="password" inputmode="text" autocomplete="off" autocapitalize="off" placeholder="Camp passcode" />
-        <button id="gate-go" class="btn" type="button">Enter camp 🚀</button>
+        <button id="gate-go" class="btn" type="button">Board the time machine 🚀</button>
         <p class="gate-note" id="gate-note">Everyone in the family uses the same passcode.</p>
       </div>`;
     document.body.appendChild(gate);
@@ -226,7 +226,7 @@
     const submit = async () => {
       const pass = input.value.trim();
       if (!pass) { input.focus(); return; }
-      go.disabled = true; note.textContent = "Connecting…";
+      go.disabled = true; note.textContent = "Powering up the time machine…";
       const ok = await startShared(pass);
       if (ok) {
         save(LS.pass, pass);
@@ -234,7 +234,7 @@
         rerender();
       } else {
         go.disabled = false;
-        note.textContent = "Couldn't connect. Check your internet and try again.";
+        note.textContent = "Time machine stalled — check your internet and try again.";
       }
     };
     go.addEventListener("click", submit);
