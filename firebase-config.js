@@ -11,10 +11,11 @@
  * (see firestore.rules). See SETUP.md for step-by-step instructions.
  */
 window.FIREBASE_CONFIG = {
-  apiKey: "",
-  authDomain: "",
-  projectId: "",
-  storageBucket: "",
-  messagingSenderId: "",
-  appId: "",
+  apiKey: "AIzaSyA8JMrlfkQFahUK0MJhkqMpFgwcke4hkWY",
+  authDomain: "cousincampapp.firebaseapp.com",
+  projectId: "cousincampapp",
+  storageBucket: "cousincampapp.firebasestorage.app",
+  messagingSenderId: "981929551490",
+  appId: "1:981929551490:web:2135c67001be83c867769b",
+  measurementId: "G-YZ6LESHDNK",
 };
