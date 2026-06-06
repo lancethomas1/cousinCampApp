@@ -375,8 +375,8 @@
     card.innerHTML = `
       <div class="cc-avatar">${me.emoji}</div>
       <div class="cc-info">
-        <div class="cc-name">${escapeHtml(me.name)} ${escapeHtml(me.last)}</div>
-        <div class="cc-sub">Time Traveler · age ${me.age}</div>
+        <div class="cc-name">${escapeHtml(me.name)}</div>
+        <div class="cc-sub">Cousin Camp Time Traveler</div>
         <div class="cc-stats">
           <div class="cc-stat"><b>${balanceFor(state.me)}</b><span>points to spend</span></div>
           <div class="cc-stat"><b>${completedCount(state.me)}</b><span>activities</span></div>
@@ -465,7 +465,7 @@
       row.className = "roster-row" + (c.id === state.me ? " me" : "");
       row.innerHTML = `
         <div class="lb-avatar" style="background:${c.color}22">${c.emoji}</div>
-        <div class="ros-name">${escapeHtml(c.name)} ${escapeHtml(c.last)}
+        <div class="ros-name">${escapeHtml(c.name)}
           <small>${badgesEarned(c.id).length} badges · ${r ? r.emoji + " " + escapeHtml(r.name) : "no prize yet"}</small></div>
         <div class="ros-pts">⭐ ${pointsFor(c.id)}</div>`;
       row.addEventListener("click", () => {
@@ -488,7 +488,7 @@
     cert.innerHTML = `
       <div class="cert-top">🕰️ Cousin Camp 2026 🕰️</div>
       <div class="cert-award">Time Machine Travelers · Official Certificate</div>
-      <div class="cert-name">${escapeHtml(camper.name)} ${escapeHtml(camper.last)}</div>
+      <div class="cert-name">${escapeHtml(camper.name)}</div>
       <div class="cert-title">${superl.emoji} ${escapeHtml(superl.title)}</div>
       <p class="cert-blurb">${escapeHtml(superl.blurb)}</p>
       <div class="cert-stats">
@@ -547,7 +547,7 @@
       const btn = document.createElement("button");
       btn.className = "camper-pick" + (c.id === state.me ? " active" : "");
       btn.type = "button";
-      btn.innerHTML = `<span class="ce">${c.emoji}</span>${escapeHtml(c.name)}<small class="cp-age">age ${c.age}</small>`;
+      btn.innerHTML = `<span class="ce">${c.emoji}</span>${escapeHtml(c.name)}`;
       btn.addEventListener("click", () => {
         state.me = c.id;
         save(LS.me, c.id);
