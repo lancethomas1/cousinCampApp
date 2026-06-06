@@ -183,32 +183,77 @@
     const frag = document.createElement("div");
     const head = document.createElement("div");
     head.innerHTML = `<h2 class="view-title">Camp Awards 🏆</h2>
-      <p class="view-sub">Everybody wins — collect badges, claim your prize!</p>`;
+      <p class="view-sub">Tap a prize to claim it · tap a cousin to see their trophies.</p>`;
     frag.appendChild(head);
 
-    if (!state.me) {
-      const empty = document.createElement("div");
-      empty.className = "empty";
-      empty.innerHTML = `<div class="big">🕰️</div>
-        <h3>Pick your traveler</h3>
-        <p>Choose who you are to start collecting badges and claim your prize.</p>`;
-      const btn = document.createElement("button");
-      btn.className = "btn";
-      btn.style.marginTop = "14px";
-      btn.textContent = "👋 Pick traveler";
-      btn.addEventListener("click", openCamperModal);
-      empty.appendChild(btn);
-      frag.appendChild(empty);
-      view.replaceChildren(frag);
-      return;
+    // --- Camp Store: tap a prize, then tap who's claiming it ----------------
+    const storeSection = document.createElement("div");
+    storeSection.innerHTML = `<h3 class="section-title">🏪 Camp Store — Pick Your Prize</h3>
+      <p class="section-note">Each prize goes to just one cousin. Tap a prize, then tap whose it is.</p>`;
+    const storeGrid = document.createElement("div");
+    storeGrid.className = "store-grid";
+    STORE.forEach((r) => {
+      const owner = claimedBy(r.id);
+      const ownerCamper = owner ? camperById(owner) : null;
+      const tile = document.createElement("button");
+      tile.type = "button";
+      tile.className = "store-tile" + (owner ? " claimed" : "");
+      tile.innerHTML = `
+        <div class="st-emoji">${r.emoji}</div>
+        <div class="st-name">${escapeHtml(r.name)}</div>
+        <div class="st-desc">${escapeHtml(r.desc)}</div>
+        <div class="st-foot">
+          ${owner
+            ? `<span class="st-owner">${ownerCamper.emoji} ${escapeHtml(ownerCamper.name)} · tap to release</span>`
+            : `<span class="st-cost">⭐ ${r.cost}</span>`}
+        </div>`;
+      tile.addEventListener("click", () =>
+        owner ? openReleaseConfirm(r, ownerCamper) : openClaimPicker(r)
+      );
+      storeGrid.appendChild(tile);
+    });
+    storeSection.appendChild(storeGrid);
+    frag.appendChild(storeSection);
+
+    // --- Selected cousin's detail (set by tapping the roster below) ---------
+    if (state.me && camperById(state.me)) {
+      frag.appendChild(buildCousinDetail(camperById(state.me)));
     }
 
-    const me = camperById(state.me);
-    const myBadges = badgesEarned(state.me);
-    const myParentBadges = parentBadgesFor(state.me);
-    const myReward = claimOf(state.me);
+    // --- Camp roster: tap a cousin to view their trophies ------------------
+    const roster = document.createElement("div");
+    roster.innerHTML = `<h3 class="section-title">🧑‍🚀 The Time Crew</h3>
+      <p class="section-note">Tap a cousin to see their trophy case &amp; certificate.</p>`;
+    CAMPERS.forEach((c) => {
+      const r = claimOf(c.id);
+      const row = document.createElement("button");
+      row.type = "button";
+      row.className = "roster-row" + (c.id === state.me ? " me" : "");
+      row.innerHTML = `
+        <div class="lb-avatar" style="background:${c.color}22">${c.emoji}</div>
+        <div class="ros-name">${escapeHtml(c.name)}
+          <small>${c.parents ? "👪 " + escapeHtml(c.parents) + " · " : ""}${badgesEarned(c.id).length + parentBadgesFor(c.id).length} badges · ${r ? r.emoji + " " + escapeHtml(r.name) : "no prize yet"}</small></div>
+        <div class="ros-pts">⭐ ${pointsFor(c.id)}</div>`;
+      row.addEventListener("click", () => {
+        state.me = c.id; save(LS.me, c.id); updateWhoami(); render();
+        requestAnimationFrame(() =>
+          document.getElementById("cousin-detail")?.scrollIntoView({ behavior: "smooth", block: "start" })
+        );
+      });
+      roster.appendChild(row);
+    });
+    frag.appendChild(roster);
 
-    // --- Camp Card: this camper's personal stats ---------------------------
+    view.replaceChildren(frag);
+  }
+
+  // The per-cousin detail shown when a cousin is tapped in the roster.
+  function buildCousinDetail(me) {
+    const wrap = document.createElement("div");
+    wrap.id = "cousin-detail";
+    const myBadges = badgesEarned(me.id);
+    const myParentBadges = parentBadgesFor(me.id);
+
     const card = document.createElement("div");
     card.className = "camp-card";
     card.style.setProperty("--cc", me.color);
@@ -218,58 +263,20 @@
         <div class="cc-name">${escapeHtml(me.name)}</div>
         <div class="cc-sub">Cousin Camp Time Traveler</div>
         <div class="cc-stats">
-          <div class="cc-stat"><b>${balanceFor(state.me)}</b><span>points to spend</span></div>
-          <div class="cc-stat"><b>${kudosCountFor(state.me)}</b><span>kudos</span></div>
+          <div class="cc-stat"><b>${balanceFor(me.id)}</b><span>points to spend</span></div>
+          <div class="cc-stat"><b>${kudosCountFor(me.id)}</b><span>kudos</span></div>
           <div class="cc-stat"><b>${myBadges.length + myParentBadges.length}</b><span>badges</span></div>
         </div>
       </div>`;
-    frag.appendChild(card);
+    wrap.appendChild(card);
 
-    // --- Camp Store: nine one-of-a-kind prizes -----------------------------
-    const storeSection = document.createElement("div");
-    storeSection.innerHTML = `<h3 class="section-title">🏪 Camp Store — Pick Your Prize</h3>
-      <p class="section-note">${myReward
-        ? `You claimed <b>${myReward.emoji} ${escapeHtml(myReward.name)}</b>. Tap it to switch.`
-        : `Each prize can be claimed by only one cousin. Spend your points to claim yours!`}</p>`;
-    const storeGrid = document.createElement("div");
-    storeGrid.className = "store-grid";
-    STORE.forEach((r) => {
-      const owner = claimedBy(r.id);
-      const ownerCamper = owner ? camperById(owner) : null;
-      const mine = owner === state.me;
-      const takenByOther = owner && !mine;
-      // Claiming swaps your one prize, so affordability is about total points.
-      const affordable = pointsFor(state.me) >= r.cost;
-
-      const tile = document.createElement("button");
-      tile.type = "button";
-      tile.className = "store-tile" + (mine ? " mine" : "") + (takenByOther ? " taken" : "");
-      tile.disabled = takenByOther;
-      tile.innerHTML = `
-        <div class="st-emoji">${r.emoji}</div>
-        <div class="st-name">${escapeHtml(r.name)}</div>
-        <div class="st-desc">${escapeHtml(r.desc)}</div>
-        <div class="st-foot">
-          ${takenByOther
-            ? `<span class="st-owner">${ownerCamper.emoji} ${escapeHtml(ownerCamper.name)}'s</span>`
-            : mine
-              ? `<span class="st-claimed">✓ Yours — tap to release</span>`
-              : `<span class="st-cost ${affordable ? "" : "short"}">⭐ ${r.cost}${affordable ? "" : " (need more)"}</span>`}
-        </div>`;
-      tile.addEventListener("click", () => mine ? releaseReward(r.id) : claimReward(r.id));
-      storeGrid.appendChild(tile);
-    });
-    storeSection.appendChild(storeGrid);
-    frag.appendChild(storeSection);
-
-    // --- Trophy Case: badges -----------------------------------------------
     const trophy = document.createElement("div");
     trophy.innerHTML = `<h3 class="section-title">🏆 ${escapeHtml(me.name)}'s Trophy Case</h3>
       <p class="section-note">${myBadges.length} of ${BADGES.length} badges earned${myBadges.length === BADGES.length ? " — every one! 🎉" : ""}</p>`;
     const tcGrid = document.createElement("div");
     tcGrid.className = "trophy-grid";
     BADGES.forEach((b) => {
-      const got = b.test(state.me);
+      const got = b.test(me.id);
       const t = document.createElement("div");
       t.className = "trophy" + (got ? " got" : " locked");
       t.innerHTML = `
@@ -279,9 +286,8 @@
       tcGrid.appendChild(t);
     });
     trophy.appendChild(tcGrid);
-    frag.appendChild(trophy);
+    wrap.appendChild(trophy);
 
-    // --- Special honors handed out by grown-ups (from the parents app) -----
     if (myParentBadges.length) {
       const honors = document.createElement("div");
       honors.innerHTML = `<h3 class="section-title">🎖️ Special Honors</h3>
@@ -298,10 +304,9 @@
         hGrid.appendChild(t);
       });
       honors.appendChild(hGrid);
-      frag.appendChild(honors);
+      wrap.appendChild(honors);
     }
 
-    // --- Awards Day certificate --------------------------------------------
     const certWrap = document.createElement("div");
     certWrap.innerHTML = `<h3 class="section-title">📜 Awards Day</h3>
       <p class="section-note">Mimi's official certificate — print it for the ceremony!</p>`;
@@ -312,30 +317,9 @@
     printBtn.innerHTML = "🖨️ Print certificate";
     printBtn.addEventListener("click", () => window.print());
     certWrap.appendChild(printBtn);
-    frag.appendChild(certWrap);
+    wrap.appendChild(certWrap);
 
-    // --- Camp family roster (non-competitive overview) ---------------------
-    const roster = document.createElement("div");
-    roster.innerHTML = `<h3 class="section-title">🧑‍🚀 The Time Crew</h3>
-      <p class="section-note">Tap a cousin to switch travelers.</p>`;
-    CAMPERS.forEach((c) => {
-      const r = claimOf(c.id);
-      const row = document.createElement("button");
-      row.type = "button";
-      row.className = "roster-row" + (c.id === state.me ? " me" : "");
-      row.innerHTML = `
-        <div class="lb-avatar" style="background:${c.color}22">${c.emoji}</div>
-        <div class="ros-name">${escapeHtml(c.name)}
-          <small>${c.parents ? "👪 " + escapeHtml(c.parents) + " · " : ""}${badgesEarned(c.id).length + parentBadgesFor(c.id).length} badges · ${r ? r.emoji + " " + escapeHtml(r.name) : "no prize yet"}</small></div>
-        <div class="ros-pts">⭐ ${pointsFor(c.id)}</div>`;
-      row.addEventListener("click", () => {
-        state.me = c.id; save(LS.me, c.id); updateWhoami(); render();
-      });
-      roster.appendChild(row);
-    });
-    frag.appendChild(roster);
-
-    view.replaceChildren(frag);
+    return wrap;
   }
 
   // Build a printable certificate card with a fun superlative.
@@ -372,15 +356,53 @@
     return { emoji: "⏳", title: "Time Travelers Graduate", blurb: "A wonderful week of memories with the cousins." };
   }
 
-  // Claim a unique prize (releasing any prize the camper already held).
-  function claimReward(rewardId) {
-    if (!state.me) { openCamperModal(); return; }
-    if (claimedBy(rewardId)) { toast("Already claimed by another cousin!"); return; }
-    const r = rewardById(rewardId);
-    if (pointsFor(state.me) < r.cost) { toast(`Need ⭐ ${r.cost} — keep earning!`); return; }
-    Store.claim(state.me, rewardId);
+  // Kiosk claim: tap a prize, then tap which cousin is claiming it.
+  function openClaimPicker(prize) {
+    const overlay = document.createElement("div");
+    overlay.className = "modal";
+    overlay.innerHTML = `
+      <div class="modal-backdrop" data-close></div>
+      <div class="modal-card" role="dialog" aria-modal="true">
+        <h2>${prize.emoji} ${escapeHtml(prize.name)}</h2>
+        <p class="modal-sub">Costs ⭐ ${prize.cost} — tap who's claiming it.</p>
+        <div class="camper-grid"></div>
+        <button class="btn-ghost" type="button" data-close>Close</button>
+      </div>`;
+    const grid = overlay.querySelector(".camper-grid");
+    CAMPERS.forEach((c) => {
+      const has = claimOf(c.id);
+      const afford = pointsFor(c.id) >= prize.cost;
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "camper-pick" + (afford ? "" : " disabled");
+      btn.disabled = !afford;
+      btn.innerHTML = `<span class="ce">${c.emoji}</span>${escapeHtml(c.name)}` +
+        `<small class="cp-pts">⭐ ${pointsFor(c.id)}${has ? " · has " + has.emoji : afford ? "" : " · need more"}</small>`;
+      if (afford) btn.addEventListener("click", () => { Store.claim(c.id, prize.id); close(); });
+      grid.appendChild(btn);
+    });
+    function close() { overlay.remove(); }
+    overlay.querySelectorAll("[data-close]").forEach((e) => e.addEventListener("click", close));
+    document.body.appendChild(overlay);
   }
-  function releaseReward(rewardId) { Store.release(rewardId); }
+
+  // Tap a claimed prize to release it back to the store.
+  function openReleaseConfirm(prize, ownerCamper) {
+    const overlay = document.createElement("div");
+    overlay.className = "modal";
+    overlay.innerHTML = `
+      <div class="modal-backdrop" data-close></div>
+      <div class="modal-card" role="dialog" aria-modal="true">
+        <h2>${prize.emoji} ${escapeHtml(prize.name)}</h2>
+        <p class="modal-sub">Claimed by ${ownerCamper.emoji} ${escapeHtml(ownerCamper.name)}. Release it so another cousin can claim it?</p>
+        <button class="btn" type="button" id="rel-go" style="width:100%;justify-content:center">Release prize</button>
+        <button class="btn-ghost" type="button" data-close style="margin-top:8px;width:100%">Keep it</button>
+      </div>`;
+    function close() { overlay.remove(); }
+    overlay.querySelector("#rel-go").addEventListener("click", () => { Store.release(prize.id); close(); });
+    overlay.querySelectorAll("[data-close]").forEach((e) => e.addEventListener("click", close));
+    document.body.appendChild(overlay);
+  }
 
   // ---- Camper modal -------------------------------------------------------
   const modal = document.getElementById("camper-modal");
@@ -454,5 +476,4 @@
   state.route = routes[initial] ? initial : "today";
   render();
   initShared();            // join the shared camp (or stay local)
-  if (!state.me) setTimeout(openCamperModal, 400);
 })();
