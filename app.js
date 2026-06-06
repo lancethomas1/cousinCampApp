@@ -183,7 +183,7 @@
     const frag = document.createElement("div");
     const head = document.createElement("div");
     head.innerHTML = `<h2 class="view-title">Camp Awards 🏆</h2>
-      <p class="view-sub">Tap a prize to claim it · tap a cousin to see their trophies.</p>`;
+      <p class="view-sub">Tap a prize to claim it · tap a traveler to see their trophies.</p>`;
     frag.appendChild(head);
 
     // --- Camp Store: tap a prize, then tap who's claiming it ----------------
@@ -504,8 +504,21 @@
     awards: renderAwards,
   };
 
+  // A small persistent link to the separate grown-ups' award app.
+  function grownupsFooter() {
+    const f = document.createElement("div");
+    f.className = "app-footer";
+    const a = document.createElement("a");
+    a.className = "grownups-link";
+    a.href = "parent.html";
+    a.innerHTML = `<span class="gl-emoji">🎖️</span> Grown-ups: open the Award app`;
+    f.appendChild(a);
+    return f;
+  }
+
   function render() {
     (routes[state.route] || renderToday)();
+    view.appendChild(grownupsFooter());
     document.querySelectorAll(".tab").forEach((t) =>
       t.classList.toggle("active", t.dataset.route === state.route)
     );

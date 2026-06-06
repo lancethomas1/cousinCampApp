@@ -102,7 +102,7 @@ const STORE = [
 // Shared Google Photos album link. Paste the "share" link to your camp's
 // Google Photos album here and the Photos tab will open it. Leave blank to
 // show a "coming soon" placeholder.
-const PHOTO_ALBUM_URL = "";
+const PHOTO_ALBUM_URL = "https://photos.app.goo.gl/ro6wZccAxgrEaB9A9";
 
 // ---------------------------------------------------------------------------
 // PARENT AWARDS — recognition that grown-ups hand out.

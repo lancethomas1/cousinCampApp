@@ -9,6 +9,16 @@ placeholder activities ready for Mimi to fill in (edit `data.js`).
 
 ## Two apps, two links
 
+**Live links** (GitHub Pages):
+
+| App | Who it's for | Link |
+|-----|--------------|------|
+| 🕰️ Campers' app | the cousins | https://lancethomas1.github.io/cousinCampApp/ |
+| 🎖️ Grown-ups' app | the parents | https://lancethomas1.github.io/cousinCampApp/parent.html |
+
+The campers' app also has a **🎖️ Grown-ups: open the Award app** link at the
+bottom of every screen, so a grown-up can hop over without typing the URL.
+
 The project ships as **two separate apps that share the same camp data**:
 
 - **Campers' app — [`index.html`](./index.html)** (the link the kids use, built for
@@ -31,14 +41,16 @@ The project ships as **two separate apps that share the same camp data**:
     **except their own kids** — those are locked in the picker, so nobody can pad
     their own kids' scores. Grown-ups who aren't listed as a parent (Mimi, aunts,
     uncles) can award everyone.
-  - The **Award Center**: pick a cousin and tap to hand out **kudos cards**
-    (kindness, helping, good sport…), **bonus points** with a note, or **special
-    badges** (Camper of the Day, Mimi's Helper…), with a recent-recognition feed.
+  - **Mission Control** (the award center): pick a cousin and tap to hand out
+    **kudos cards** (kindness, helping, good sport…), **bonus points** with a note,
+    or **special badges** (Camper of the Day, Mimi's Helper…), with a
+    recent-recognition feed.
 
-If your site is hosted at `https://example.com/`, the parents' link is
-`https://example.com/parent.html`. Both apps read and write the **same** camp,
-so an award handed out by a parent instantly shows up in that cousin's points and
-trophy case in the campers' app.
+Both links point at the same folder — the parents' app is just `parent.html`
+next to the campers' `index.html`. If you host somewhere other than GitHub Pages,
+append `/parent.html` to your base URL (e.g. `https://example.com/parent.html`).
+Both apps read and write the **same** camp, so an award handed out by a parent
+instantly shows up in that cousin's points and trophy case in the campers' app.
 
 > **The parents app has no separate password by design** — any grown-up who has
 > the link (and the family passcode in shared mode) can hand out awards quickly.
@@ -105,9 +117,11 @@ ISO `YYYY-MM-DD`.
 | `parent.html` | Grown-ups' app shell — the separate Award Center link |
 | `styles.css` | Shared theme, mobile-first layout, print styles |
 | `core.js` | Shared model — state, Firestore sync, persistence, points/awards |
-| `app.js` | Campers' views — Today, Schedule, Photos, Awards |
+| `app.js` | Campers' views — Today, Schedule, Photos, Cheers, Awards |
 | `parent.js` | Grown-ups' view — kudos, bonus points & special badges |
 | `data.js` | Camp schedule, campers, prizes, album link, kudos & badges (edit me!) |
 | `firebase-config.js` | Your Firebase project config (for shared mode) |
 | `firestore.rules` | Security rules for the shared database |
+| `icons/` | App icons (clock for campers, medal for grown-ups) — favicons, iOS home-screen, PWA |
+| `site.webmanifest` / `parent.webmanifest` | PWA manifests so each app installs to the home screen with its own icon |
 | `SETUP.md` | How to turn on the shared camp |
