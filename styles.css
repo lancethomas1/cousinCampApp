@@ -194,9 +194,14 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
   width: 116px;
   height: 116px;
   background: url("icons/train.svg") right bottom / contain no-repeat;
-  opacity: .92;
-  filter: drop-shadow(0 0 10px rgba(86,207,230,.4));
+  /* Sit behind the text as a faint watermark so it never covers wording. */
+  z-index: 0;
+  opacity: .28;
+  filter: drop-shadow(0 0 8px rgba(86,207,230,.25));
+  pointer-events: none;
 }
+/* Keep all hero copy layered above the decorative train. */
+.hero > * { position: relative; z-index: 1; }
 .hero .eyebrow { font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; font-size: 12px; color: #8fe3f3; }
 .hero h2 { font-size: 28px; margin: 4px 0 6px; }
 .hero p { margin: 0; font-weight: 700; opacity: .92; }
