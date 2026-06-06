@@ -1,25 +1,36 @@
 /* ============================================================
    Cousin Camp — styles
-   "Time Heist" theme, inspired by the film The Bad Guys: a dark,
-   graphic, cel-shaded look. Charcoal surfaces with a hard top
-   highlight, electric-cyan primary accent, warm brass/amber for
+   "Time Heist" theme, inspired by the film The Bad Guys: a graphic,
+   cel-shaded look with an electric-cyan accent, warm brass/amber for
    points & gold, and neon rail ties. Edgy and cinematic.
+
+   Auto light/dark: the dark palette below is the default; a
+   prefers-color-scheme: light block near the end flips the content
+   surfaces to a matching light palette. The colored banners
+   (header, hero, gate backdrop) stay dark/cinematic in both.
    ============================================================ */
 
 :root {
   --sun: #56cfe6;        /* electric cyan — primary accent (loco rim light) */
-  --sun-dark: #8fe3f3;   /* brighter cyan for text/active on dark */
+  --sun-dark: #8fe3f3;   /* accent text/active on the current surface */
   --sky: #45b6d8;        /* cool blue */
   --grass: #46c279;      /* signal green (success / done) */
+  --gold: #ffce4d;       /* brass / amber (points, awards) */
+  --danger: #ff8a96;     /* short / negative */
   --sand: #322e3a;       /* raised well / chip surface */
   --cream: #26232c;      /* card / panel surface */
-  --ink: #f1ece1;        /* primary light text */
+  --bar: #1c1a23;        /* bottom tab bar */
+  --field: #1b1922;      /* form inputs */
+  --muted: #211f27;      /* locked / disabled surfaces */
+  --ink: #f1ece1;        /* primary text */
   --ink-soft: #a39c91;   /* muted text */
-  --gold: #ffce4d;       /* brass / amber (points, awards) */
-  --deep: #16141a;       /* deepest background ink */
+  --deep: #16141a;       /* ink that sits on top of an accent fill */
   --line: rgba(255,255,255,.08);
   --line-2: rgba(255,255,255,.14);
   --edge: rgba(255,255,255,.06);   /* hard top highlight on panels */
+  --dash: rgba(255,255,255,.22);   /* dashed avatar wells */
+  --inset: rgba(255,255,255,.03);  /* faint inset panels (kid rows) */
+  --cert-base: linear-gradient(180deg, #211d27 0%, #18151d 100%);
   --shadow: 0 6px 16px rgba(0,0,0,.45);
   --shadow-lg: 0 16px 38px rgba(0,0,0,.58);
   --radius: 18px;
@@ -84,7 +95,7 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
 .brand-mark { font-size: 34px; line-height: 1; filter: drop-shadow(0 2px 6px rgba(86,207,230,.45)); display: flex; }
 .brand-mark img { display: block; width: 42px; height: 42px; }
 .brand-text h1 { font-size: 24px; font-weight: 800; letter-spacing: .3px; }
-.brand-text p { margin: 0; font-size: 13px; opacity: .82; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--sun-dark); }
+.brand-text p { margin: 0; font-size: 13px; opacity: .82; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #8fe3f3; }
 
 .whoami {
   display: flex;
@@ -186,7 +197,7 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
   opacity: .92;
   filter: drop-shadow(0 0 10px rgba(86,207,230,.4));
 }
-.hero .eyebrow { font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; font-size: 12px; color: var(--sun-dark); }
+.hero .eyebrow { font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; font-size: 12px; color: #8fe3f3; }
 .hero h2 { font-size: 28px; margin: 4px 0 6px; }
 .hero p { margin: 0; font-weight: 700; opacity: .92; }
 .hero-progress {
@@ -299,7 +310,7 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
   text-transform: uppercase;
   letter-spacing: .05em;
   color: var(--ink-soft);
-  background: rgba(255,255,255,.03);
+  background: var(--inset);
   border-top: 1px solid var(--line);
   padding: 9px 14px 2px;
 }
@@ -308,7 +319,7 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
   flex-wrap: wrap;
   gap: 6px;
   padding: 6px 10px 12px;
-  background: rgba(255,255,255,.03);
+  background: var(--inset);
 }
 .kid-check {
   display: flex;
@@ -334,7 +345,7 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
   place-items: center;
   font-size: 23px;
   background: var(--sand);
-  border: 2.5px dashed rgba(255,255,255,.22);
+  border: 2.5px dashed var(--dash);
   transition: border-color .12s ease, opacity .12s ease;
 }
 .kid-check:not(.done) .kc-avatar { opacity: .5; }
@@ -627,7 +638,7 @@ select.day-filter {
   z-index: 30;
   height: calc(var(--tab-h) + env(safe-area-inset-bottom));
   padding-bottom: env(safe-area-inset-bottom);
-  background: #1c1a23;
+  background: var(--bar);
   border-top: 1px solid var(--line);
   display: flex;
   box-shadow: 0 -6px 18px rgba(0,0,0,.5);
@@ -755,14 +766,14 @@ select.day-filter {
 }
 .store-tile:active { transform: scale(.97); }
 .store-tile.mine { border-color: var(--grass); background: rgba(70,194,121,.14); }
-.store-tile.taken { opacity: .5; cursor: not-allowed; background: #211f27; }
+.store-tile.taken { opacity: .5; cursor: not-allowed; background: var(--muted); }
 .store-tile.claimed { border-color: var(--grass); background: rgba(70,194,121,.14); }
 .st-emoji { font-size: 30px; }
 .st-name { font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 16px; }
 .st-desc { color: var(--ink-soft); font-weight: 600; font-size: 12.5px; flex: 1; }
 .st-foot { margin-top: 4px; }
 .st-cost { font-weight: 800; color: var(--gold); background: rgba(255,206,77,.16); padding: 3px 10px; border-radius: 999px; font-size: 13px; }
-.st-cost.short { color: #ff8a96; background: rgba(255,107,122,.16); }
+.st-cost.short { color: var(--danger); background: rgba(255,107,122,.16); }
 .st-claimed { font-weight: 800; color: var(--grass); font-size: 13px; }
 .st-owner { font-weight: 800; color: var(--ink-soft); font-size: 13px; }
 
@@ -781,7 +792,7 @@ select.day-filter {
   border: 1px solid var(--line);
   border-top-color: var(--edge);
 }
-.trophy.locked { opacity: .6; background: #211f27; }
+.trophy.locked { opacity: .6; background: var(--muted); }
 .tr-emoji { font-size: 32px; line-height: 1; }
 .trophy.locked .tr-emoji { filter: grayscale(1); opacity: .6; }
 .tr-label { font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 13.5px; margin-top: 4px; }
@@ -792,7 +803,7 @@ select.day-filter {
 .certificate {
   background:
     repeating-linear-gradient(45deg, rgba(255,206,77,.06) 0 10px, transparent 10px 20px),
-    linear-gradient(180deg, #211d27 0%, #18151d 100%);
+    var(--cert-base);
   border: 3px double var(--gold);
   border-radius: var(--radius);
   padding: 22px 18px;
@@ -903,7 +914,7 @@ select.day-filter {
 .gate-card input {
   width: 100%;
   border: 2px solid var(--line-2);
-  background: #1b1922;
+  background: var(--field);
   color: var(--ink);
   border-radius: 14px;
   padding: 13px 14px;
@@ -960,7 +971,7 @@ select.day-filter {
 .pid-switch:active { transform: scale(.95); }
 
 /* A parent's own kids are locked in the target picker. */
-.target-pick.locked { opacity: .5; cursor: not-allowed; background: #211f27; }
+.target-pick.locked { opacity: .5; cursor: not-allowed; background: var(--muted); }
 .target-pick.locked .tp-emoji { filter: grayscale(1); }
 .tp-lock { font-weight: 800; font-size: 9.5px; color: var(--ink-soft); white-space: nowrap; }
 
@@ -1071,7 +1082,7 @@ select.day-filter {
   font-weight: 700;
   font-size: 15px;
   color: var(--ink);
-  background: #1b1922;
+  background: var(--field);
 }
 .bonus-note:focus, .bonus-amt:focus { outline: none; border-color: var(--sun); box-shadow: 0 0 0 3px rgba(86,207,230,.25); }
 .bonus-quick { display: flex; gap: 8px; }
@@ -1111,7 +1122,7 @@ select.day-filter {
 .fr-label { font-weight: 800; font-size: 14px; line-height: 1.2; }
 .fr-time { font-weight: 700; font-size: 11.5px; color: var(--ink-soft); }
 .fr-pts { font-weight: 800; color: var(--grass); background: rgba(70,194,121,.16); padding: 3px 10px; border-radius: 999px; font-size: 13px; flex: 0 0 auto; }
-.fr-pts.neg { color: #ff8a96; background: rgba(255,107,122,.16); }
+.fr-pts.neg { color: var(--danger); background: rgba(255,107,122,.16); }
 .fr-undo {
   flex: 0 0 auto;
   border: none;
@@ -1132,6 +1143,44 @@ select.day-filter {
 
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }
+}
+
+/* ---------- Light mode (follows the phone's setting) ----------
+   Flip the content surfaces to a light palette. The colored banners
+   (header, hero, gate backdrop, camp/award cards, toast) keep their
+   dark/cinematic treatment in both modes, so the accent text on them
+   is pinned to a constant bright cyan rather than --sun-dark. */
+@media (prefers-color-scheme: light) {
+  :root {
+    --sun: #1f9fc4;        /* deeper cyan so the accent reads on white */
+    --sun-dark: #0e7d97;   /* accent text/active on light surfaces */
+    --sky: #2f93b8;
+    --grass: #2f9e5e;
+    --gold: #b5821a;       /* brass that reads as point text on light */
+    --danger: #d8425a;
+    --sand: #f0ecf4;       /* raised well / chip surface */
+    --cream: #ffffff;      /* card / panel surface */
+    --bar: #ffffff;        /* bottom tab bar */
+    --field: #ffffff;      /* form inputs */
+    --muted: #ece8ef;      /* locked / disabled surfaces */
+    --ink: #242029;        /* primary text */
+    --ink-soft: #6c6573;   /* muted text */
+    --line: rgba(40,30,50,.12);
+    --line-2: rgba(40,30,50,.18);
+    --edge: rgba(40,30,50,.05);
+    --dash: rgba(40,30,50,.22);
+    --inset: rgba(40,30,50,.04);
+    --cert-base: linear-gradient(180deg, #fffdf7 0%, #fdf5e4 100%);
+    --shadow: 0 6px 16px rgba(40,30,50,.12);
+    --shadow-lg: 0 16px 36px rgba(40,30,50,.2);
+  }
+  body {
+    background:
+      radial-gradient(120% 80% at 50% -10%, #e9ecf6 0%, rgba(233,236,246,0) 55%),
+      linear-gradient(180deg, #f6f7fb 0%, #eef0f6 60%);
+  }
+  /* The tab bar now sits on a light page — soften its drop shadow. */
+  .tabbar { box-shadow: 0 -6px 18px rgba(40,30,50,.1); }
 }
 
 /* ---------- Print: just the certificate (forced light for ink) ---------- */
