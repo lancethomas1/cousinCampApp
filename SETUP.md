@@ -59,6 +59,32 @@ share link into `PHOTO_ALBUM_URL` in **`data.js`** and it appears under the
 gallery. (Note: Google Photos can't be displayed *inside* the app — it can only
 be linked to — which is why the in-app gallery uses Firebase.)
 
+## Import from Google Photos (optional — Picker API)
+Google **no longer lets apps read a shared album automatically** (the old API was
+shut off in March 2025 and there's no scheduled/connector access). The only
+sanctioned way is the **Picker API**, where a person manually picks photos and the
+app copies them in. To enable the "📥 Import from Google Photos" button:
+
+1. **Enable the API:** Google Cloud Console → your `cousincampapp` project →
+   **APIs & Services → Library** → search **Photos Picker API** → **Enable**.
+2. **OAuth consent screen:** APIs & Services → **OAuth consent screen** → External.
+   Fill in the basics, add the scope `…/auth/photospicker.mediaitems.readonly`, and
+   under **Test users** add each family member's Google email. (Leaving it in
+   "Testing" avoids Google's full app verification; testers just click past an
+   "unverified app" notice.)
+3. **Create a client ID:** APIs & Services → **Credentials → Create credentials →
+   OAuth client ID → Web application**. Under **Authorized JavaScript origins** add
+   `https://lancethomas1.github.io` (and `http://localhost:8000` for local testing).
+   Copy the **Client ID** into `GOOGLE_PICKER.clientId` in **`firebase-config.js`**.
+
+Then the Photos tab shows the import button: tap it → sign in → pick photos in
+Google Photos → they download into the shared gallery.
+
+> ⚠️ **Heads-up:** the import **downloads each picked photo in the browser**, which
+> Google may block with a CORS error. If imports fail (check the browser console),
+> it needs a tiny proxy (a free Cloudflare Worker) to do the download — ask and it
+> can be added. This is **manual** picking only; Google offers no scheduled import.
+
 ## Switching back to local mode
 Blank out the values in `firebase-config.js` and the app returns to per-device
 local mode (no passcode, no sharing).
