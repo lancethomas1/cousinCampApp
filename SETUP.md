@@ -37,10 +37,27 @@ passcode**.
 - Pick something simple the family can remember (e.g. `mimi2026`) and share it
   in your family group chat. Each person enters it once.
 
-## Photos
-Photos use a **Google Photos shared album** instead of in-app uploads. Create a
-shared album in Google Photos, copy its share link, and paste it into
-`PHOTO_ALBUM_URL` in **`data.js`**. The Photos tab will then open that album.
+## Photos — live in-app gallery
+The Photos tab is a **live shared gallery**: family tap **Add photos** in the app,
+the pictures upload to **Firebase Storage**, and they stream into the grid for
+everyone. To turn it on:
+
+1. In the Firebase console: **Build → Storage → Get started**, accept the default
+   rules prompt, and pick a location (the same region as Firestore is fine).
+2. Open the **Rules** tab in Storage, replace everything with the contents of
+   **`storage.rules`** from this repo, and **Publish**.
+3. Re-publish your **Firestore** rules too — `firestore.rules` now includes a
+   `photos` subcollection rule the gallery needs (Build → Firestore → Rules →
+   paste `firestore.rules` → Publish).
+
+Photos are downscaled in the browser before upload (≈1280px JPEGs), so the free
+tier (5 GB) holds thousands of them. Tip: keep it to photos — videos are large
+and eat the quota fast.
+
+A **Google Photos album** link is still supported as a backup button: paste a
+share link into `PHOTO_ALBUM_URL` in **`data.js`** and it appears under the
+gallery. (Note: Google Photos can't be displayed *inside* the app — it can only
+be linked to — which is why the in-app gallery uses Firebase.)
 
 ## Switching back to local mode
 Blank out the values in `firebase-config.js` and the app returns to per-device

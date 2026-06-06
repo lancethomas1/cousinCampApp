@@ -10,6 +10,13 @@ service cloud.firestore {
     match /camps/{campId} {
       allow get, create, update: if true;
       allow list, delete: if false;
+
+      // Shared photo gallery metadata. You need the campId (passcode) to reach
+      // it, so read/write are open within a camp; listing is needed to show
+      // the gallery.
+      match /photos/{photoId} {
+        allow read, create, delete: if true;
+      }
     }
   }
 }
