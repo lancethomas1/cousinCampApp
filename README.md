@@ -28,8 +28,10 @@ The project ships as **two separate apps that share the same camp data**:
     one iPad without switching profiles.
   - **📸 Photos** — *Snapshots in Time*. A **live shared gallery**: tap **Add
     photos** and they upload to Firebase Storage and stream into the grid for
-    everyone (see [SETUP.md](./SETUP.md) to enable Storage). A Google Photos album
-    link (`PHOTO_ALBUM_URL` in `data.js`) shows as a backup button.
+    everyone (see [SETUP.md](./SETUP.md) to enable Storage). Optionally, an
+    **Import from Google Photos** button (Google Picker API) lets you hand-pick
+    existing photos to copy in. A Google Photos album link (`PHOTO_ALBUM_URL` in
+    `data.js`) also shows as a backup button.
   - **🎉 Cheers** — *Crew Cheers*, a friendly crew board. Shows the whole crew's
     combined progress, then every traveler's stats side by side, ranked by points
     from highest to lowest.
