@@ -371,20 +371,17 @@
     toastTimer = setTimeout(() => el.classList.remove("show"), 2200);
   }
 
-  // ---- Toggle an activity complete ---------------------------------------
-  function toggleActivity(activityId, points, title) {
-    if (!state.me) { openCamperModal(); toast("Pick your camper first!"); return; }
-    const turningOn = !isDone(state.me, activityId);
-    if (turningOn) toast(`+${points} pts — ${title} ✅`);
-    Store.toggle(state.me, activityId, turningOn);
-  }
-
-  // ---- Activity row markup -----------------------------------------------
+  // ---- Activity row markup (shared-iPad kiosk) ---------------------------
+  // Each activity shows every cousin's face. A kid taps their own face to
+  // check in (tap again to undo) — no "who am I" switching needed, so the
+  // whole crew can share one iPad.
   function activityRow(a) {
-    const done = state.me && isDone(state.me, a.id);
     const el = document.createElement("div");
-    el.className = "activity" + (done ? " done" : "");
-    el.innerHTML = `
+    el.className = "activity-card";
+
+    const head = document.createElement("div");
+    head.className = "activity-head";
+    head.innerHTML = `
       <div class="activity-emoji">${a.emoji}</div>
       <div class="activity-body">
         <div class="activity-top">
@@ -394,13 +391,30 @@
         <div class="activity-title">${escapeHtml(a.title)}</div>
         <p class="activity-desc">${escapeHtml(a.desc)}</p>
         <div class="activity-loc">📍 ${escapeHtml(a.location)}</div>
-      </div>
-      <button class="check-btn ${done ? "checked" : ""}" type="button"
-              aria-label="Mark ${escapeHtml(a.title)} complete">${done ? "✓" : ""}</button>
-    `;
-    el.querySelector(".check-btn").addEventListener("click", () =>
-      toggleActivity(a.id, a.points, a.title)
-    );
+      </div>`;
+    el.appendChild(head);
+
+    const kidrow = document.createElement("div");
+    kidrow.className = "kidrow";
+    CAMPERS.forEach((c) => {
+      const done = isDone(c.id, a.id);
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "kid-check" + (done ? " done" : "");
+      btn.style.setProperty("--kc", c.color);
+      btn.setAttribute("aria-pressed", done ? "true" : "false");
+      btn.setAttribute("aria-label", `Mark ${c.name} ${done ? "not done" : "done"} for ${a.title}`);
+      btn.innerHTML = `
+        <span class="kc-avatar"><span class="kc-emoji">${c.emoji}</span><span class="kc-check">✓</span></span>
+        <span class="kc-name">${escapeHtml(c.name)}</span>`;
+      btn.addEventListener("click", () => {
+        const turningOn = !isDone(c.id, a.id);
+        if (turningOn) toast(`+${a.points} ${c.name} ✅`);
+        Store.toggle(c.id, a.id, turningOn);
+      });
+      kidrow.appendChild(btn);
+    });
+    el.appendChild(kidrow);
     return el;
   }
 
@@ -410,9 +424,12 @@
     const day = SCHEDULE.find((d) => d.date === iso);
     const frag = document.createElement("div");
 
-    const total = day.activities.length;
-    const doneN = state.me ? day.activities.filter((a) => isDone(state.me, a.id)).length : 0;
-    const pct = total ? Math.round((doneN / total) * 100) : 0;
+    // Camp-wide progress: every cousin's check-off across today's activities.
+    const totalChecks = day.activities.length * CAMPERS.length;
+    const doneChecks = day.activities.reduce(
+      (s, a) => s + CAMPERS.filter((c) => isDone(c.id, a.id)).length, 0
+    );
+    const pct = totalChecks ? Math.round((doneChecks / totalChecks) * 100) : 0;
 
     const hero = document.createElement("div");
     hero.className = "hero";
@@ -421,7 +438,7 @@
       <h2>${escapeHtml(day.title)}</h2>
       <p>${day.era ? escapeHtml(day.era) + " · " : ""}${fmtLong(iso)}</p>
       <div class="hero-progress"><span style="width:${pct}%"></span></div>
-      <div class="hero-progress-label">${doneN}/${total} activities done${state.me ? "" : " — pick your traveler to track points"}</div>
+      <div class="hero-progress-label">👇 Tap your face to check in! · ${doneChecks}/${totalChecks} done today</div>
     `;
     frag.appendChild(hero);
 
@@ -435,7 +452,7 @@
     const frag = document.createElement("div");
     const head = document.createElement("div");
     head.innerHTML = `<h2 class="view-title">Journey Through Time 🗓️</h2>
-      <p class="view-sub">Seven stops across history with Mimi's time machine.</p>`;
+      <p class="view-sub">Five days of Cousin Camp — tap your face to check in!</p>`;
     frag.appendChild(head);
 
     SCHEDULE.forEach((day) => {
