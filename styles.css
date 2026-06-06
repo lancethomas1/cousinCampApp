@@ -775,6 +775,19 @@ select.day-filter {
 .gate-card .btn { width: 100%; justify-content: center; font-size: 16px; padding: 13px; }
 .gate-note { font-size: 12.5px; margin: 12px 0 0 !important; }
 
+/* ---------- Parents app (parent.html) ---------- */
+/* A green/gold grown-ups theme to tell the two apps apart at a glance. */
+.app-header--parent {
+  background:
+    radial-gradient(2px 2px at 18% 32%, rgba(255,255,255,.9), transparent),
+    radial-gradient(2px 2px at 68% 22%, rgba(255,255,255,.7), transparent),
+    radial-gradient(1.5px 1.5px at 42% 64%, rgba(255,255,255,.8), transparent),
+    linear-gradient(135deg, #1f8f5f 0%, #2faa6a 55%, #f4b400 160%);
+}
+.parent-app .whoami { text-decoration: none; }
+/* No bottom tab bar on the parents app, so trim the reserved space. */
+.view--notabs { padding-bottom: calc(env(safe-area-inset-bottom) + 28px); }
+
 /* ---------- Parent Award Center (Kudos tab) ---------- */
 /* Target picker: horizontal row of cousins to award to. */
 .target-picker {

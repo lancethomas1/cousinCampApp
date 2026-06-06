@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#2faa6a" />
+  <title>Cousin Camp · Grown-Ups 🎖️</title>
+  <meta name="description" content="Cousin Camp — grown-ups' award app. Give kudos, bonus points, and special badges to the cousins." />
+  <meta name="robots" content="noindex" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎖️</text></svg>" />
+</head>
+<body class="parent-app">
+  <!-- Header -->
+  <header class="app-header app-header--parent">
+    <div class="header-inner">
+      <div class="brand">
+        <span class="brand-mark">🎖️</span>
+        <div class="brand-text">
+          <h1>Cousin Camp</h1>
+          <p>Grown-Ups · Award Center</p>
+        </div>
+      </div>
+      <a class="whoami" href="index.html" aria-label="Open the campers' app">
+        <span class="whoami-emoji">🕰️</span>
+        <span class="whoami-name">Campers app</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main view container -->
+  <main id="view" class="view view--notabs" tabindex="-1"></main>
+
+  <!-- Firebase (compat) — powers the shared camp. Falls back to local mode
+       if these fail to load or aren't configured. -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="data.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="core.js"></script>
+  <script src="parent.js"></script>
+</body>
+</html>
