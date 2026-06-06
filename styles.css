@@ -448,6 +448,7 @@ select.day-filter {
 .camper-pick:active { transform: scale(.94); }
 .camper-pick.active { border-color: var(--sun); background: #fff2ec; }
 .camper-pick .ce { font-size: 30px; display: block; margin-bottom: 4px; }
+.camper-pick .cp-age { display: block; font-weight: 700; font-size: 11px; color: var(--ink-soft); margin-top: 2px; }
 
 /* ---------- Bottom tab bar ---------- */
 .tabbar {

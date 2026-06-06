@@ -340,7 +340,7 @@
       row.innerHTML = `
         <div class="lb-rank">${i + 1}</div>
         <div class="lb-avatar" style="background:${r.camper.color}22">${r.camper.emoji}</div>
-        <div class="lb-name">${escapeHtml(r.camper.name)}${r.camper.id === state.me ? " <small>that's you!</small>" : `<small>${r.done} activities</small>`}</div>
+        <div class="lb-name">${escapeHtml(r.camper.name)} ${escapeHtml(r.camper.last)}${r.camper.id === state.me ? " <small>that's you!</small>" : `<small>age ${r.camper.age} · ${r.done} done</small>`}</div>
         <div class="lb-pts">⭐ ${r.pts}</div>
       `;
       frag.appendChild(row);
@@ -380,7 +380,7 @@
       const btn = document.createElement("button");
       btn.className = "camper-pick" + (c.id === state.me ? " active" : "");
       btn.type = "button";
-      btn.innerHTML = `<span class="ce">${c.emoji}</span>${escapeHtml(c.name)}`;
+      btn.innerHTML = `<span class="ce">${c.emoji}</span>${escapeHtml(c.name)}<small class="cp-age">age ${c.age}</small>`;
       btn.addEventListener("click", () => {
         state.me = c.id;
         save(LS.me, c.id);

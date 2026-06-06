@@ -6,15 +6,17 @@
  */
 
 // The cousins (campers). `id` is used internally and must be unique.
+// `last` and `age` show up in the camper picker and leaderboard.
 const CAMPERS = [
-  { id: "william",  name: "William",  emoji: "🧢", color: "#ef6c4d" },
-  { id: "mimi",     name: "Mimi",     emoji: "👵", color: "#9b59b6" },
-  { id: "ava",      name: "Ava",      emoji: "🌸", color: "#e84393" },
-  { id: "liam",     name: "Liam",     emoji: "⚽", color: "#27ae60" },
-  { id: "sophie",   name: "Sophie",   emoji: "🦋", color: "#2980b9" },
-  { id: "noah",     name: "Noah",     emoji: "🚀", color: "#f39c12" },
-  { id: "ella",     name: "Ella",     emoji: "🎨", color: "#16a085" },
-  { id: "jack",     name: "Jack",     emoji: "🐸", color: "#8e44ad" },
+  { id: "laila",   name: "Laila",   last: "Inman",     age: 13, emoji: "🦄", color: "#e84393" },
+  { id: "william", name: "William", last: "Thomas",    age: 11, emoji: "🧢", color: "#ef6c4d" },
+  { id: "sophie",  name: "Sophie",  last: "Inman",     age: 10, emoji: "🦋", color: "#2980b9" },
+  { id: "samuel",  name: "Samuel",  last: "Thomas",    age:  9, emoji: "⚽", color: "#27ae60" },
+  { id: "logan",   name: "Logan",   last: "Hines",     age:  7, emoji: "🦖", color: "#8e44ad" },
+  { id: "zoe",     name: "Zoe",     last: "Hines",     age:  6, emoji: "🌈", color: "#f39c12" },
+  { id: "leo",     name: "Leo",     last: "Thomas",    age:  5, emoji: "🦁", color: "#16a085" },
+  { id: "ava",     name: "Ava",     last: "Quinones",  age:  4, emoji: "🌸", color: "#d63384" },
+  { id: "noel",    name: "Noel",    last: "Hines",     age:  3, emoji: "🐥", color: "#00b894" },
 ];
 
 // Camp week. Each day has a list of activities led by (or starring) Mimi.
