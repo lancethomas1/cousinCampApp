@@ -10,15 +10,18 @@
 // The cousins (time travelers). `id` is used internally and must be unique.
 // First names only — keep it that way if the repo is public.
 // `parents` lists each cousin's grown-ups (shown on the camp roster).
+// `photo` (optional) is a real headshot shown in place of the emoji — drop a
+// square photo in the photos/ folder and point to it here. Cousins without a
+// photo fall back to their emoji automatically.
 const CAMPERS = [
   { id: "laila",   name: "Laila",   emoji: "🦄", color: "#e84393", parents: "Chris" },
-  { id: "william", name: "William", emoji: "🧢", color: "#ef6c4d", parents: "Lance & Betsy" },
+  { id: "william", name: "William", emoji: "🧢", color: "#ef6c4d", parents: "Lance & Betsy", photo: "photos/william.jpg" },
   { id: "sophie",  name: "Sophie",  emoji: "🦋", color: "#2980b9", parents: "Chris" },
-  { id: "samuel",  name: "Samuel",  emoji: "⚽", color: "#27ae60", parents: "Lance & Betsy" },
+  { id: "samuel",  name: "Samuel",  emoji: "⚽", color: "#27ae60", parents: "Lance & Betsy", photo: "photos/samuel.jpg" },
   { id: "logan",   name: "Logan",   emoji: "🦖", color: "#8e44ad", parents: "Jason & Sera" },
   { id: "zoe",     name: "Zoe",     emoji: "🌈", color: "#f39c12", parents: "Jason & Sera" },
-  { id: "leo",     name: "Leo",     emoji: "🦁", color: "#16a085", parents: "Lance & Betsy" },
-  { id: "ava",     name: "Ava",     emoji: "🌸", color: "#d63384", parents: "Shannon & Vinny" },
+  { id: "leo",     name: "Leo",     emoji: "🦁", color: "#16a085", parents: "Lance & Betsy", photo: "photos/leo.jpg" },
+  { id: "ava",     name: "Ava",     emoji: "🌸", color: "#d63384", parents: "Shannon & Vinny", photo: "photos/ava.jpg" },
   { id: "noel",    name: "Noel",    emoji: "🐥", color: "#00b894", parents: "Jason & Sera" },
 ];
 

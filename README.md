@@ -82,6 +82,9 @@ All the camp content lives in [`data.js`](./data.js):
 - **`CAMPERS`** — the list of cousins (name, emoji, color, `parents`). The
   `parents` string (e.g. `"Lance & Betsy"`) also powers the parents app: a
   grown-up who signs in with one of those first names can't award that cousin.
+  Add an optional `photo` (e.g. `"photos/ava.jpg"`) to show a real headshot in
+  place of the emoji — square photos in the [`photos/`](./photos) folder look
+  best, and any cousin without one simply falls back to their emoji.
 - **`SCHEDULE`** — each day's title and activities
   (time, title, emoji, location, point value, description).
 - **`STORE`** — the nine one-of-a-kind Camp Store prizes.

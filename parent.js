@@ -16,7 +16,7 @@
     pointsFor, kudosCountFor, parentBadgesFor, hasParentBadge, awardsFor,
     targetCamper, setTarget, giveKudos, giveBonus, toggleParentBadge, undoAward,
     allParentNames, currentParent, ownKidIds, isOwnKid, setParent, clearParent,
-    toast, escapeHtml, timeAgo,
+    toast, escapeHtml, camperFace, timeAgo,
   } = C;
   const view = document.getElementById("view");
 
@@ -130,7 +130,7 @@
       b.className = "target-pick" + (me && c.id === me.id ? " active" : "") + (mine ? " locked" : "");
       b.style.setProperty("--cc", c.color);
       b.disabled = mine;
-      b.innerHTML = `<span class="tp-emoji">${c.emoji}</span><span class="tp-name">${escapeHtml(c.name)}</span>` +
+      b.innerHTML = `${camperFace(c, "tp-emoji")}<span class="tp-name">${escapeHtml(c.name)}</span>` +
         (mine ? `<span class="tp-lock">🙅 your kid</span>` : `<span class="tp-pts">⭐ ${pointsFor(c.id)}</span>`);
       if (!mine) b.addEventListener("click", () => setTarget(c.id));
       picker.appendChild(b);
@@ -152,7 +152,7 @@
     banner.className = "award-banner";
     banner.style.setProperty("--cc", me.color);
     banner.innerHTML = `
-      <div class="ab-avatar">${me.emoji}</div>
+      <div class="ab-avatar">${camperFace(me)}</div>
       <div class="ab-info">
         <div class="ab-name">Awarding <b>${escapeHtml(me.name)}</b></div>
         <div class="ab-stats">

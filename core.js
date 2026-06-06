@@ -447,6 +447,17 @@
       ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])
     );
   }
+  // A cousin's "face" for avatars: their real photo if they have one, otherwise
+  // their emoji. `emojiClass` keeps each spot's existing styling — it's applied
+  // to both the emoji span and the photo <img> so the same CSS hooks work.
+  function camperFace(c, emojiClass) {
+    if (c && c.photo) {
+      const cls = emojiClass ? `${emojiClass} avatar-photo` : "avatar-photo";
+      return `<img class="${cls}" src="${escapeHtml(c.photo)}" alt="${escapeHtml(c.name)}" loading="lazy">`;
+    }
+    const e = c ? c.emoji : "";
+    return emojiClass ? `<span class="${emojiClass}">${e}</span>` : e;
+  }
 
   // ---- Public surface -----------------------------------------------------
   window.CampCore = {
@@ -465,6 +476,6 @@
     // parent identity & fairness rule
     allParentNames, currentParent, ownKidIds, isOwnKid, setParent, clearParent,
     // formatting & utils
-    todayISO, fmtDow, dayNum, fmtLong, toast, escapeHtml, uid, timeAgo,
+    todayISO, fmtDow, dayNum, fmtLong, toast, escapeHtml, camperFace, uid, timeAgo,
   };
 })();

@@ -17,7 +17,7 @@
     pointsFor, balanceFor, completedCount, anyFullDay, fullDayCount,
     rewardById, claimedBy, claimOf,
     kudosCountFor, parentBadgesFor,
-    todayISO, fmtDow, dayNum, fmtLong, toast, escapeHtml,
+    todayISO, fmtDow, dayNum, fmtLong, toast, escapeHtml, camperFace,
   } = C;
   const view = document.getElementById("view");
 
@@ -55,7 +55,7 @@
       btn.setAttribute("aria-pressed", done ? "true" : "false");
       btn.setAttribute("aria-label", `Mark ${c.name} ${done ? "not done" : "done"} for ${a.title}`);
       btn.innerHTML = `
-        <span class="kc-avatar"><span class="kc-emoji">${c.emoji}</span><span class="kc-check">✓</span></span>
+        <span class="kc-avatar">${camperFace(c, "kc-emoji")}<span class="kc-check">✓</span></span>
         <span class="kc-name">${escapeHtml(c.name)}</span>`;
       btn.addEventListener("click", () => {
         const turningOn = !isDone(c.id, a.id);
@@ -230,7 +230,7 @@
       row.type = "button";
       row.className = "roster-row" + (c.id === state.me ? " me" : "");
       row.innerHTML = `
-        <div class="lb-avatar" style="background:${c.color}22">${c.emoji}</div>
+        <div class="lb-avatar" style="background:${c.color}22">${camperFace(c)}</div>
         <div class="ros-name">${escapeHtml(c.name)}
           <small>${c.parents ? "👪 " + escapeHtml(c.parents) + " · " : ""}${badgesEarned(c.id).length + parentBadgesFor(c.id).length} badges · ${r ? r.emoji + " " + escapeHtml(r.name) : "no prize yet"}</small></div>
         <div class="ros-pts">⭐ ${pointsFor(c.id)}</div>`;
@@ -258,7 +258,7 @@
     card.className = "camp-card";
     card.style.setProperty("--cc", me.color);
     card.innerHTML = `
-      <div class="cc-avatar">${me.emoji}</div>
+      <div class="cc-avatar">${camperFace(me)}</div>
       <div class="cc-info">
         <div class="cc-name">${escapeHtml(me.name)}</div>
         <div class="cc-sub">Cousin Camp Time Traveler</div>
@@ -376,7 +376,7 @@
       btn.type = "button";
       btn.className = "camper-pick" + (afford ? "" : " disabled");
       btn.disabled = !afford;
-      btn.innerHTML = `<span class="ce">${c.emoji}</span>${escapeHtml(c.name)}` +
+      btn.innerHTML = `${camperFace(c, "ce")}${escapeHtml(c.name)}` +
         `<small class="cp-pts">⭐ ${pointsFor(c.id)}${has ? " · has " + has.emoji : afford ? "" : " · need more"}</small>`;
       if (afford) btn.addEventListener("click", () => { Store.claim(c.id, prize.id); close(); });
       grid.appendChild(btn);
@@ -414,7 +414,7 @@
       const btn = document.createElement("button");
       btn.className = "camper-pick" + (c.id === state.me ? " active" : "");
       btn.type = "button";
-      btn.innerHTML = `<span class="ce">${c.emoji}</span>${escapeHtml(c.name)}`;
+      btn.innerHTML = `${camperFace(c, "ce")}${escapeHtml(c.name)}`;
       btn.addEventListener("click", () => {
         state.me = c.id;
         save(LS.me, c.id);
@@ -433,7 +433,7 @@
   function updateWhoami() {
     const btn = document.getElementById("whoami");
     const me = camperById(state.me);
-    btn.querySelector(".whoami-emoji").textContent = me ? me.emoji : "👋";
+    btn.querySelector(".whoami-emoji").innerHTML = me ? camperFace(me) : "👋";
     btn.querySelector(".whoami-name").textContent = me ? me.name : "Pick traveler";
   }
   document.getElementById("whoami").addEventListener("click", openCamperModal);
@@ -481,7 +481,7 @@
       row.type = "button";
       row.className = "roster-row" + (c.id === state.me ? " me" : "");
       row.innerHTML = `
-        <div class="lb-avatar" style="background:${c.color}22">${c.emoji}</div>
+        <div class="lb-avatar" style="background:${c.color}22">${camperFace(c)}</div>
         <div class="ros-name">${escapeHtml(c.name)}
           <small>${badges} badges · ${kudosCountFor(c.id)} kudos</small></div>
         <div class="ros-pts">⭐ ${pointsFor(c.id)}</div>`;

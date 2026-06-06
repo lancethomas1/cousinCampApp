@@ -533,6 +533,20 @@ select.day-filter {
 .camper-pick .cp-pts { display: block; font-weight: 700; font-size: 11px; color: var(--ink-soft); margin-top: 2px; }
 .camper-pick.disabled, .camper-pick:disabled { opacity: .42; cursor: not-allowed; }
 
+/* ---------- Camper photo avatars ---------- */
+/* A real headshot used in place of a cousin's emoji (see camperFace in core.js).
+   It fills whatever avatar "well" it sits in and inherits that well's shape. */
+.avatar-photo { object-fit: cover; display: block; }
+.kc-avatar .avatar-photo,
+.cc-avatar .avatar-photo,
+.lb-avatar .avatar-photo,
+.ab-avatar .avatar-photo { width: 100%; height: 100%; border-radius: inherit; }
+/* The name-gate and award pickers show the emoji glyph directly — give the
+   photo a fixed round size in those spots. */
+.camper-pick .ce.avatar-photo { width: 54px; height: 54px; border-radius: 50%; margin: 0 auto 4px; }
+.tp-emoji.avatar-photo { width: 40px; height: 40px; border-radius: 50%; }
+.whoami-emoji .avatar-photo { width: 20px; height: 20px; border-radius: 50%; }
+
 /* ---------- Bottom tab bar ---------- */
 .tabbar {
   position: fixed;
