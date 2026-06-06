@@ -325,6 +325,25 @@
   function hasParentBadge(camperId, badgeId) {
     return awardsFor(camperId).some((a) => a.type === "badge" && a.refId === badgeId);
   }
+  // Leaderboard of grown-ups by how much recognition they've handed out.
+  // Tallies every award tagged with a `by` name across all campers (cousin
+  // cheers carry no `by`, so they're naturally excluded). Returns rows of
+  // { name, awards, kudos, points } sorted most-generous first — by total
+  // awards given, then points, then name.
+  function awarderTally() {
+    const rows = new Map();
+    CAMPERS.forEach((c) => awardsFor(c.id).forEach((a) => {
+      if (!a.by) return;
+      const key = String(a.by).toLowerCase();
+      const row = rows.get(key) || { name: a.by, awards: 0, kudos: 0, points: 0 };
+      row.awards += 1;
+      if (a.type === "kudos") row.kudos += 1;
+      row.points += a.points || 0;
+      rows.set(key, row);
+    }));
+    return [...rows.values()].sort((x, y) =>
+      y.awards - x.awards || y.points - x.points || x.name.localeCompare(y.name));
+  }
   // The camper a grown-up is currently awarding to in the parents app.
   function targetCamper() {
     return camperById(state.target) || camperById(state.me) || CAMPERS[0] || null;
@@ -650,7 +669,7 @@
     // store
     rewardById, claimedBy, claimOf, spentBy, balanceFor,
     // parent awards
-    kudosById, parentBadgeById, awardsFor, kudosCountFor, cheersCountFor, parentBadgesFor, hasParentBadge,
+    kudosById, parentBadgeById, awardsFor, kudosCountFor, cheersCountFor, parentBadgesFor, hasParentBadge, awarderTally,
     targetCamper, setTarget, giveKudos, giveCheer, giveBonus, toggleParentBadge, undoAward,
     // parent identity & fairness rule
     allParentNames, grownupRoster, currentParent, ownKidIds, isOwnKid, setParent, clearParent,

@@ -843,6 +843,10 @@ select.day-filter {
   text-align: left;
 }
 .roster-row.me { outline: 2px solid var(--sun); box-shadow: 0 0 14px rgba(86,207,230,.3); }
+/* Grown-up generosity leaderboard (parents' app) reuses the roster rows, but
+   the rows aren't tappable here. */
+.awarder-board { margin-top: 22px; }
+.awarder-board .roster-row { cursor: default; }
 .ros-name { font-weight: 800; flex: 1; min-width: 0; }
 .ros-name small { display: block; font-weight: 700; color: var(--ink-soft); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ros-you { display: inline-block; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: var(--sun-dark); background: rgba(86,207,230,.16); padding: 1px 7px; border-radius: 999px; vertical-align: middle; }
