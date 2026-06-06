@@ -163,11 +163,11 @@
     const hero = document.createElement("div");
     hero.className = "hero";
     hero.innerHTML = `
-      <div class="eyebrow">Today at Cousin Camp</div>
+      <div class="eyebrow">🕰️ Today the machine lands in…</div>
       <h2>${escapeHtml(day.title)}</h2>
-      <p>${fmtLong(iso)}</p>
+      <p>${day.era ? escapeHtml(day.era) + " · " : ""}${fmtLong(iso)}</p>
       <div class="hero-progress"><span style="width:${pct}%"></span></div>
-      <div class="hero-progress-label">${doneN}/${total} activities done${state.me ? "" : " — pick your camper to track points"}</div>
+      <div class="hero-progress-label">${doneN}/${total} activities done${state.me ? "" : " — pick your traveler to track points"}</div>
     `;
     frag.appendChild(hero);
 
@@ -180,8 +180,8 @@
     const today = todayISO();
     const frag = document.createElement("div");
     const head = document.createElement("div");
-    head.innerHTML = `<h2 class="view-title">Camp Schedule 🗓️</h2>
-      <p class="view-sub">One week of Mimi's grand adventures.</p>`;
+    head.innerHTML = `<h2 class="view-title">Journey Through Time 🗓️</h2>
+      <p class="view-sub">Seven stops across history with Mimi's time machine.</p>`;
     frag.appendChild(head);
 
     SCHEDULE.forEach((day) => {
@@ -193,7 +193,7 @@
         <div class="day-badge"><div class="dow">${fmtDow(day.date)}</div><div class="dnum">${dayNum(day.date)}</div></div>
         <div>
           <h3>${escapeHtml(day.title)}</h3>
-          <div class="day-theme">${day.activities.length} activities</div>
+          <div class="day-theme">${day.era ? escapeHtml(day.era) : day.activities.length + " activities"}</div>
         </div>
         ${day.date === today ? '<span class="today-pill">TODAY</span>' : ""}
       `;
@@ -325,21 +325,23 @@
   // claims one unique prize, and earns an Awards Day certificate.
   // Each badge has a `hint` shown while it's still locked.
   const BADGES = [
-    { id: "earlybird", emoji: "🌅", label: "Early Bird",    hint: "Go on the Sunrise Nature Walk",            test: (c) => isDone(c, "d2-a1") },
-    { id: "baker",     emoji: "🍪", label: "Master Baker",   hint: "Finish Mimi's Cookie Workshop",            test: (c) => isDone(c, "d3-a1") },
-    { id: "showstop",  emoji: "⭐", label: "Showstopper",    hint: "Perform in the Talent Show",               test: (c) => isDone(c, "d6-a4") },
-    { id: "explorer",  emoji: "🧭", label: "Explorer",       hint: "Do the Scavenger Hunt + Frog Pond",        test: (c) => isDone(c, "d1-a3") && isDone(c, "d2-a4") },
-    { id: "water",     emoji: "💦", label: "Water Warrior",  hint: "Complete every Water Day activity",        test: (c) => completedDay(c, "2026-06-09") },
-    { id: "nature",    emoji: "🦋", label: "Nature Lover",   hint: "Complete every Nature Day activity",       test: (c) => completedDay(c, "2026-06-07") },
-    { id: "crafty",    emoji: "🎨", label: "Crafty Camper",  hint: "Do Flag Painting, Nature Collage & Costumes", test: (c) => isDone(c, "d1-a2") && isDone(c, "d2-a3") && isDone(c, "d6-a2") },
-    { id: "campfire",  emoji: "🔥", label: "Campfire Kid",   hint: "Make s'mores at the Bonfire",              test: (c) => isDone(c, "d1-a4") },
-    { id: "olympian",  emoji: "🏅", label: "Olympian",       hint: "Compete in the Backyard Olympics",         test: (c) => isDone(c, "d5-a1") },
-    { id: "cardshark", emoji: "🃏", label: "Card Shark",     hint: "Play Card Games with Mimi",                test: (c) => isDone(c, "d5-a2") },
-    { id: "foodie",    emoji: "🍕", label: "Camp Foodie",    hint: "Enjoy Pancakes, Cupcakes & Pizza Night",   test: (c) => isDone(c, "d1-a1") && isDone(c, "d3-a2") && isDone(c, "d3-a4") },
-    { id: "dynamo",    emoji: "🌟", label: "Daily Dynamo",   hint: "Finish all 4 activities in any one day",   test: (c) => anyFullDay(c) },
-    { id: "halfway",   emoji: "🎯", label: "Halfway Hero",   hint: "Complete 14 activities",                   test: (c) => completedCount(c) >= 14 },
-    { id: "champion",  emoji: "👑", label: "Camp Champion",  hint: "Complete 24 activities",                   test: (c) => completedCount(c) >= 24 },
-    { id: "perfect",   emoji: "🎖️", label: "Perfect Camper", hint: "Complete every single activity",           test: (c) => completedCount(c) >= allActivities().length },
+    { id: "cadet",     emoji: "🚀", label: "Time Cadet",      hint: "Build your time-travel gear on Launch Day", test: (c) => isDone(c, "d1-a2") },
+    { id: "mapdecoder", emoji: "🗺️", label: "Map Decoder",    hint: "Decode the Time Map scavenger hunt",        test: (c) => isDone(c, "d1-a3") },
+    { id: "fossil",    emoji: "🦴", label: "Fossil Hunter",   hint: "Dig up fossils in the Prehistoric Age",     test: (c) => isDone(c, "d2-a2") },
+    { id: "scientist", emoji: "🌋", label: "Mad Scientist",   hint: "Erupt the prehistoric volcano",             test: (c) => isDone(c, "d2-a4") },
+    { id: "dinodays",  emoji: "🦖", label: "Dino Days",       hint: "Complete every Dinosaur Days activity",     test: (c) => completedDay(c, "2026-06-07") },
+    { id: "pyramid",   emoji: "🔺", label: "Pyramid Builder", hint: "Build the Great Pyramid in Ancient Egypt",  test: (c) => isDone(c, "d3-a1") },
+    { id: "baker",     emoji: "🍪", label: "Master Baker",    hint: "Decorate the mummy cookies",                test: (c) => isDone(c, "d3-a2") },
+    { id: "scribe",    emoji: "📜", label: "Royal Scribe",    hint: "Write your hieroglyphic name scroll",       test: (c) => isDone(c, "d3-a3") },
+    { id: "castle",    emoji: "🏰", label: "Castle Keeper",   hint: "Build the cardboard castle",                test: (c) => isDone(c, "d4-a1") },
+    { id: "knight",    emoji: "⚔️", label: "Brave Knight",    hint: "Complete every Knights & Castles activity", test: (c) => completedDay(c, "2026-06-09") },
+    { id: "sealegs",   emoji: "🏴‍☠️", label: "Sea Legs",       hint: "Complete every Pirate Seas activity",       test: (c) => completedDay(c, "2026-06-10") },
+    { id: "treasure",  emoji: "🪙", label: "Treasure Hunter", hint: "Find the buried pirate treasure",           test: (c) => isDone(c, "d5-a2") },
+    { id: "showstop",  emoji: "⭐", label: "Showstopper",     hint: "Perform in the Wild West Hoedown Show",     test: (c) => isDone(c, "d6-a4") },
+    { id: "dynamo",    emoji: "🌟", label: "Daily Dynamo",    hint: "Finish all 4 activities in any one era",    test: (c) => anyFullDay(c) },
+    { id: "halfway",   emoji: "🎯", label: "Time Traveler",   hint: "Complete 14 activities",                    test: (c) => completedCount(c) >= 14 },
+    { id: "champion",  emoji: "👑", label: "Time Champion",   hint: "Complete 24 activities",                    test: (c) => completedCount(c) >= 24 },
+    { id: "master",    emoji: "🎖️", label: "Master of Time",  hint: "Complete every activity across all eras",   test: (c) => completedCount(c) >= allActivities().length },
   ];
   const badgesEarned = (camperId) => BADGES.filter((b) => b.test(camperId));
 
@@ -353,13 +355,13 @@
     if (!state.me) {
       const empty = document.createElement("div");
       empty.className = "empty";
-      empty.innerHTML = `<div class="big">🏕️</div>
-        <h3>Pick your camper</h3>
+      empty.innerHTML = `<div class="big">🕰️</div>
+        <h3>Pick your traveler</h3>
         <p>Choose who you are to start collecting badges and claim your prize.</p>`;
       const btn = document.createElement("button");
       btn.className = "btn";
       btn.style.marginTop = "14px";
-      btn.textContent = "👋 Pick camper";
+      btn.textContent = "👋 Pick traveler";
       btn.addEventListener("click", openCamperModal);
       empty.appendChild(btn);
       frag.appendChild(empty);
@@ -379,7 +381,7 @@
       <div class="cc-avatar">${me.emoji}</div>
       <div class="cc-info">
         <div class="cc-name">${escapeHtml(me.name)} ${escapeHtml(me.last)}</div>
-        <div class="cc-sub">Cousin Camp · age ${me.age}</div>
+        <div class="cc-sub">Time Traveler · age ${me.age}</div>
         <div class="cc-stats">
           <div class="cc-stat"><b>${balanceFor(state.me)}</b><span>points to spend</span></div>
           <div class="cc-stat"><b>${completedCount(state.me)}</b><span>activities</span></div>
@@ -459,8 +461,8 @@
 
     // --- Camp family roster (non-competitive overview) ---------------------
     const roster = document.createElement("div");
-    roster.innerHTML = `<h3 class="section-title">🧑‍🤝‍🧑 The Whole Camp</h3>
-      <p class="section-note">Tap a cousin to switch campers.</p>`;
+    roster.innerHTML = `<h3 class="section-title">🧑‍🚀 The Time Crew</h3>
+      <p class="section-note">Tap a cousin to switch travelers.</p>`;
     CAMPERS.forEach((c) => {
       const r = claimOf(c.id);
       const row = document.createElement("button");
@@ -489,8 +491,8 @@
     const cert = document.createElement("div");
     cert.className = "certificate";
     cert.innerHTML = `
-      <div class="cert-top">🏕️ Cousin Camp 2026 🏕️</div>
-      <div class="cert-award">Official Certificate</div>
+      <div class="cert-top">🕰️ Cousin Camp 2026 🕰️</div>
+      <div class="cert-award">Time Machine Travelers · Official Certificate</div>
       <div class="cert-name">${escapeHtml(camper.name)} ${escapeHtml(camper.last)}</div>
       <div class="cert-title">${superl.emoji} ${escapeHtml(superl.title)}</div>
       <p class="cert-blurb">${escapeHtml(superl.blurb)}</p>
@@ -506,14 +508,16 @@
 
   // Pick a celebratory superlative based on what the camper did most.
   function pickSuperlative(camperId) {
-    if (completedCount(camperId) >= allActivities().length) return { emoji: "🎖️", title: "The Perfect Camper", blurb: "Did every single thing at camp. Mimi is amazed!" };
-    if (badgesEarned(camperId).some((b) => b.id === "showstop")) return { emoji: "⭐", title: "Camp Superstar", blurb: "Lit up the stage at the Cousin Camp Talent Show." };
-    if (badgesEarned(camperId).some((b) => b.id === "baker"))    return { emoji: "🍪", title: "Star Baker", blurb: "Master of Mimi's secret family recipes." };
-    if (badgesEarned(camperId).some((b) => b.id === "olympian")) return { emoji: "🏅", title: "Camp Athlete", blurb: "Champion of the Backyard Olympics." };
-    if (badgesEarned(camperId).some((b) => b.id === "explorer")) return { emoji: "🧭", title: "Great Explorer", blurb: "Discovered every corner of Mimi's yard." };
-    if (badgesEarned(camperId).some((b) => b.id === "crafty"))   return { emoji: "🎨", title: "Camp Artist", blurb: "Made the most beautiful camp crafts." };
-    if (completedCount(camperId) >= 8)                            return { emoji: "🌟", title: "Camp All-Star", blurb: "Jumped into the fun all week long." };
-    return { emoji: "🤗", title: "Cousin Camp Graduate", blurb: "A wonderful week of memories with the cousins." };
+    const has = (id) => badgesEarned(camperId).some((b) => b.id === id);
+    if (completedCount(camperId) >= allActivities().length) return { emoji: "🎖️", title: "Master of All Time", blurb: "Traveled to every era and did it all. Mimi is amazed!" };
+    if (has("showstop")) return { emoji: "⭐", title: "Wild West Superstar", blurb: "Stole the show at the Hoedown Talent Show." };
+    if (has("sealegs"))  return { emoji: "🏴‍☠️", title: "Fearless Pirate Captain", blurb: "Ruled the seas in the Age of Sail." };
+    if (has("knight"))   return { emoji: "⚔️", title: "Bravest Knight", blurb: "Defended Camp Castle through the Middle Ages." };
+    if (has("dinodays")) return { emoji: "🦖", title: "Dino Wrangler", blurb: "Tracked dinosaurs across the Prehistoric Age." };
+    if (has("pyramid"))  return { emoji: "🔺", title: "Pyramid Architect", blurb: "Built wonders in Ancient Egypt." };
+    if (has("baker"))    return { emoji: "🍪", title: "Royal Pastry Chef", blurb: "Master of Mimi's secret family recipes." };
+    if (completedCount(camperId) >= 8) return { emoji: "🌟", title: "Time-Travel All-Star", blurb: "Jumped into every era with both feet." };
+    return { emoji: "⏳", title: "Time Travelers Graduate", blurb: "A wonderful trip through time with the cousins." };
   }
 
   // Claim a unique prize (releasing any prize the camper already held).
