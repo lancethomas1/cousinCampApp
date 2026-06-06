@@ -30,9 +30,9 @@ The project ships as **two separate apps that share the same camp data**:
     photos** and they upload to Firebase Storage and stream into the grid for
     everyone (see [SETUP.md](./SETUP.md) to enable Storage). A Google Photos album
     link (`PHOTO_ALBUM_URL` in `data.js`) shows as a backup button.
-  - **🎉 Cheers** — *Crew Cheers*, a friendly, **non-competitive** crew board. Shows
-    the whole crew's combined progress, then every traveler's stats side by side
-    (listed alphabetically, never ranked) — everybody's a winner.
+  - **🎉 Cheers** — *Crew Cheers*, a friendly crew board. Shows the whole crew's
+    combined progress, then every traveler's stats side by side, ranked by points
+    from highest to lowest.
   - **🏆 Awards** — the Camp Store is a kiosk: tap a prize, then tap which cousin is
     claiming it (one prize each). Tap any cousin to see their trophy case (badges
     earned *and* parent-granted) and print their Awards Day certificate.
