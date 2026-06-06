@@ -20,6 +20,12 @@ The project ships as **two separate apps that share the same camp data**:
     badges (earned *and* parent-granted), claim one of nine one-of-a-kind prizes,
     and print an Awards Day certificate.
 - **Grown-ups' app — [`parent.html`](./parent.html)** (a separate link for parents)
+  - **Lite sign-in:** grown-ups enter their **first name** to start (remembered on
+    that device; tap **Switch** to change).
+  - **Fairness rule:** a parent can give kudos/points/badges to every cousin
+    **except their own kids** — those are locked in the picker, so nobody can pad
+    their own kids' scores. Grown-ups who aren't listed as a parent (Mimi, aunts,
+    uncles) can award everyone.
   - The **Award Center**: pick a cousin and tap to hand out **kudos cards**
     (kindness, helping, good sport…), **bonus points** with a note, or **special
     badges** (Camper of the Day, Mimi's Helper…), with a recent-recognition feed.
@@ -76,6 +82,10 @@ All the camp content lives in [`data.js`](./data.js):
 - **`KUDOS`** — the kudos cards grown-ups can award (emoji, label, point value).
 - **`BONUS_QUICK`** — the quick-tap bonus point amounts in the parents app.
 - **`PARENT_BADGES`** — the special badges grown-ups can grant or take back.
+- **`PARENTS`** — the grown-ups' sign-in + fairness rule: `{ name, kids: [...] }`
+  per parent. A parent can't award the camper ids listed under their name. Names
+  are matched case-insensitively; only `"Lance"` is filled in — add the rest of
+  the family (kid ids are listed in a comment in `data.js`).
 
 Edit those to match your real reunion — dates are ISO `YYYY-MM-DD`.
 

@@ -14,6 +14,7 @@
   "use strict";
 
   const { CAMPERS, SCHEDULE, STORE, PHOTO_ALBUM_URL, KUDOS, BONUS_QUICK, PARENT_BADGES } = window.CAMP_DATA;
+  const PARENTS = window.CAMP_DATA.PARENTS || [];
 
   // ---- Storage helpers ----------------------------------------------------
   const LS = {
@@ -23,6 +24,7 @@
     awards: "cc.awards",         // { camperId: [ {id,type,refId,emoji,label,points,note,ts} ] }
     pass: "cc.pass",             // remembered family passcode (shared mode)
     target: "cc.target",         // camper a grown-up is awarding to (stays local)
+    parent: "cc.parent",         // grown-up's first name in the parents app (local)
   };
   const load = (k, fallback) => {
     try { return JSON.parse(localStorage.getItem(k)) ?? fallback; }
@@ -38,6 +40,7 @@
     awards: load(LS.awards, {}),
     route: "today",
     target: load(LS.target, null),  // who the grown-up is awarding to
+    parent: load(LS.parent, null),  // signed-in grown-up's first name (parents app)
   };
 
   // ---- Render wiring ------------------------------------------------------
@@ -319,15 +322,48 @@
     rerender();
   }
 
+  // ---- Parent identity & fairness rule ------------------------------------
+  // A grown-up signs in with their first name in the parents app. If their name
+  // matches a PARENTS entry, they cannot give awards to their own kids.
+  function parentByName(name) {
+    if (!name) return null;
+    const n = String(name).trim().toLowerCase();
+    return PARENTS.find((p) => String(p.name).trim().toLowerCase() === n) || null;
+  }
+  function currentParent() { return parentByName(state.parent); }
+  function ownKidIds() {
+    const p = currentParent();
+    return p ? (p.kids || []) : [];
+  }
+  function isOwnKid(camperId) { return ownKidIds().includes(camperId); }
+  function setParent(name) {
+    state.parent = String(name || "").trim() || null;
+    save(LS.parent, state.parent);
+    rerender();
+  }
+  function clearParent() {
+    state.parent = null;
+    save(LS.parent, null);
+    rerender();
+  }
+  // Returns true (and warns) if the signed-in parent may not award this camper.
+  function blockOwnKid(c) {
+    if (isOwnKid(c.id)) {
+      toast(`${c.name} is your kid — let another grown-up award them 🙂`);
+      return true;
+    }
+    return false;
+  }
+
   // Award actions — persist through Store so they sync in shared mode.
   function giveKudos(kudosId) {
-    const c = targetCamper(); if (!c) return;
+    const c = targetCamper(); if (!c || blockOwnKid(c)) return;
     const k = kudosById(kudosId); if (!k) return;
     toast(`${k.emoji} ${k.label} for ${c.name} +${k.points}`);
     Store.award(c.id, { type: "kudos", refId: k.id, emoji: k.emoji, label: k.label, points: k.points });
   }
   function giveBonus(points, note) {
-    const c = targetCamper(); if (!c) return;
+    const c = targetCamper(); if (!c || blockOwnKid(c)) return;
     const pts = Math.round(Number(points) || 0);
     if (!pts) { toast("Enter some points first"); return; }
     const clean = (note || "").trim();
@@ -335,7 +371,7 @@
     Store.award(c.id, { type: "bonus", emoji: pts < 0 ? "➖" : "➕", label: "Bonus points", points: pts, note: clean });
   }
   function toggleParentBadge(badgeId) {
-    const c = targetCamper(); if (!c) return;
+    const c = targetCamper(); if (!c || blockOwnKid(c)) return;
     const b = parentBadgeById(badgeId); if (!b) return;
     toast(hasParentBadge(c.id, badgeId) ? `Took back ${b.emoji} ${b.label}` : `${b.emoji} ${b.label} for ${c.name}!`);
     Store.toggleBadge(c.id, { type: "badge", refId: b.id, emoji: b.emoji, label: b.label, points: 0 });
@@ -399,7 +435,7 @@
 
   // ---- Public surface -----------------------------------------------------
   window.CampCore = {
-    data: { CAMPERS, SCHEDULE, STORE, KUDOS, BONUS_QUICK, PARENT_BADGES, PHOTO_ALBUM_URL },
+    data: { CAMPERS, SCHEDULE, STORE, KUDOS, BONUS_QUICK, PARENT_BADGES, PARENTS, PHOTO_ALBUM_URL },
     state, LS, load, save,
     setRender, initShared, startShared, Store,
     // campers & activities
@@ -411,6 +447,8 @@
     // parent awards
     kudosById, parentBadgeById, awardsFor, kudosCountFor, parentBadgesFor, hasParentBadge,
     targetCamper, setTarget, giveKudos, giveBonus, toggleParentBadge, undoAward,
+    // parent identity & fairness rule
+    parentByName, currentParent, ownKidIds, isOwnKid, setParent, clearParent,
     // formatting & utils
     todayISO, fmtDow, dayNum, fmtLong, toast, escapeHtml, uid, timeAgo,
   };

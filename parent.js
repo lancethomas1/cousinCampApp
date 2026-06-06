@@ -10,20 +10,109 @@
   "use strict";
 
   const C = window.CampCore;
-  const { CAMPERS, KUDOS, BONUS_QUICK, PARENT_BADGES } = C.data;
+  const { CAMPERS, KUDOS, BONUS_QUICK, PARENT_BADGES, PARENTS } = C.data;
   const {
-    setRender, initShared,
+    state, setRender, initShared,
     pointsFor, kudosCountFor, parentBadgesFor, hasParentBadge, awardsFor,
     targetCamper, setTarget, giveKudos, giveBonus, toggleParentBadge, undoAward,
-    escapeHtml, timeAgo,
+    currentParent, ownKidIds, isOwnKid, setParent, clearParent,
+    toast, escapeHtml, timeAgo,
   } = C;
   const view = document.getElementById("view");
 
+  const firstAwardable = () => CAMPERS.find((c) => !isOwnKid(c.id)) || null;
+
+  // ---- Sign-in gate: enter your first name --------------------------------
+  function renderGate() {
+    const frag = document.createElement("div");
+    const card = document.createElement("div");
+    card.className = "card name-gate";
+    card.innerHTML = `
+      <div class="ng-emoji">👋</div>
+      <h2>Who's awarding?</h2>
+      <p class="ng-sub">Enter your first name to give kudos &amp; points. Parents can't
+        award their own kids, so the cousins' scores stay fair.</p>`;
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.className = "bonus-note ng-input";
+    input.placeholder = "Your first name";
+    input.autocomplete = "off";
+    input.setAttribute("autocapitalize", "words");
+    const go = document.createElement("button");
+    go.type = "button";
+    go.className = "btn ng-go";
+    go.textContent = "Start awarding 🎖️";
+    const submit = () => {
+      const name = input.value.trim();
+      if (!name) { input.focus(); return; }
+      enterAs(name);
+    };
+    go.addEventListener("click", submit);
+    input.addEventListener("keydown", (e) => { if (e.key === "Enter") submit(); });
+    card.append(input, go);
+
+    // Quick-pick buttons for the parents we already know about.
+    if (PARENTS.length) {
+      const quick = document.createElement("div");
+      quick.className = "name-quick";
+      PARENTS.forEach((p) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "btn-ghost name-chip";
+        b.textContent = p.name;
+        b.addEventListener("click", () => enterAs(p.name));
+        quick.appendChild(b);
+      });
+      const lbl = document.createElement("p");
+      lbl.className = "ng-or";
+      lbl.textContent = "…or tap your name:";
+      card.append(lbl, quick);
+    }
+    frag.appendChild(card);
+    view.replaceChildren(frag);
+    setTimeout(() => input.focus(), 60);
+  }
+
+  // Sign in, then make sure the selected cousin isn't one of this parent's kids.
+  function enterAs(name) {
+    setParent(name);              // re-renders
+    const t = targetCamper();
+    if (t && isOwnKid(t.id)) {
+      const alt = firstAwardable();
+      if (alt) setTarget(alt.id); // re-renders onto an awardable cousin
+    }
+    toast(`Hi, ${name}! 👋`);
+  }
+
   // ---- Award Center view --------------------------------------------------
   function render() {
+    // Gate first: no name yet → ask for it.
+    if (!state.parent) { renderGate(); return; }
+
     const frag = document.createElement("div");
-    const me = targetCamper();
+    let me = targetCamper();
     if (!me) { view.replaceChildren(frag); return; }
+    // Never sit on one of this parent's own kids — hop to an awardable cousin.
+    if (isOwnKid(me.id)) {
+      const alt = firstAwardable();
+      if (alt) { setTarget(alt.id); return; }  // re-renders with an allowed target
+      me = null;
+    }
+
+    // --- Signed-in bar -----------------------------------------------------
+    const idBar = document.createElement("div");
+    idBar.className = "parent-id";
+    const who = currentParent();
+    idBar.innerHTML = `<span>👋 Signed in as <b>${escapeHtml(state.parent)}</b>${
+      who && ownKidIds().length ? ` · can't award your own kids` : ""}</span>`;
+    const switchBtn = document.createElement("button");
+    switchBtn.type = "button";
+    switchBtn.className = "pid-switch";
+    switchBtn.textContent = "Switch";
+    switchBtn.addEventListener("click", clearParent);
+    idBar.appendChild(switchBtn);
+    frag.appendChild(idBar);
 
     // --- Who am I awarding? (target picker) --------------------------------
     const pickerHead = document.createElement("div");
@@ -34,15 +123,28 @@
     const picker = document.createElement("div");
     picker.className = "target-picker";
     CAMPERS.forEach((c) => {
+      const mine = isOwnKid(c.id);
       const b = document.createElement("button");
       b.type = "button";
-      b.className = "target-pick" + (c.id === me.id ? " active" : "");
+      b.className = "target-pick" + (me && c.id === me.id ? " active" : "") + (mine ? " locked" : "");
       b.style.setProperty("--cc", c.color);
-      b.innerHTML = `<span class="tp-emoji">${c.emoji}</span><span class="tp-name">${escapeHtml(c.name)}</span><span class="tp-pts">⭐ ${pointsFor(c.id)}</span>`;
-      b.addEventListener("click", () => setTarget(c.id));
+      b.disabled = mine;
+      b.innerHTML = `<span class="tp-emoji">${c.emoji}</span><span class="tp-name">${escapeHtml(c.name)}</span>` +
+        (mine ? `<span class="tp-lock">🙅 your kid</span>` : `<span class="tp-pts">⭐ ${pointsFor(c.id)}</span>`);
+      if (!mine) b.addEventListener("click", () => setTarget(c.id));
       picker.appendChild(b);
     });
     frag.appendChild(picker);
+
+    if (!me) {
+      const none = document.createElement("div");
+      none.className = "empty";
+      none.innerHTML = `<div class="big">🙂</div><h3>No cousins to award</h3>
+        <p>Everyone shown is one of your own kids. Another grown-up can award them.</p>`;
+      frag.appendChild(none);
+      view.replaceChildren(frag);
+      return;
+    }
 
     // --- Selected camper banner -------------------------------------------
     const banner = document.createElement("div");
