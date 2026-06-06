@@ -16,8 +16,10 @@ The project ships as **two separate apps that share the same camp data**:
   - **📅 Today / 🗓️ Schedule** — each activity shows every cousin's face; a kid taps
     their **own face** to check in (tap again to undo), so the whole crew can share
     one iPad without switching profiles.
-  - **📸 Photos** — *Snapshots in Time*. Opens the camp's shared **Google Photos**
-    album / time capsule (set `PHOTO_ALBUM_URL` in `data.js`).
+  - **📸 Photos** — *Snapshots in Time*. A **live shared gallery**: tap **Add
+    photos** and they upload to Firebase Storage and stream into the grid for
+    everyone (see [SETUP.md](./SETUP.md) to enable Storage). A Google Photos album
+    link (`PHOTO_ALBUM_URL` in `data.js`) shows as a backup button.
   - **🎉 Cheers** — *Crew Cheers*, a friendly, **non-competitive** crew board. Shows
     the whole crew's combined progress, then every traveler's stats side by side
     (listed alphabetically, never ranked) — everybody's a winner.

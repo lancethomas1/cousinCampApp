@@ -12,7 +12,7 @@
   const C = window.CampCore;
   const { CAMPERS, SCHEDULE, STORE, PHOTO_ALBUM_URL } = C.data;
   const {
-    state, LS, save, Store, setRender, initShared,
+    state, LS, save, Store, Photos, setRender, initShared,
     camperById, allActivities, isDone,
     pointsFor, balanceFor, completedCount, anyFullDay, fullDayCount,
     rewardById, claimedBy, claimOf,
@@ -126,38 +126,99 @@
   }
 
   // ---- PHOTOS view --------------------------------------------------------
-  // Photos live in a shared Google Photos album (set PHOTO_ALBUM_URL in data.js).
+  // A live, shared in-app gallery (Firebase Storage). Everyone's photos stream
+  // in here. The Google Photos album link stays as a backup.
   function renderPhotos() {
     const url = (PHOTO_ALBUM_URL || "").trim();
     const frag = document.createElement("div");
     const head = document.createElement("div");
     head.innerHTML = `<h2 class="view-title">Snapshots in Time 📸</h2>
-      <p class="view-sub">Every moment from our trip through the eras, in one shared album.</p>`;
+      <p class="view-sub">Every moment from our trip through the eras — shared live with the crew.</p>`;
     frag.appendChild(head);
 
-    const card = document.createElement("div");
-    card.className = "card album-card";
-    if (url) {
-      card.innerHTML = `
-        <div class="album-emoji">🖼️</div>
-        <h3>Cousin Camp Time Capsule</h3>
-        <p>Add your snapshots and relive everyone's moments from across the timeline in our shared Google Photos album.</p>`;
-      const a = document.createElement("a");
-      a.className = "btn album-btn";
-      a.href = url; a.target = "_blank"; a.rel = "noopener";
-      a.innerHTML = "📷 Open shared album";
-      card.appendChild(a);
-      const hint = document.createElement("p");
-      hint.className = "album-hint";
-      hint.textContent = "Tip: in Google Photos, tap Add photos to upload from your camera roll.";
-      card.appendChild(hint);
-    } else {
-      card.innerHTML = `
-        <div class="album-emoji">📷</div>
-        <h3>Time capsule coming soon</h3>
-        <p>Mimi will add the Google Photos album link here so the whole crew can share snapshots from the journey.</p>`;
+    // Add-photo button (uploads into the shared gallery).
+    if (Photos.enabled()) {
+      const bar = document.createElement("div");
+      bar.className = "photo-toolbar";
+      const addBtn = document.createElement("button");
+      addBtn.className = "btn album-btn";
+      addBtn.innerHTML = "➕ Add photos";
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
+      input.multiple = true;
+      input.hidden = true;
+      addBtn.addEventListener("click", () => input.click());
+      input.addEventListener("change", async (e) => {
+        const files = e.target.files;
+        if (!files || !files.length) return;
+        addBtn.disabled = true;
+        addBtn.innerHTML = "⏳ Uploading…";
+        toast(`Uploading ${files.length} photo${files.length > 1 ? "s" : ""}…`);
+        await Photos.addMany(files);
+        input.value = "";
+        addBtn.disabled = false;
+        addBtn.innerHTML = "➕ Add photos";
+        // gallery refreshes itself via the live snapshot
+      });
+      bar.append(addBtn, input);
+      frag.appendChild(bar);
     }
-    frag.appendChild(card);
+
+    // The live grid.
+    const photos = Photos.list();
+    if (photos.length) {
+      const grid = document.createElement("div");
+      grid.className = "gallery-grid";
+      photos.forEach((p) => {
+        const cell = document.createElement("div");
+        cell.className = "gallery-item";
+        cell.innerHTML = `<img src="${p.url}" alt="Camp photo" loading="lazy">`;
+        const a = cell.querySelector("img");
+        a.addEventListener("click", () => window.open(p.url, "_blank", "noopener"));
+        if (Photos.enabled()) {
+          const del = document.createElement("button");
+          del.className = "gallery-del";
+          del.type = "button";
+          del.setAttribute("aria-label", "Remove photo");
+          del.textContent = "✕";
+          del.addEventListener("click", (ev) => {
+            ev.stopPropagation();
+            if (confirm("Remove this photo for everyone?")) Photos.remove(p);
+          });
+          cell.appendChild(del);
+        }
+        grid.appendChild(cell);
+      });
+      frag.appendChild(grid);
+    } else {
+      const empty = document.createElement("div");
+      empty.className = "card album-card";
+      if (Photos.enabled()) {
+        empty.innerHTML = `<div class="album-emoji">📷</div>
+          <h3>No photos yet</h3>
+          <p>Tap <b>Add photos</b> to share the first snapshots — they'll stream in here for the whole crew.</p>`;
+      } else {
+        empty.innerHTML = `<div class="album-emoji">📷</div>
+          <h3>Shared gallery is warming up</h3>
+          <p>In-app photo sharing turns on once the camp is connected (and Firebase Storage is enabled). Until then, use the album link below.</p>`;
+      }
+      frag.appendChild(empty);
+    }
+
+    // Google Photos album backup link.
+    if (url) {
+      const albumWrap = document.createElement("div");
+      albumWrap.style.marginTop = "16px";
+      albumWrap.style.textAlign = "center";
+      const a = document.createElement("a");
+      a.className = "btn-ghost";
+      a.href = url; a.target = "_blank"; a.rel = "noopener";
+      a.innerHTML = "🖼️ Open the Google Photos album";
+      albumWrap.appendChild(a);
+      frag.appendChild(albumWrap);
+    }
+
     view.replaceChildren(frag);
   }
 
