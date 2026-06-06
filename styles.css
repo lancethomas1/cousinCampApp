@@ -705,6 +705,167 @@ select.day-filter {
 .gate-card .btn { width: 100%; justify-content: center; font-size: 16px; padding: 13px; }
 .gate-note { font-size: 12.5px; margin: 12px 0 0 !important; }
 
+/* ---------- Parent Award Center (Kudos tab) ---------- */
+/* Target picker: horizontal row of cousins to award to. */
+.target-picker {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 2px 2px 10px;
+  margin: 0 -2px 4px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.target-picker::-webkit-scrollbar { display: none; }
+.target-pick {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  width: 76px;
+  padding: 8px 4px;
+  background: var(--cream);
+  border: 2px solid rgba(58,46,37,.08);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  font-family: "Nunito", sans-serif;
+  transition: transform .1s ease;
+}
+.target-pick:active { transform: scale(.96); }
+.target-pick.active { border-color: var(--cc, var(--sun)); background: #fff; outline: 3px solid color-mix(in srgb, var(--cc, var(--sun)) 30%, transparent); }
+.tp-emoji { font-size: 28px; line-height: 1; }
+.tp-name { font-weight: 800; font-size: 12.5px; }
+.tp-pts { font-weight: 800; font-size: 10.5px; color: #b8860b; }
+
+/* Banner showing who is being awarded. */
+.award-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, var(--cc, var(--sun)) 0%, #ffffff 260%);
+  color: #fff;
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  box-shadow: var(--shadow-lg);
+  margin-bottom: 4px;
+}
+.ab-avatar {
+  font-size: 30px;
+  width: 52px; height: 52px;
+  display: grid; place-items: center;
+  background: rgba(255,255,255,.28);
+  border-radius: 14px;
+  flex: 0 0 auto;
+}
+.ab-name { font-weight: 700; font-size: 14px; }
+.ab-name b { font-family: "Baloo 2", sans-serif; font-size: 18px; }
+.ab-stats { display: flex; gap: 12px; margin-top: 4px; font-size: 12px; font-weight: 700; opacity: .95; }
+.ab-stats b { font-family: "Baloo 2", sans-serif; font-size: 14px; }
+
+/* Kudos board. */
+.kudos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: 10px;
+}
+.kudos-tile {
+  position: relative;
+  text-align: center;
+  background: var(--cream);
+  border: 2px solid rgba(58,46,37,.08);
+  border-radius: var(--radius-sm);
+  padding: 12px 8px 10px;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  font-family: "Nunito", sans-serif;
+  transition: transform .1s ease;
+}
+.kudos-tile:active { transform: scale(.95); }
+.kt-emoji { font-size: 30px; line-height: 1; }
+.kt-label { font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 13.5px; margin-top: 4px; }
+.kt-desc { font-size: 11px; font-weight: 700; color: var(--ink-soft); margin-top: 2px; line-height: 1.2; }
+.kt-pts { display: inline-block; margin-top: 8px; font-weight: 800; color: var(--grass); background: #effbf4; padding: 2px 10px; border-radius: 999px; font-size: 12.5px; }
+
+/* Bonus points card. */
+.bonus-card {
+  background: var(--cream);
+  border: 1px solid rgba(58,46,37,.06);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.bonus-note, .bonus-amt {
+  width: 100%;
+  border: 2px solid rgba(58,46,37,.12);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-family: "Nunito", sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--ink);
+  background: #fff;
+}
+.bonus-note:focus, .bonus-amt:focus { outline: none; border-color: var(--sun); }
+.bonus-quick { display: flex; gap: 8px; }
+.bonus-btn {
+  flex: 1;
+  border: none;
+  background: #fff4cf;
+  color: #b8860b;
+  font-family: "Baloo 2", sans-serif;
+  font-weight: 800;
+  font-size: 17px;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform .1s ease;
+}
+.bonus-btn:active { transform: scale(.95); }
+.bonus-custom { display: flex; gap: 8px; }
+.bonus-custom .bonus-amt { flex: 1; }
+.bonus-custom .btn { flex: 0 0 auto; margin: 0; }
+
+/* Recent award feed. */
+.award-feed { display: flex; flex-direction: column; gap: 8px; }
+.feed-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--cream);
+  border: 1px solid rgba(58,46,37,.05);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  padding: 9px 12px;
+}
+.fr-emoji { font-size: 26px; flex: 0 0 auto; }
+.fr-body { flex: 1; min-width: 0; }
+.fr-label { font-weight: 800; font-size: 14px; line-height: 1.2; }
+.fr-time { font-weight: 700; font-size: 11.5px; color: var(--ink-soft); }
+.fr-pts { font-weight: 800; color: var(--grass); background: #effbf4; padding: 3px 10px; border-radius: 999px; font-size: 13px; flex: 0 0 auto; }
+.fr-pts.neg { color: #a35; background: #ffe1e6; }
+.fr-undo {
+  flex: 0 0 auto;
+  border: none;
+  background: #f4f0ea;
+  color: var(--ink-soft);
+  width: 28px; height: 28px;
+  border-radius: 999px;
+  font-weight: 800;
+  cursor: pointer;
+  line-height: 1;
+}
+.fr-undo:active { transform: scale(.9); }
+
+/* Parent badge tiles are tappable in the Kudos tab. */
+.pb-toggle { cursor: pointer; font-family: "Nunito", sans-serif; transition: transform .1s ease; }
+.pb-toggle:active { transform: scale(.95); }
+.pb-toggle.locked .tr-emoji { filter: none; opacity: .8; }
+
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }
 }
@@ -713,6 +874,7 @@ select.day-filter {
 @media print {
   .app-header, .tabbar, .toast, .section-title, .section-note,
   .store-grid, .trophy-grid, .camp-card, .roster-row, .btn,
+  .target-picker, .award-banner, .kudos-grid, .bonus-card, .award-feed,
   .view-title, .view-sub, .empty, .gate { display: none !important; }
   body { background: #fff; }
   .view { padding: 0; }

@@ -100,5 +100,44 @@ const STORE = [
 // show a "coming soon" placeholder.
 const PHOTO_ALBUM_URL = "";
 
+// ---------------------------------------------------------------------------
+// PARENT AWARDS — recognition that grown-ups hand out.
+// At Cousin Camp the grown-ups (Mimi, parents, aunts & uncles) award the extra
+// points. The "Kudos" tab lets any grown-up pick a cousin and tap to award:
+//   • Kudos cards  — in-the-moment recognition, each worth bonus points
+//   • Bonus points — a custom amount with an optional note
+//   • Parent badges — special one-of-a-kind honors for the trophy case
+// In shared mode these sync to every device alongside points and prizes.
+// Edit these arrays to change what grown-ups can hand out.
+// ---------------------------------------------------------------------------
+
+// Kudos cards. Tap one to award it to the chosen cousin (adds `points`).
+const KUDOS = [
+  { id: "k-kind",    emoji: "🤝", label: "Kindness",      points: 10, desc: "Was kind to a cousin." },
+  { id: "k-helper",  emoji: "🦸", label: "Super Helper",  points: 10, desc: "Helped out without being asked." },
+  { id: "k-sport",   emoji: "🤸", label: "Good Sport",    points: 10, desc: "Won or lost with a smile." },
+  { id: "k-brave",   emoji: "🦁", label: "Brave",         points: 10, desc: "Tried something new or scary." },
+  { id: "k-share",   emoji: "🎁", label: "Great Sharing", points: 10, desc: "Shared with the whole group." },
+  { id: "k-clean",   emoji: "🧹", label: "Big Cleanup",   points: 10, desc: "Cleaned up like a champ." },
+  { id: "k-manners", emoji: "💬", label: "Kind Words",    points:  5, desc: "Please, thank you, and kindness." },
+  { id: "k-listen",  emoji: "👂", label: "Good Listener", points:  5, desc: "Listened to Mimi the first time." },
+  { id: "k-leader",  emoji: "⭐", label: "Camp Leader",   points: 15, desc: "Led the cousins by example." },
+  { id: "k-extra",   emoji: "💪", label: "Extra Effort",  points: 15, desc: "Went above and beyond." },
+];
+
+// Quick-tap bonus point amounts (a custom amount is always available too).
+const BONUS_QUICK = [5, 10, 25];
+
+// Special badges a grown-up can grant or take back. These join the camper's
+// trophy case alongside the badges earned from activities.
+const PARENT_BADGES = [
+  { id: "pb-star",     emoji: "🌟", label: "Camper of the Day", desc: "The standout cousin today." },
+  { id: "pb-helper",   emoji: "🫶", label: "Mimi's Helper",     desc: "Mimi's right hand all day long." },
+  { id: "pb-kind",     emoji: "💝", label: "Kindness Award",    desc: "Spread the most kindness." },
+  { id: "pb-explorer", emoji: "🧭", label: "Bold Explorer",     desc: "The most adventurous traveler." },
+  { id: "pb-artist",   emoji: "🎨", label: "Camp Artist",       desc: "Dazzling camp creativity." },
+  { id: "pb-peace",    emoji: "🕊️", label: "Peacemaker",        desc: "Helped the cousins get along." },
+];
+
 // Make available to app.js
-window.CAMP_DATA = { CAMPERS, SCHEDULE, STORE, PHOTO_ALBUM_URL };
+window.CAMP_DATA = { CAMPERS, SCHEDULE, STORE, PHOTO_ALBUM_URL, KUDOS, BONUS_QUICK, PARENT_BADGES };

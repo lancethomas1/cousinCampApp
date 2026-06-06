@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  const { CAMPERS, SCHEDULE, STORE, PHOTO_ALBUM_URL } = window.CAMP_DATA;
+  const { CAMPERS, SCHEDULE, STORE, PHOTO_ALBUM_URL, KUDOS, BONUS_QUICK, PARENT_BADGES } = window.CAMP_DATA;
   const view = document.getElementById("view");
 
   // ---- Storage helpers ----------------------------------------------------
@@ -14,7 +14,9 @@
     me: "cc.me",                 // current camper id (stays local to each device)
     done: "cc.done",             // { camperId: { activityId: true } }
     claims: "cc.claims",         // { rewardId: camperId } — one prize per camper
+    awards: "cc.awards",         // { camperId: [ {id,type,refId,emoji,label,points,note,ts} ] }
     pass: "cc.pass",             // remembered family passcode (shared mode)
+    target: "cc.target",         // camper a grown-up is awarding to (stays local)
   };
   const load = (k, fallback) => {
     try { return JSON.parse(localStorage.getItem(k)) ?? fallback; }
@@ -27,7 +29,9 @@
     me: load(LS.me, null),
     done: load(LS.done, {}),
     claims: load(LS.claims, {}),
+    awards: load(LS.awards, {}),
     route: "today",
+    target: load(LS.target, null),  // who the grown-up is awarding to
   };
 
   // ---- Shared sync (Firebase Firestore) or local fallback -----------------
@@ -59,11 +63,13 @@
       // Start from a clean slate; live data arrives via the snapshot below.
       state.done = {};
       state.claims = {};
+      state.awards = {};
       Sync.ref.onSnapshot(
         (snap) => {
           const d = snap.data() || {};
           state.done = d.done || {};
           state.claims = d.claims || {};
+          state.awards = d.awards || {};
           render();
         },
         (err) => { console.error("sync error", err); toast("Sync error — check connection"); }
@@ -76,12 +82,12 @@
   }
 
   // Run a mutation against the shared doc atomically (read-modify-write).
-  // `mutate(next)` edits { done, claims } in place; throw to abort.
+  // `mutate(next)` edits { done, claims, awards } in place; throw to abort.
   async function sharedWrite(mutate) {
     await Sync.db.runTransaction(async (t) => {
       const snap = await t.get(Sync.ref);
       const d = snap.exists ? snap.data() : {};
-      const next = { done: d.done || {}, claims: d.claims || {} };
+      const next = { done: d.done || {}, claims: d.claims || {}, awards: d.awards || {} };
       mutate(next);
       t.set(Sync.ref, next);
     });
@@ -144,6 +150,45 @@
         render();
       }
     },
+    // Append a parent award (kudos / bonus / badge) to a camper's log.
+    async award(camperId, award) {
+      const entry = { id: uid(), ts: Date.now(), ...award };
+      if (Sync.mode === "shared") {
+        try { await sharedWrite((n) => { n.awards[camperId] = (n.awards[camperId] || []).concat(entry); }); }
+        catch (e) { toast("Couldn't save — try again"); }
+      } else {
+        state.awards = { ...state.awards, [camperId]: (state.awards[camperId] || []).concat(entry) };
+        save(LS.awards, state.awards);
+        render();
+      }
+    },
+    // Remove a single award from a camper's log (kudos / bonus undo).
+    async removeAward(camperId, awardId) {
+      const drop = (list) => (list || []).filter((a) => a.id !== awardId);
+      if (Sync.mode === "shared") {
+        try { await sharedWrite((n) => { n.awards[camperId] = drop(n.awards[camperId]); }); }
+        catch (e) { toast("Couldn't save — try again"); }
+      } else {
+        state.awards = { ...state.awards, [camperId]: drop(state.awards[camperId]) };
+        save(LS.awards, state.awards);
+        render();
+      }
+    },
+    // Grant a special badge if absent, or take it back if already held.
+    async toggleBadge(camperId, badge) {
+      const isBadge = (a) => a.type === "badge" && a.refId === badge.refId;
+      const apply = (list) => (list || []).some(isBadge)
+        ? (list || []).filter((a) => !isBadge(a))
+        : (list || []).concat({ id: uid(), ts: Date.now(), ...badge });
+      if (Sync.mode === "shared") {
+        try { await sharedWrite((n) => { n.awards[camperId] = apply(n.awards[camperId]); }); }
+        catch (e) { toast("Couldn't save — try again"); }
+      } else {
+        state.awards = { ...state.awards, [camperId]: apply(state.awards[camperId]) };
+        save(LS.awards, state.awards);
+        render();
+      }
+    },
   };
 
   // Full-screen passcode gate shown in shared mode before joining.
@@ -191,9 +236,14 @@
   function isDone(camperId, activityId) {
     return !!doneMap(camperId)[activityId];
   }
-  function pointsFor(camperId) {
+  // Points from checked-off activities only.
+  function activityPointsFor(camperId) {
     const dm = doneMap(camperId);
     return allActivities().reduce((sum, a) => sum + (dm[a.id] ? a.points : 0), 0);
+  }
+  // Grand total = activity points + everything grown-ups have awarded.
+  function pointsFor(camperId) {
+    return activityPointsFor(camperId) + awardPointsFor(camperId);
   }
   function completedCount(camperId) {
     const dm = doneMap(camperId);
@@ -209,6 +259,64 @@
   }
   function fullDayCount(camperId) {
     return SCHEDULE.filter((d) => completedDay(camperId, d.date)).length;
+  }
+
+  // ---- Parent awards (kudos, bonus points, special badges) ----------------
+  const kudosById = (id) => KUDOS.find((k) => k.id === id) || null;
+  const parentBadgeById = (id) => PARENT_BADGES.find((b) => b.id === id) || null;
+  // The award log for one camper (newest last). Always returns a real array.
+  function awardsFor(camperId) {
+    return state.awards[camperId] || [];
+  }
+  // Bonus points a camper has been awarded by grown-ups (kudos + bonus).
+  function awardPointsFor(camperId) {
+    return awardsFor(camperId).reduce((sum, a) => sum + (a.points || 0), 0);
+  }
+  function kudosCountFor(camperId) {
+    return awardsFor(camperId).filter((a) => a.type === "kudos").length;
+  }
+  // Special parent badges a camper currently holds.
+  function parentBadgesFor(camperId) {
+    const held = new Set(awardsFor(camperId).filter((a) => a.type === "badge").map((a) => a.refId));
+    return PARENT_BADGES.filter((b) => held.has(b.id));
+  }
+  function hasParentBadge(camperId, badgeId) {
+    return awardsFor(camperId).some((a) => a.type === "badge" && a.refId === badgeId);
+  }
+  // The camper a grown-up is currently awarding to in the Kudos tab.
+  function targetCamper() {
+    return camperById(state.target) || camperById(state.me) || CAMPERS[0] || null;
+  }
+  function setTarget(camperId) {
+    state.target = camperId;
+    save(LS.target, camperId);
+    render();
+  }
+
+  // Award actions (UI-facing) — persist through Store so they sync in shared mode.
+  function giveKudos(kudosId) {
+    const c = targetCamper(); if (!c) return;
+    const k = kudosById(kudosId); if (!k) return;
+    toast(`${k.emoji} ${k.label} for ${c.name} +${k.points}`);
+    Store.award(c.id, { type: "kudos", refId: k.id, emoji: k.emoji, label: k.label, points: k.points });
+  }
+  function giveBonus(points, note) {
+    const c = targetCamper(); if (!c) return;
+    const pts = Math.round(Number(points) || 0);
+    if (!pts) { toast("Enter some points first"); return; }
+    const clean = (note || "").trim();
+    toast(`${pts > 0 ? "+" : ""}${pts} for ${c.name}${clean ? " — " + clean : ""}`);
+    Store.award(c.id, { type: "bonus", emoji: pts < 0 ? "➖" : "➕", label: "Bonus points", points: pts, note: clean });
+  }
+  function toggleParentBadge(badgeId) {
+    const c = targetCamper(); if (!c) return;
+    const b = parentBadgeById(badgeId); if (!b) return;
+    toast(hasParentBadge(c.id, badgeId) ? `Took back ${b.emoji} ${b.label}` : `${b.emoji} ${b.label} for ${c.name}!`);
+    Store.toggleBadge(c.id, { type: "badge", refId: b.id, emoji: b.emoji, label: b.label, points: 0 });
+  }
+  function undoAward(camperId, awardId) {
+    toast("Award removed");
+    Store.removeAward(camperId, awardId);
   }
 
   // ---- Camp Store / prize claims -----------------------------------------
@@ -386,6 +494,164 @@
     view.replaceChildren(frag);
   }
 
+  // ---- KUDOS view (the Parent Award Center) -------------------------------
+  // Grown-ups pick a cousin, then tap to award kudos, bonus points, or a
+  // special badge. Everything flows into that cousin's points and trophy case,
+  // and syncs across devices in shared mode.
+  function renderParents() {
+    const frag = document.createElement("div");
+    const head = document.createElement("div");
+    head.innerHTML = `<h2 class="view-title">Parent Award Center 🎖️</h2>
+      <p class="view-sub">Grown-ups: pick a cousin, then tap to hand out points, kudos &amp; badges.</p>`;
+    frag.appendChild(head);
+
+    const me = targetCamper();
+    if (!me) { view.replaceChildren(frag); return; }
+
+    // --- Who am I awarding? (target picker) --------------------------------
+    const picker = document.createElement("div");
+    picker.className = "target-picker";
+    CAMPERS.forEach((c) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "target-pick" + (c.id === me.id ? " active" : "");
+      b.style.setProperty("--cc", c.color);
+      b.innerHTML = `<span class="tp-emoji">${c.emoji}</span><span class="tp-name">${escapeHtml(c.name)}</span><span class="tp-pts">⭐ ${pointsFor(c.id)}</span>`;
+      b.addEventListener("click", () => setTarget(c.id));
+      picker.appendChild(b);
+    });
+    frag.appendChild(picker);
+
+    // --- Selected camper banner -------------------------------------------
+    const banner = document.createElement("div");
+    banner.className = "award-banner";
+    banner.style.setProperty("--cc", me.color);
+    banner.innerHTML = `
+      <div class="ab-avatar">${me.emoji}</div>
+      <div class="ab-info">
+        <div class="ab-name">Awarding <b>${escapeHtml(me.name)}</b></div>
+        <div class="ab-stats">
+          <span><b>${pointsFor(me.id)}</b> points</span>
+          <span><b>${kudosCountFor(me.id)}</b> kudos</span>
+          <span><b>${parentBadgesFor(me.id).length}</b> badges</span>
+        </div>
+      </div>`;
+    frag.appendChild(banner);
+
+    // --- Kudos board -------------------------------------------------------
+    const kudosWrap = document.createElement("div");
+    kudosWrap.innerHTML = `<h3 class="section-title">🙌 Give Kudos</h3>
+      <p class="section-note">Tap a card to award it to ${escapeHtml(me.name)}.</p>`;
+    const kGrid = document.createElement("div");
+    kGrid.className = "kudos-grid";
+    KUDOS.forEach((k) => {
+      const tile = document.createElement("button");
+      tile.type = "button";
+      tile.className = "kudos-tile";
+      tile.innerHTML = `
+        <div class="kt-emoji">${k.emoji}</div>
+        <div class="kt-label">${escapeHtml(k.label)}</div>
+        <div class="kt-desc">${escapeHtml(k.desc)}</div>
+        <div class="kt-pts">+${k.points}</div>`;
+      tile.addEventListener("click", () => giveKudos(k.id));
+      kGrid.appendChild(tile);
+    });
+    kudosWrap.appendChild(kGrid);
+    frag.appendChild(kudosWrap);
+
+    // --- Bonus points ------------------------------------------------------
+    const bonusWrap = document.createElement("div");
+    bonusWrap.innerHTML = `<h3 class="section-title">➕ Bonus Points</h3>
+      <p class="section-note">Add a custom amount with an optional note.</p>`;
+    const bonusCard = document.createElement("div");
+    bonusCard.className = "bonus-card";
+    const noteInput = document.createElement("input");
+    noteInput.type = "text";
+    noteInput.className = "bonus-note";
+    noteInput.placeholder = "What's it for? (optional)";
+    noteInput.maxLength = 60;
+    const quickRow = document.createElement("div");
+    quickRow.className = "bonus-quick";
+    BONUS_QUICK.forEach((n) => {
+      const qb = document.createElement("button");
+      qb.type = "button";
+      qb.className = "bonus-btn";
+      qb.textContent = `+${n}`;
+      qb.addEventListener("click", () => { giveBonus(n, noteInput.value); noteInput.value = ""; });
+      quickRow.appendChild(qb);
+    });
+    const customRow = document.createElement("div");
+    customRow.className = "bonus-custom";
+    const amtInput = document.createElement("input");
+    amtInput.type = "number";
+    amtInput.className = "bonus-amt";
+    amtInput.placeholder = "Custom";
+    amtInput.step = "1";
+    const giveBtn = document.createElement("button");
+    giveBtn.type = "button";
+    giveBtn.className = "btn";
+    giveBtn.textContent = "Give";
+    giveBtn.addEventListener("click", () => {
+      giveBonus(amtInput.value, noteInput.value);
+      amtInput.value = ""; noteInput.value = "";
+    });
+    customRow.append(amtInput, giveBtn);
+    bonusCard.append(noteInput, quickRow, customRow);
+    bonusWrap.appendChild(bonusCard);
+    frag.appendChild(bonusWrap);
+
+    // --- Special badges ----------------------------------------------------
+    const badgeWrap = document.createElement("div");
+    badgeWrap.innerHTML = `<h3 class="section-title">🏅 Special Badges</h3>
+      <p class="section-note">Tap to grant a one-of-a-kind honor; tap again to take it back.</p>`;
+    const pbGrid = document.createElement("div");
+    pbGrid.className = "trophy-grid";
+    PARENT_BADGES.forEach((b) => {
+      const got = hasParentBadge(me.id, b.id);
+      const t = document.createElement("button");
+      t.type = "button";
+      t.className = "trophy pb-toggle" + (got ? " got" : " locked");
+      t.innerHTML = `
+        <div class="tr-emoji">${got ? b.emoji : "➕"}</div>
+        <div class="tr-label">${escapeHtml(b.label)}</div>
+        <div class="tr-hint">${got ? "Granted — tap to remove" : escapeHtml(b.desc)}</div>`;
+      t.addEventListener("click", () => toggleParentBadge(b.id));
+      pbGrid.appendChild(t);
+    });
+    badgeWrap.appendChild(pbGrid);
+    frag.appendChild(badgeWrap);
+
+    // --- Recent recognition feed ------------------------------------------
+    const feedWrap = document.createElement("div");
+    feedWrap.innerHTML = `<h3 class="section-title">🧾 ${escapeHtml(me.name)}'s Recent Awards</h3>`;
+    const feed = awardsFor(me.id).slice().reverse();
+    if (feed.length === 0) {
+      feedWrap.innerHTML += `<p class="section-note">No awards yet — tap a kudos card above to start! 🌟</p>`;
+    } else {
+      const list = document.createElement("div");
+      list.className = "award-feed";
+      feed.forEach((a) => {
+        const row = document.createElement("div");
+        row.className = "feed-row";
+        const pts = a.points ? `<span class="fr-pts ${a.points < 0 ? "neg" : ""}">${a.points > 0 ? "+" : ""}${a.points}</span>` : "";
+        row.innerHTML = `
+          <div class="fr-emoji">${a.emoji}</div>
+          <div class="fr-body">
+            <div class="fr-label">${escapeHtml(a.label)}${a.note ? ` — ${escapeHtml(a.note)}` : ""}</div>
+            <div class="fr-time">${timeAgo(a.ts)}</div>
+          </div>
+          ${pts}
+          <button class="fr-undo" type="button" aria-label="Remove award">✕</button>`;
+        row.querySelector(".fr-undo").addEventListener("click", () => undoAward(me.id, a.id));
+        list.appendChild(row);
+      });
+      feedWrap.appendChild(list);
+    }
+    frag.appendChild(feedWrap);
+
+    view.replaceChildren(frag);
+  }
+
   // ---- AWARDS view --------------------------------------------------------
   // Collect, don't compete: every cousin works toward their own badges,
   // claims one unique prize, and earns an Awards Day certificate.
@@ -429,6 +695,7 @@
 
     const me = camperById(state.me);
     const myBadges = badgesEarned(state.me);
+    const myParentBadges = parentBadgesFor(state.me);
     const myReward = claimOf(state.me);
 
     // --- Camp Card: this camper's personal stats ---------------------------
@@ -442,8 +709,8 @@
         <div class="cc-sub">Cousin Camp Time Traveler</div>
         <div class="cc-stats">
           <div class="cc-stat"><b>${balanceFor(state.me)}</b><span>points to spend</span></div>
-          <div class="cc-stat"><b>${completedCount(state.me)}</b><span>activities</span></div>
-          <div class="cc-stat"><b>${myBadges.length}</b><span>badges</span></div>
+          <div class="cc-stat"><b>${kudosCountFor(state.me)}</b><span>kudos</span></div>
+          <div class="cc-stat"><b>${myBadges.length + myParentBadges.length}</b><span>badges</span></div>
         </div>
       </div>`;
     frag.appendChild(card);
@@ -504,6 +771,26 @@
     trophy.appendChild(tcGrid);
     frag.appendChild(trophy);
 
+    // --- Special honors handed out by grown-ups ----------------------------
+    if (myParentBadges.length) {
+      const honors = document.createElement("div");
+      honors.innerHTML = `<h3 class="section-title">🎖️ Special Honors</h3>
+        <p class="section-note">Awarded to ${escapeHtml(me.name)} by Mimi &amp; the grown-ups.</p>`;
+      const hGrid = document.createElement("div");
+      hGrid.className = "trophy-grid";
+      myParentBadges.forEach((b) => {
+        const t = document.createElement("div");
+        t.className = "trophy got";
+        t.innerHTML = `
+          <div class="tr-emoji">${b.emoji}</div>
+          <div class="tr-label">${escapeHtml(b.label)}</div>
+          <div class="tr-hint">${escapeHtml(b.desc)}</div>`;
+        hGrid.appendChild(t);
+      });
+      honors.appendChild(hGrid);
+      frag.appendChild(honors);
+    }
+
     // --- Awards Day certificate --------------------------------------------
     const certWrap = document.createElement("div");
     certWrap.innerHTML = `<h3 class="section-title">📜 Awards Day</h3>
@@ -529,7 +816,7 @@
       row.innerHTML = `
         <div class="lb-avatar" style="background:${c.color}22">${c.emoji}</div>
         <div class="ros-name">${escapeHtml(c.name)}
-          <small>${badgesEarned(c.id).length} badges · ${r ? r.emoji + " " + escapeHtml(r.name) : "no prize yet"}</small></div>
+          <small>${badgesEarned(c.id).length + parentBadgesFor(c.id).length} badges · ${r ? r.emoji + " " + escapeHtml(r.name) : "no prize yet"}</small></div>
         <div class="ros-pts">⭐ ${pointsFor(c.id)}</div>`;
       row.addEventListener("click", () => {
         state.me = c.id; save(LS.me, c.id); updateWhoami(); render();
@@ -543,7 +830,7 @@
 
   // Build a printable certificate card with a fun superlative.
   function buildCertificate(camper) {
-    const badges = badgesEarned(camper.id);
+    const badgeCount = badgesEarned(camper.id).length + parentBadgesFor(camper.id).length;
     const reward = claimOf(camper.id);
     const superl = pickSuperlative(camper.id);
     const cert = document.createElement("div");
@@ -556,7 +843,7 @@
       <p class="cert-blurb">${escapeHtml(superl.blurb)}</p>
       <div class="cert-stats">
         <span>🎯 ${completedCount(camper.id)} activities</span>
-        <span>🏅 ${badges.length} badges</span>
+        <span>🏅 ${badgeCount} badges</span>
         <span>⭐ ${pointsFor(camper.id)} points</span>
         ${reward ? `<span>${reward.emoji} ${escapeHtml(reward.name)}</span>` : ""}
       </div>
@@ -626,6 +913,7 @@
     today: renderToday,
     schedule: renderSchedule,
     photos: renderPhotos,
+    kudos: renderParents,
     awards: renderAwards,
   };
 
@@ -653,6 +941,18 @@
   });
 
   // ---- Utils --------------------------------------------------------------
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+  // Short "time ago" label for the award feed.
+  function timeAgo(ts) {
+    const s = Math.max(0, Math.round((Date.now() - ts) / 1000));
+    if (s < 60) return "just now";
+    const m = Math.round(s / 60);
+    if (m < 60) return `${m} min ago`;
+    const h = Math.round(m / 60);
+    if (h < 24) return `${h} hr ago`;
+    const d = Math.round(h / 24);
+    return `${d} day${d > 1 ? "s" : ""} ago`;
+  }
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, (c) =>
       ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])
