@@ -531,6 +531,86 @@
     },
   };
 
+  // ---- Pull to refresh ----------------------------------------------------
+  // A custom pull-down gesture, since standalone (home-screen) PWAs have no
+  // browser chrome and therefore no built-in pull-to-refresh. Only engages
+  // when the page is scrolled to the very top and the swipe is mostly vertical,
+  // so horizontal scrollers (face rows, prize tiles) and taps still work.
+  function initPullToRefresh(onRefresh) {
+    if (!("ontouchstart" in window)) return;        // touch devices only
+    const refresh = typeof onRefresh === "function" ? onRefresh : () => location.reload();
+    const THRESHOLD = 70;   // px of pull needed to trigger
+    const MAX = 110;        // max visual travel
+    const DAMP = 0.5;       // rubber-band factor
+
+    const ind = document.createElement("div");
+    ind.className = "ptr";
+    ind.innerHTML = `<div class="ptr-circle"><span class="ptr-icon">↻</span></div>`;
+    document.body.appendChild(ind);
+    const icon = ind.querySelector(".ptr-icon");
+
+    const atTop = () => (window.scrollY || document.documentElement.scrollTop || 0) <= 0;
+    let startX = 0, startY = 0, active = false, decided = false, committed = false,
+        ready = false, refreshing = false;
+
+    const place = (pull) => {
+      ind.style.transform = `translateY(${pull}px)`;
+      ind.style.opacity = Math.min(pull / THRESHOLD, 1);
+      icon.style.transform = `rotate(${pull * 2.6}deg)`;
+    };
+    const snapBack = () => {
+      ind.style.transition = "transform .25s ease, opacity .25s ease";
+      ind.style.transform = "translateY(0)";
+      ind.style.opacity = "0";
+      ind.classList.remove("ready");
+    };
+
+    window.addEventListener("touchstart", (e) => {
+      if (refreshing || e.touches.length !== 1 || !atTop()) { active = false; return; }
+      startX = e.touches[0].clientX; startY = e.touches[0].clientY;
+      active = true; decided = false; committed = false; ready = false;
+      ind.style.transition = "none";
+    }, { passive: true });
+
+    window.addEventListener("touchmove", (e) => {
+      if (!active || refreshing) return;
+      const dx = e.touches[0].clientX - startX;
+      const dy = e.touches[0].clientY - startY;
+      if (!decided) {
+        if (Math.abs(dx) > 8 || Math.abs(dy) > 8) {
+          decided = true;
+          committed = dy > 0 && dy > Math.abs(dx) && atTop();   // mostly-vertical pull at top
+          if (!committed) active = false;
+        }
+        if (!committed) return;
+      }
+      if (!atTop()) { active = false; snapBack(); return; }
+      e.preventDefault();                                       // stop native overscroll
+      const pull = Math.min(dy * DAMP, MAX);
+      place(pull);
+      ready = pull >= THRESHOLD;
+      ind.classList.toggle("ready", ready);
+    }, { passive: false });
+
+    const end = () => {
+      if (!committed || refreshing) { active = false; return; }
+      active = false;
+      ind.style.transition = "transform .25s ease, opacity .25s ease";
+      if (ready) {
+        refreshing = true;
+        icon.style.transform = "";
+        ind.classList.add("spin");
+        ind.style.transform = "translateY(58px)";
+        ind.style.opacity = "1";
+        setTimeout(refresh, 450);                               // let the spinner show
+      } else {
+        snapBack();
+      }
+    };
+    window.addEventListener("touchend", end, { passive: true });
+    window.addEventListener("touchcancel", end, { passive: true });
+  }
+
   // ---- Public surface -----------------------------------------------------
   window.CampCore = {
     data: { CAMPERS, SCHEDULE, STORE, KUDOS, BONUS_QUICK, PARENT_BADGES, PHOTO_ALBUM_URL },
@@ -549,5 +629,10 @@
     allParentNames, currentParent, ownKidIds, isOwnKid, setParent, clearParent,
     // formatting & utils
     todayISO, fmtDow, dayNum, fmtLong, toast, escapeHtml, camperFace, uid, timeAgo,
+    initPullToRefresh,
   };
+
+  // Both apps get pull-to-refresh automatically (reloads the page, which
+  // reconnects the shared camp and redraws everything).
+  initPullToRefresh();
 })();
