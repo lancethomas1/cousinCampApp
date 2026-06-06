@@ -117,8 +117,8 @@
 
     // --- Who am I awarding? (target picker) --------------------------------
     const pickerHead = document.createElement("div");
-    pickerHead.innerHTML = `<h2 class="view-title">Give Awards 🎖️</h2>
-      <p class="view-sub">Pick a cousin, then tap to hand out points, kudos &amp; badges.</p>`;
+    pickerHead.innerHTML = `<h2 class="view-title">Mission Control 🎖️</h2>
+      <p class="view-sub">Power the time machine — pick a cousin, then hand out points, kudos &amp; badges.</p>`;
     frag.appendChild(pickerHead);
 
     const picker = document.createElement("div");

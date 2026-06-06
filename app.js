@@ -131,8 +131,8 @@
     const url = (PHOTO_ALBUM_URL || "").trim();
     const frag = document.createElement("div");
     const head = document.createElement("div");
-    head.innerHTML = `<h2 class="view-title">Camp Photos 📸</h2>
-      <p class="view-sub">All our memories in one shared album.</p>`;
+    head.innerHTML = `<h2 class="view-title">Snapshots in Time 📸</h2>
+      <p class="view-sub">Every moment from our trip through the eras, in one shared album.</p>`;
     frag.appendChild(head);
 
     const card = document.createElement("div");
@@ -140,8 +140,8 @@
     if (url) {
       card.innerHTML = `
         <div class="album-emoji">🖼️</div>
-        <h3>Cousin Camp Shared Album</h3>
-        <p>Add your pictures and see everyone else's in our shared Google Photos album.</p>`;
+        <h3>Cousin Camp Time Capsule</h3>
+        <p>Add your snapshots and relive everyone's moments from across the timeline in our shared Google Photos album.</p>`;
       const a = document.createElement("a");
       a.className = "btn album-btn";
       a.href = url; a.target = "_blank"; a.rel = "noopener";
@@ -154,8 +154,8 @@
     } else {
       card.innerHTML = `
         <div class="album-emoji">📷</div>
-        <h3>Shared album coming soon</h3>
-        <p>Mimi will add the Google Photos album link here so everyone can share pictures.</p>`;
+        <h3>Time capsule coming soon</h3>
+        <p>Mimi will add the Google Photos album link here so the whole crew can share snapshots from the journey.</p>`;
     }
     frag.appendChild(card);
     view.replaceChildren(frag);
@@ -183,7 +183,7 @@
     const frag = document.createElement("div");
     const head = document.createElement("div");
     head.innerHTML = `<h2 class="view-title">Camp Awards 🏆</h2>
-      <p class="view-sub">Tap a prize to claim it · tap a cousin to see their trophies.</p>`;
+      <p class="view-sub">Tap a prize to claim it · tap a traveler to see their trophies.</p>`;
     frag.appendChild(head);
 
     // --- Camp Store: tap a prize, then tap who's claiming it ----------------
@@ -322,6 +322,63 @@
     return wrap;
   }
 
+  // ---- CHEERS view (a friendly, non-competitive crew board) ---------------
+  // A "leaderboard" that doesn't rank anyone: it celebrates the whole crew's
+  // progress together, then shows each traveler's stats side by side. Campers
+  // are listed alphabetically on purpose — everybody's a winner here.
+  function renderCheers() {
+    const frag = document.createElement("div");
+    const head = document.createElement("div");
+    head.innerHTML = `<h2 class="view-title">Crew Cheers 🎉</h2>
+      <p class="view-sub">Cheering on every traveler across the timeline — the whole crew counts!</p>`;
+    frag.appendChild(head);
+
+    // Crew totals — what we've all done together this week.
+    const crewPoints = CAMPERS.reduce((s, c) => s + pointsFor(c.id), 0);
+    const crewBadges = CAMPERS.reduce((s, c) => s + badgesEarned(c.id).length + parentBadgesFor(c.id).length, 0);
+    const crewKudos = CAMPERS.reduce((s, c) => s + kudosCountFor(c.id), 0);
+    const crewPrizes = CAMPERS.filter((c) => claimOf(c.id)).length;
+
+    const totals = document.createElement("div");
+    totals.className = "camp-card";
+    totals.innerHTML = `
+      <div class="cc-avatar">🚀</div>
+      <div class="cc-info">
+        <div class="cc-name">The Whole Crew</div>
+        <div class="cc-sub">${CAMPERS.length} time travelers, all in it together</div>
+        <div class="cc-stats">
+          <div class="cc-stat"><b>${crewPoints}</b><span>points earned</span></div>
+          <div class="cc-stat"><b>${crewBadges}</b><span>badges</span></div>
+          <div class="cc-stat"><b>${crewKudos}</b><span>kudos</span></div>
+          <div class="cc-stat"><b>${crewPrizes}</b><span>prizes</span></div>
+        </div>
+      </div>`;
+    frag.appendChild(totals);
+
+    // Everyone's board — alphabetical, so it never reads as a ranking.
+    const board = document.createElement("div");
+    board.innerHTML = `<h3 class="section-title">🌟 Our Time Travelers</h3>
+      <p class="section-note">Tap a traveler to cheer them on and spotlight their stats.</p>`;
+    [...CAMPERS].sort((a, b) => a.name.localeCompare(b.name)).forEach((c) => {
+      const badges = badgesEarned(c.id).length + parentBadgesFor(c.id).length;
+      const row = document.createElement("button");
+      row.type = "button";
+      row.className = "roster-row" + (c.id === state.me ? " me" : "");
+      row.innerHTML = `
+        <div class="lb-avatar" style="background:${c.color}22">${c.emoji}</div>
+        <div class="ros-name">${escapeHtml(c.name)}
+          <small>${badges} badges · ${kudosCountFor(c.id)} kudos</small></div>
+        <div class="ros-pts">⭐ ${pointsFor(c.id)}</div>`;
+      row.addEventListener("click", () => {
+        state.me = c.id; save(LS.me, c.id); updateWhoami(); render();
+      });
+      board.appendChild(row);
+    });
+    frag.appendChild(board);
+
+    view.replaceChildren(frag);
+  }
+
   // Build a printable certificate card with a fun superlative.
   function buildCertificate(camper) {
     const badgeCount = badgesEarned(camper.id).length + parentBadgesFor(camper.id).length;
@@ -420,7 +477,7 @@
         save(LS.me, c.id);
         closeCamperModal();
         updateWhoami();
-        toast(`Welcome, ${c.name}! ${c.emoji}`);
+        toast(`Welcome aboard, ${c.name}! ${c.emoji}`);
         render();
       });
       camperGrid.appendChild(btn);
@@ -434,7 +491,7 @@
     const btn = document.getElementById("whoami");
     const me = camperById(state.me);
     btn.querySelector(".whoami-emoji").textContent = me ? me.emoji : "👋";
-    btn.querySelector(".whoami-name").textContent = me ? me.name : "Pick camper";
+    btn.querySelector(".whoami-name").textContent = me ? me.name : "Pick traveler";
   }
   document.getElementById("whoami").addEventListener("click", openCamperModal);
 
@@ -443,6 +500,7 @@
     today: renderToday,
     schedule: renderSchedule,
     photos: renderPhotos,
+    cheers: renderCheers,
     awards: renderAwards,
   };
 

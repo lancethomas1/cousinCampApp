@@ -16,8 +16,11 @@ The project ships as **two separate apps that share the same camp data**:
   - **📅 Today / 🗓️ Schedule** — each activity shows every cousin's face; a kid taps
     their **own face** to check in (tap again to undo), so the whole crew can share
     one iPad without switching profiles.
-  - **📸 Photos** — opens the camp's shared **Google Photos** album (set
-    `PHOTO_ALBUM_URL` in `data.js`).
+  - **📸 Photos** — *Snapshots in Time*. Opens the camp's shared **Google Photos**
+    album / time capsule (set `PHOTO_ALBUM_URL` in `data.js`).
+  - **🎉 Cheers** — *Crew Cheers*, a friendly, **non-competitive** crew board. Shows
+    the whole crew's combined progress, then every traveler's stats side by side
+    (listed alphabetically, never ranked) — everybody's a winner.
   - **🏆 Awards** — the Camp Store is a kiosk: tap a prize, then tap which cousin is
     claiming it (one prize each). Tap any cousin to see their trophy case (badges
     earned *and* parent-granted) and print their Awards Day certificate.
@@ -28,9 +31,10 @@ The project ships as **two separate apps that share the same camp data**:
     **except their own kids** — those are locked in the picker, so nobody can pad
     their own kids' scores. Grown-ups who aren't listed as a parent (Mimi, aunts,
     uncles) can award everyone.
-  - The **Award Center**: pick a cousin and tap to hand out **kudos cards**
-    (kindness, helping, good sport…), **bonus points** with a note, or **special
-    badges** (Camper of the Day, Mimi's Helper…), with a recent-recognition feed.
+  - **Mission Control** (the award center): pick a cousin and tap to hand out
+    **kudos cards** (kindness, helping, good sport…), **bonus points** with a note,
+    or **special badges** (Camper of the Day, Mimi's Helper…), with a
+    recent-recognition feed.
 
 If your site is hosted at `https://example.com/`, the parents' link is
 `https://example.com/parent.html`. Both apps read and write the **same** camp,
@@ -99,7 +103,7 @@ ISO `YYYY-MM-DD`.
 | `parent.html` | Grown-ups' app shell — the separate Award Center link |
 | `styles.css` | Shared theme, mobile-first layout, print styles |
 | `core.js` | Shared model — state, Firestore sync, persistence, points/awards |
-| `app.js` | Campers' views — Today, Schedule, Photos, Awards |
+| `app.js` | Campers' views — Today, Schedule, Photos, Cheers, Awards |
 | `parent.js` | Grown-ups' view — kudos, bonus points & special badges |
 | `data.js` | Camp schedule, campers, prizes, album link, kudos & badges (edit me!) |
 | `firebase-config.js` | Your Firebase project config (for shared mode) |
