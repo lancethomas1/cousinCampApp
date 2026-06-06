@@ -263,11 +263,14 @@
         const row = document.createElement("div");
         row.className = "feed-row";
         const pts = a.points ? `<span class="fr-pts ${a.points < 0 ? "neg" : ""}">${a.points > 0 ? "+" : ""}${a.points}</span>` : "";
+        // Who handed out this award: the grown-up's name for parent awards, or
+        // the cousin's for a cheer. Older awards predate tracking, so fall back.
+        const by = a.by || (a.type === "cheer" && a.from ? (camperById(a.from) || {}).name : "");
         row.innerHTML = `
           <div class="fr-emoji">${a.emoji}</div>
           <div class="fr-body">
             <div class="fr-label">${escapeHtml(a.label)}${a.note ? ` — ${escapeHtml(a.note)}` : ""}</div>
-            <div class="fr-time">${timeAgo(a.ts)}</div>
+            <div class="fr-time">${timeAgo(a.ts)}${by ? ` · by ${escapeHtml(by)}` : ""}</div>
           </div>
           ${pts}
           <button class="fr-undo" type="button" aria-label="Remove award">✕</button>`;
