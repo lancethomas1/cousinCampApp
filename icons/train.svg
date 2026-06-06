@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
+  <defs>
+    <linearGradient id="smoke" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f4f7f8"/>
+      <stop offset="1" stop-color="#aebcc2"/>
+    </linearGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3a322b"/>
+      <stop offset="1" stop-color="#1c1813"/>
+    </linearGradient>
+    <radialGradient id="lamp" cx="50%" cy="42%" r="60%">
+      <stop offset="0" stop-color="#fff1c4"/>
+      <stop offset="1" stop-color="#f0a92e"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Smoke: dark steam plume billowing up and back, with sharp wisps -->
+  <g fill="#39332c" opacity=".92">
+    <circle cx="38" cy="35" r="7"/><circle cx="45" cy="27" r="9"/>
+    <circle cx="57" cy="20" r="11"/><circle cx="71" cy="15" r="12"/>
+    <circle cx="86" cy="13" r="11"/><circle cx="96" cy="20" r="7"/>
+    <polygon points="92,11 110,3 98,19"/><polygon points="85,5 101,2 90,12" opacity=".8"/>
+  </g>
+  <g fill="#7b7368" opacity=".5">
+    <circle cx="54" cy="16" r="6"/><circle cx="69" cy="11" r="6"/><circle cx="84" cy="10" r="5"/>
+  </g>
+
+  <!-- Driving gear -->
+  <g stroke="#d4a52e" stroke-width="3">
+    <circle cx="30" cy="97" r="8" fill="#1c1813"/>
+    <circle cx="55" cy="94" r="15" fill="#1c1813"/>
+    <circle cx="90" cy="94" r="15" fill="#1c1813"/>
+  </g>
+  <g stroke="#6b5f4d" stroke-width="2" stroke-linecap="round">
+    <line x1="55" y1="83" x2="55" y2="105"/><line x1="44" y1="94" x2="66" y2="94"/>
+    <line x1="47" y1="86" x2="63" y2="102"/><line x1="47" y1="102" x2="63" y2="86"/>
+    <line x1="90" y1="83" x2="90" y2="105"/><line x1="79" y1="94" x2="101" y2="94"/>
+    <line x1="82" y1="86" x2="98" y2="102"/><line x1="82" y1="102" x2="98" y2="86"/>
+  </g>
+  <rect x="51" y="91.5" width="43" height="5" rx="2.5" fill="#c2703d"/>
+  <g fill="#d4a52e"><circle cx="55" cy="94" r="4"/><circle cx="90" cy="94" r="4"/><circle cx="30" cy="97" r="3"/></g>
+  <g fill="#1c1813"><circle cx="55" cy="94" r="2"/><circle cx="90" cy="94" r="2"/></g>
+
+  <!-- Footplate + cowcatcher (pilot) -->
+  <polygon points="20,86 8,99 22,99 24,86" fill="#1c1813"/>
+  <rect x="14" y="84" width="102" height="8" rx="3" fill="url(#body)"/>
+  <rect x="14" y="84.5" width="102" height="2.4" rx="1.2" fill="#c2703d" opacity=".85"/>
+
+  <!-- Boiler -->
+  <rect x="20" y="54" width="72" height="32" rx="16" fill="url(#body)"/>
+  <g stroke="#c2703d" stroke-width="2" opacity=".5"><line x1="49" y1="55" x2="49" y2="85"/><line x1="71" y1="55" x2="71" y2="85"/></g>
+  <circle cx="24" cy="65" r="5" fill="url(#lamp)" stroke="#d4a52e" stroke-width="1.5"/>
+
+  <!-- Funnel + steam dome -->
+  <polygon points="29,54 46,54 49,40 26,40" fill="#1c1813"/>
+  <rect x="25" y="37" width="25" height="4.5" rx="2.2" fill="#d4a52e"/>
+  <path d="M55 54a9 9 0 0 1 18 0z" fill="#1c1813"/>
+  <rect x="55" y="51.5" width="18" height="3" rx="1.5" fill="#d4a52e"/>
+
+  <!-- Cab -->
+  <rect x="86" y="46" width="30" height="40" rx="5" fill="url(#body)"/>
+  <rect x="82" y="42" width="38" height="7" rx="3" fill="#1c1813"/>
+  <rect x="92" y="54" width="18" height="16" rx="3" fill="#6fb4d6"/>
+  <rect x="92" y="54" width="18" height="16" rx="3" fill="none" stroke="#d4a52e" stroke-width="1.5"/>
+</svg>

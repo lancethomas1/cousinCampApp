@@ -77,7 +77,8 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
   gap: 12px;
 }
 .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
-.brand-mark { font-size: 34px; line-height: 1; filter: drop-shadow(0 2px 2px rgba(0,0,0,.2)); }
+.brand-mark { font-size: 34px; line-height: 1; filter: drop-shadow(0 2px 3px rgba(0,0,0,.28)); display: flex; }
+.brand-mark img { display: block; width: 42px; height: 42px; }
 .brand-text h1 { font-size: 24px; font-weight: 800; letter-spacing: .3px; }
 .brand-text p { margin: 0; font-size: 13px; opacity: .92; font-weight: 700; }
 
@@ -170,13 +171,14 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
   overflow: hidden;
 }
 .hero::after {
-  content: "🚂";
+  content: "";
   position: absolute;
-  right: 2px;
-  bottom: -6px;
-  font-size: 84px;
-  opacity: .22;
-  transform: scaleX(-1) rotate(-4deg);
+  right: 6px;
+  bottom: 2px;
+  width: 108px;
+  height: 108px;
+  background: url("icons/train.svg") right bottom / contain no-repeat;
+  opacity: .6;
 }
 .hero .eyebrow { font-weight: 800; text-transform: uppercase; letter-spacing: 1px; font-size: 12px; opacity: .9; }
 .hero h2 { font-size: 28px; margin: 4px 0 6px; }
