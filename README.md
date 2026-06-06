@@ -16,9 +16,6 @@ placeholder activities ready for Mimi to fill in (edit `data.js`).
 | 🕰️ Campers' app | the cousins | https://lancethomas1.github.io/cousinCampApp/ |
 | 🎖️ Grown-ups' app | the parents | https://lancethomas1.github.io/cousinCampApp/parent.html |
 
-The campers' app also has a **🎖️ Grown-ups: open the Award app** link at the
-bottom of every screen, so a grown-up can hop over without typing the URL.
-
 The project ships as **two separate apps that share the same camp data**:
 
 - **Campers' app — [`index.html`](./index.html)** (the link the kids use, built for

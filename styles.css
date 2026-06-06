@@ -100,30 +100,6 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
 }
 .view-sub { color: var(--ink-soft); font-weight: 700; margin: 0 0 18px; }
 
-/* ---------- Grown-ups link (footer of every campers' view) ---------- */
-.app-footer {
-  margin: 26px 0 4px;
-  padding-top: 18px;
-  border-top: 1px dashed rgba(58,46,37,.15);
-  text-align: center;
-}
-.grownups-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  text-decoration: none;
-  background: var(--cream);
-  border: 1.5px solid rgba(47,170,106,.35);
-  color: var(--ink-soft);
-  font-weight: 800;
-  font-size: 13px;
-  padding: 9px 16px;
-  border-radius: 999px;
-  box-shadow: var(--shadow);
-}
-.grownups-link:active { transform: scale(.97); }
-.grownups-link .gl-emoji { font-size: 16px; }
-
 /* ---------- Pull to refresh indicator ---------- */
 .ptr {
   position: fixed;
