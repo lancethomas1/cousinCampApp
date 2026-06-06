@@ -122,4 +122,6 @@ ISO `YYYY-MM-DD`.
 | `data.js` | Camp schedule, campers, prizes, album link, kudos & badges (edit me!) |
 | `firebase-config.js` | Your Firebase project config (for shared mode) |
 | `firestore.rules` | Security rules for the shared database |
+| `icons/` | App icons (clock for campers, medal for grown-ups) — favicons, iOS home-screen, PWA |
+| `site.webmanifest` / `parent.webmanifest` | PWA manifests so each app installs to the home screen with its own icon |
 | `SETUP.md` | How to turn on the shared camp |

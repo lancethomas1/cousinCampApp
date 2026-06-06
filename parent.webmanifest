@@ -1,0 +1,15 @@
+{
+  "name": "Cousin Camp · Grown-Ups",
+  "short_name": "Camp Awards",
+  "description": "Cousin Camp grown-ups' award app — kudos, bonus points & badges.",
+  "start_url": "./parent.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#effbf4",
+  "theme_color": "#2faa6a",
+  "icons": [
+    { "src": "icons/parent-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/parent-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
