@@ -124,6 +124,37 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
 .grownups-link:active { transform: scale(.97); }
 .grownups-link .gl-emoji { font-size: 16px; }
 
+/* ---------- Pull to refresh indicator ---------- */
+.ptr {
+  position: fixed;
+  top: calc(env(safe-area-inset-top) - 46px);
+  left: 0;
+  right: 0;
+  display: grid;
+  place-items: center;
+  z-index: 60;
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+.ptr-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--cream);
+  border: 1px solid rgba(58,46,37,.08);
+  box-shadow: var(--shadow);
+  display: grid;
+  place-items: center;
+}
+.ptr-icon { font-size: 21px; line-height: 1; color: var(--sun-dark); }
+.ptr.ready .ptr-circle { background: var(--sun); border-color: transparent; }
+.ptr.ready .ptr-icon { color: #fff; }
+.parent-app .ptr-icon { color: var(--grass); }
+.parent-app .ptr.ready .ptr-circle { background: var(--grass); }
+.ptr.spin .ptr-icon { animation: ptr-spin .7s linear infinite; }
+@keyframes ptr-spin { to { transform: rotate(360deg); } }
+
 /* ---------- Cards ---------- */
 .card {
   background: var(--cream);
