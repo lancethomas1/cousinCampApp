@@ -25,6 +25,15 @@ const CAMPERS = [
   { id: "noel",    name: "Noel",    emoji: "🐥", color: "#00b894", parents: "Jason & Sera" },
 ];
 
+// Extra grown-ups who help run camp but have no kids of their own here
+// (grandparents, aunts, uncles). They show up in the parents' app sign-in and
+// can award points, kudos, and badges to ANY cousin. `name` is the first name
+// they sign in with; `nickname` is what the cousins call them.
+const GROWNUPS = [
+  { name: "Carole", nickname: "Mimi"  },
+  { name: "Keith",  nickname: "Papaw" },
+];
+
 // The camp schedule. Camp runs five days, June 22–26, 2026.
 // Monday & Tuesday are filled in with Mimi's real plans; Wed–Fri are still
 // neutral placeholder slots. Edit the titles, times, locations, points, and
@@ -178,4 +187,4 @@ const PARENT_BADGES = [
 ];
 
 // Make available to app.js
-window.CAMP_DATA = { CAMPERS, SCHEDULE, STORE, PHOTO_ALBUM_URL, KUDOS, BONUS_QUICK, PARENT_BADGES };
+window.CAMP_DATA = { CAMPERS, GROWNUPS, SCHEDULE, STORE, PHOTO_ALBUM_URL, KUDOS, BONUS_QUICK, PARENT_BADGES };
