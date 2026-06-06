@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  const { CAMPERS, SCHEDULE } = window.CAMP_DATA;
+  const { CAMPERS, SCHEDULE, STORE } = window.CAMP_DATA;
   const view = document.getElementById("view");
 
   // ---- Storage helpers ----------------------------------------------------
@@ -14,6 +14,7 @@
     me: "cc.me",                 // current camper id
     done: "cc.done",             // { camperId: { activityId: true } }
     photos: "cc.photos",         // [ { id, date, src, camper } ]
+    claims: "cc.claims",         // { rewardId: camperId } — one prize per camper
   };
   const load = (k, fallback) => {
     try { return JSON.parse(localStorage.getItem(k)) ?? fallback; }
@@ -26,6 +27,7 @@
     me: load(LS.me, null),
     done: load(LS.done, {}),
     photos: load(LS.photos, []),
+    claims: load(LS.claims, {}),
     route: "today",
     photoFilter: "all",
   };
@@ -46,6 +48,33 @@
   function completedCount(camperId) {
     const dm = doneMap(camperId);
     return allActivities().filter((a) => dm[a.id]).length;
+  }
+  // True if the camper finished every activity on a given day.
+  function completedDay(camperId, date) {
+    const day = SCHEDULE.find((d) => d.date === date);
+    return !!day && day.activities.every((a) => isDone(camperId, a.id));
+  }
+  function anyFullDay(camperId) {
+    return SCHEDULE.some((d) => completedDay(camperId, d.date));
+  }
+
+  // ---- Camp Store / prize claims -----------------------------------------
+  const rewardById = (id) => STORE.find((r) => r.id === id) || null;
+  // Which camper (if any) has claimed a given reward.
+  const claimedBy = (rewardId) => state.claims[rewardId] || null;
+  // Which reward (if any) a camper currently holds. One prize per camper.
+  function claimOf(camperId) {
+    const id = Object.keys(state.claims).find((rid) => state.claims[rid] === camperId);
+    return id ? rewardById(id) : null;
+  }
+  // Points already spent on the camper's claimed prize.
+  function spentBy(camperId) {
+    const r = claimOf(camperId);
+    return r ? r.cost : 0;
+  }
+  // Spendable balance = points earned minus the prize they're holding.
+  function balanceFor(camperId) {
+    return pointsFor(camperId) - spentBy(camperId);
   }
 
   // ---- Date helpers -------------------------------------------------------
@@ -292,82 +321,224 @@
   }
 
   // ---- AWARDS view --------------------------------------------------------
+  // Collect, don't compete: every cousin works toward their own badges,
+  // claims one unique prize, and earns an Awards Day certificate.
+  // Each badge has a `hint` shown while it's still locked.
   const BADGES = [
-    { id: "firstday",  emoji: "🌅", label: "Early Bird", test: (c) => isDone(c, "d2-a1") },
-    { id: "baker",     emoji: "🍪", label: "Master Baker", test: (c) => isDone(c, "d3-a1") },
-    { id: "talent",    emoji: "⭐", label: "Showstopper", test: (c) => isDone(c, "d6-a4") },
-    { id: "explorer",  emoji: "🧭", label: "Explorer", test: (c) => isDone(c, "d1-a3") && isDone(c, "d2-a4") },
-    { id: "halfway",   emoji: "🎯", label: "Halfway Hero", test: (c) => completedCount(c) >= 14 },
-    { id: "champion",  emoji: "👑", label: "Camp Champion", test: (c) => completedCount(c) >= 24 },
+    { id: "earlybird", emoji: "🌅", label: "Early Bird",    hint: "Go on the Sunrise Nature Walk",            test: (c) => isDone(c, "d2-a1") },
+    { id: "baker",     emoji: "🍪", label: "Master Baker",   hint: "Finish Mimi's Cookie Workshop",            test: (c) => isDone(c, "d3-a1") },
+    { id: "showstop",  emoji: "⭐", label: "Showstopper",    hint: "Perform in the Talent Show",               test: (c) => isDone(c, "d6-a4") },
+    { id: "explorer",  emoji: "🧭", label: "Explorer",       hint: "Do the Scavenger Hunt + Frog Pond",        test: (c) => isDone(c, "d1-a3") && isDone(c, "d2-a4") },
+    { id: "water",     emoji: "💦", label: "Water Warrior",  hint: "Complete every Water Day activity",        test: (c) => completedDay(c, "2026-06-09") },
+    { id: "nature",    emoji: "🦋", label: "Nature Lover",   hint: "Complete every Nature Day activity",       test: (c) => completedDay(c, "2026-06-07") },
+    { id: "crafty",    emoji: "🎨", label: "Crafty Camper",  hint: "Do Flag Painting, Nature Collage & Costumes", test: (c) => isDone(c, "d1-a2") && isDone(c, "d2-a3") && isDone(c, "d6-a2") },
+    { id: "campfire",  emoji: "🔥", label: "Campfire Kid",   hint: "Make s'mores at the Bonfire",              test: (c) => isDone(c, "d1-a4") },
+    { id: "olympian",  emoji: "🏅", label: "Olympian",       hint: "Compete in the Backyard Olympics",         test: (c) => isDone(c, "d5-a1") },
+    { id: "cardshark", emoji: "🃏", label: "Card Shark",     hint: "Play Card Games with Mimi",                test: (c) => isDone(c, "d5-a2") },
+    { id: "foodie",    emoji: "🍕", label: "Camp Foodie",    hint: "Enjoy Pancakes, Cupcakes & Pizza Night",   test: (c) => isDone(c, "d1-a1") && isDone(c, "d3-a2") && isDone(c, "d3-a4") },
+    { id: "dynamo",    emoji: "🌟", label: "Daily Dynamo",   hint: "Finish all 4 activities in any one day",   test: (c) => anyFullDay(c) },
+    { id: "halfway",   emoji: "🎯", label: "Halfway Hero",   hint: "Complete 14 activities",                   test: (c) => completedCount(c) >= 14 },
+    { id: "champion",  emoji: "👑", label: "Camp Champion",  hint: "Complete 24 activities",                   test: (c) => completedCount(c) >= 24 },
+    { id: "perfect",   emoji: "🎖️", label: "Perfect Camper", hint: "Complete every single activity",           test: (c) => completedCount(c) >= allActivities().length },
   ];
+  const badgesEarned = (camperId) => BADGES.filter((b) => b.test(camperId));
 
   function renderAwards() {
     const frag = document.createElement("div");
     const head = document.createElement("div");
     head.innerHTML = `<h2 class="view-title">Camp Awards 🏆</h2>
-      <p class="view-sub">Earn points by completing activities!</p>`;
+      <p class="view-sub">Everybody wins — collect badges, claim your prize!</p>`;
     frag.appendChild(head);
 
-    const ranked = CAMPERS
-      .map((c) => ({ camper: c, pts: pointsFor(c.id), done: completedCount(c.id) }))
-      .sort((a, b) => b.pts - a.pts || b.done - a.done);
-
-    // Podium (top 3) — only meaningful once someone has points.
-    if (ranked[0].pts > 0) {
-      const podium = document.createElement("div");
-      podium.className = "podium";
-      const order = [1, 0, 2]; // 2nd, 1st, 3rd visually
-      order.forEach((idx) => {
-        const r = ranked[idx];
-        if (!r) return;
-        const step = document.createElement("div");
-        step.className = `podium-step rank-${idx + 1}`;
-        step.innerHTML = `
-          <div class="podium-avatar" style="background:${r.camper.color}22">${r.camper.emoji}</div>
-          <div class="podium-name">${escapeHtml(r.camper.name)}</div>
-          <div class="podium-pts">${r.pts} pts</div>
-          <div class="podium-bar">${idx + 1}</div>
-        `;
-        podium.appendChild(step);
-      });
-      frag.appendChild(podium);
+    if (!state.me) {
+      const empty = document.createElement("div");
+      empty.className = "empty";
+      empty.innerHTML = `<div class="big">🏕️</div>
+        <h3>Pick your camper</h3>
+        <p>Choose who you are to start collecting badges and claim your prize.</p>`;
+      const btn = document.createElement("button");
+      btn.className = "btn";
+      btn.style.marginTop = "14px";
+      btn.textContent = "👋 Pick camper";
+      btn.addEventListener("click", openCamperModal);
+      empty.appendChild(btn);
+      frag.appendChild(empty);
+      view.replaceChildren(frag);
+      return;
     }
 
-    // Full leaderboard
-    ranked.forEach((r, i) => {
-      const row = document.createElement("div");
-      row.className = "leaderboard-row" + (r.camper.id === state.me ? " me" : "");
-      row.innerHTML = `
-        <div class="lb-rank">${i + 1}</div>
-        <div class="lb-avatar" style="background:${r.camper.color}22">${r.camper.emoji}</div>
-        <div class="lb-name">${escapeHtml(r.camper.name)} ${escapeHtml(r.camper.last)}${r.camper.id === state.me ? " <small>that's you!</small>" : `<small>age ${r.camper.age} · ${r.done} done</small>`}</div>
-        <div class="lb-pts">⭐ ${r.pts}</div>
-      `;
-      frag.appendChild(row);
+    const me = camperById(state.me);
+    const myBadges = badgesEarned(state.me);
+    const myReward = claimOf(state.me);
+
+    // --- Camp Card: this camper's personal stats ---------------------------
+    const card = document.createElement("div");
+    card.className = "camp-card";
+    card.style.setProperty("--cc", me.color);
+    card.innerHTML = `
+      <div class="cc-avatar">${me.emoji}</div>
+      <div class="cc-info">
+        <div class="cc-name">${escapeHtml(me.name)} ${escapeHtml(me.last)}</div>
+        <div class="cc-sub">Cousin Camp · age ${me.age}</div>
+        <div class="cc-stats">
+          <div class="cc-stat"><b>${balanceFor(state.me)}</b><span>points to spend</span></div>
+          <div class="cc-stat"><b>${completedCount(state.me)}</b><span>activities</span></div>
+          <div class="cc-stat"><b>${myBadges.length}</b><span>badges</span></div>
+        </div>
+      </div>`;
+    frag.appendChild(card);
+
+    // --- Camp Store: nine one-of-a-kind prizes -----------------------------
+    const storeSection = document.createElement("div");
+    storeSection.innerHTML = `<h3 class="section-title">🏪 Camp Store — Pick Your Prize</h3>
+      <p class="section-note">${myReward
+        ? `You claimed <b>${myReward.emoji} ${escapeHtml(myReward.name)}</b>. Tap it to switch.`
+        : `Each prize can be claimed by only one cousin. Spend your points to claim yours!`}</p>`;
+    const storeGrid = document.createElement("div");
+    storeGrid.className = "store-grid";
+    STORE.forEach((r) => {
+      const owner = claimedBy(r.id);
+      const ownerCamper = owner ? camperById(owner) : null;
+      const mine = owner === state.me;
+      const takenByOther = owner && !mine;
+      // Claiming swaps your one prize, so affordability is about total points.
+      const affordable = pointsFor(state.me) >= r.cost;
+
+      const tile = document.createElement("button");
+      tile.type = "button";
+      tile.className = "store-tile" + (mine ? " mine" : "") + (takenByOther ? " taken" : "");
+      tile.disabled = takenByOther;
+      tile.innerHTML = `
+        <div class="st-emoji">${r.emoji}</div>
+        <div class="st-name">${escapeHtml(r.name)}</div>
+        <div class="st-desc">${escapeHtml(r.desc)}</div>
+        <div class="st-foot">
+          ${takenByOther
+            ? `<span class="st-owner">${ownerCamper.emoji} ${escapeHtml(ownerCamper.name)}'s</span>`
+            : mine
+              ? `<span class="st-claimed">✓ Yours — tap to release</span>`
+              : `<span class="st-cost ${affordable ? "" : "short"}">⭐ ${r.cost}${affordable ? "" : " (need more)"}</span>`}
+        </div>`;
+      tile.addEventListener("click", () => mine ? releaseReward(r.id) : claimReward(r.id));
+      storeGrid.appendChild(tile);
     });
+    storeSection.appendChild(storeGrid);
+    frag.appendChild(storeSection);
 
-    // My badges
-    const badgeCard = document.createElement("div");
-    badgeCard.className = "card";
-    if (state.me) {
-      const me = camperById(state.me);
-      const earned = BADGES.map((b) => ({ ...b, got: b.test(state.me) }));
-      badgeCard.innerHTML = `<h3 style="margin-bottom:10px">${me.emoji} ${escapeHtml(me.name)}'s Badges</h3>`;
-      const row = document.createElement("div");
-      row.className = "badge-row";
-      earned.forEach((b) => {
-        const span = document.createElement("span");
-        span.className = "badge" + (b.got ? "" : " locked");
-        span.innerHTML = `${b.got ? b.emoji : "🔒"} ${escapeHtml(b.label)}`;
-        row.appendChild(span);
+    // --- Trophy Case: badges -----------------------------------------------
+    const trophy = document.createElement("div");
+    trophy.innerHTML = `<h3 class="section-title">🏆 ${escapeHtml(me.name)}'s Trophy Case</h3>
+      <p class="section-note">${myBadges.length} of ${BADGES.length} badges earned${myBadges.length === BADGES.length ? " — every one! 🎉" : ""}</p>`;
+    const tcGrid = document.createElement("div");
+    tcGrid.className = "trophy-grid";
+    BADGES.forEach((b) => {
+      const got = b.test(state.me);
+      const t = document.createElement("div");
+      t.className = "trophy" + (got ? " got" : " locked");
+      t.innerHTML = `
+        <div class="tr-emoji">${got ? b.emoji : "🔒"}</div>
+        <div class="tr-label">${escapeHtml(b.label)}</div>
+        <div class="tr-hint">${got ? "Earned!" : escapeHtml(b.hint)}</div>`;
+      tcGrid.appendChild(t);
+    });
+    trophy.appendChild(tcGrid);
+    frag.appendChild(trophy);
+
+    // --- Awards Day certificate --------------------------------------------
+    const certWrap = document.createElement("div");
+    certWrap.innerHTML = `<h3 class="section-title">📜 Awards Day</h3>
+      <p class="section-note">Mimi's official certificate — print it for the ceremony!</p>`;
+    certWrap.appendChild(buildCertificate(me));
+    const printBtn = document.createElement("button");
+    printBtn.className = "btn";
+    printBtn.style.marginTop = "12px";
+    printBtn.innerHTML = "🖨️ Print certificate";
+    printBtn.addEventListener("click", () => window.print());
+    certWrap.appendChild(printBtn);
+    frag.appendChild(certWrap);
+
+    // --- Camp family roster (non-competitive overview) ---------------------
+    const roster = document.createElement("div");
+    roster.innerHTML = `<h3 class="section-title">🧑‍🤝‍🧑 The Whole Camp</h3>
+      <p class="section-note">Tap a cousin to switch campers.</p>`;
+    CAMPERS.forEach((c) => {
+      const r = claimOf(c.id);
+      const row = document.createElement("button");
+      row.type = "button";
+      row.className = "roster-row" + (c.id === state.me ? " me" : "");
+      row.innerHTML = `
+        <div class="lb-avatar" style="background:${c.color}22">${c.emoji}</div>
+        <div class="ros-name">${escapeHtml(c.name)} ${escapeHtml(c.last)}
+          <small>${badgesEarned(c.id).length} badges · ${r ? r.emoji + " " + escapeHtml(r.name) : "no prize yet"}</small></div>
+        <div class="ros-pts">⭐ ${pointsFor(c.id)}</div>`;
+      row.addEventListener("click", () => {
+        state.me = c.id; save(LS.me, c.id); updateWhoami(); render();
       });
-      badgeCard.appendChild(row);
-    } else {
-      badgeCard.innerHTML = `<h3 style="margin-bottom:6px">🎖️ Earn badges!</h3>
-        <p style="color:var(--ink-soft);font-weight:700;margin:0">Pick your camper to start collecting badges and points.</p>`;
-    }
-    frag.appendChild(badgeCard);
+      roster.appendChild(row);
+    });
+    frag.appendChild(roster);
+
     view.replaceChildren(frag);
+  }
+
+  // Build a printable certificate card with a fun superlative.
+  function buildCertificate(camper) {
+    const badges = badgesEarned(camper.id);
+    const reward = claimOf(camper.id);
+    const superl = pickSuperlative(camper.id);
+    const cert = document.createElement("div");
+    cert.className = "certificate";
+    cert.innerHTML = `
+      <div class="cert-top">🏕️ Cousin Camp 2026 🏕️</div>
+      <div class="cert-award">Official Certificate</div>
+      <div class="cert-name">${escapeHtml(camper.name)} ${escapeHtml(camper.last)}</div>
+      <div class="cert-title">${superl.emoji} ${escapeHtml(superl.title)}</div>
+      <p class="cert-blurb">${escapeHtml(superl.blurb)}</p>
+      <div class="cert-stats">
+        <span>🎯 ${completedCount(camper.id)} activities</span>
+        <span>🏅 ${badges.length} badges</span>
+        <span>⭐ ${pointsFor(camper.id)} points</span>
+        ${reward ? `<span>${reward.emoji} ${escapeHtml(reward.name)}</span>` : ""}
+      </div>
+      <div class="cert-sign">With love,<br><span>Mimi 👵</span></div>`;
+    return cert;
+  }
+
+  // Pick a celebratory superlative based on what the camper did most.
+  function pickSuperlative(camperId) {
+    if (completedCount(camperId) >= allActivities().length) return { emoji: "🎖️", title: "The Perfect Camper", blurb: "Did every single thing at camp. Mimi is amazed!" };
+    if (badgesEarned(camperId).some((b) => b.id === "showstop")) return { emoji: "⭐", title: "Camp Superstar", blurb: "Lit up the stage at the Cousin Camp Talent Show." };
+    if (badgesEarned(camperId).some((b) => b.id === "baker"))    return { emoji: "🍪", title: "Star Baker", blurb: "Master of Mimi's secret family recipes." };
+    if (badgesEarned(camperId).some((b) => b.id === "olympian")) return { emoji: "🏅", title: "Camp Athlete", blurb: "Champion of the Backyard Olympics." };
+    if (badgesEarned(camperId).some((b) => b.id === "explorer")) return { emoji: "🧭", title: "Great Explorer", blurb: "Discovered every corner of Mimi's yard." };
+    if (badgesEarned(camperId).some((b) => b.id === "crafty"))   return { emoji: "🎨", title: "Camp Artist", blurb: "Made the most beautiful camp crafts." };
+    if (completedCount(camperId) >= 8)                            return { emoji: "🌟", title: "Camp All-Star", blurb: "Jumped into the fun all week long." };
+    return { emoji: "🤗", title: "Cousin Camp Graduate", blurb: "A wonderful week of memories with the cousins." };
+  }
+
+  // Claim a unique prize (releasing any prize the camper already held).
+  function claimReward(rewardId) {
+    if (!state.me) { openCamperModal(); return; }
+    if (claimedBy(rewardId)) { toast("Already claimed by another cousin!"); return; }
+    const r = rewardById(rewardId);
+    if (pointsFor(state.me) < r.cost) { toast(`Need ⭐ ${r.cost} — keep earning!`); return; }
+    // Release any reward this camper currently holds (one prize per camper).
+    const prev = claimOf(state.me);
+    const claims = { ...state.claims };
+    if (prev) delete claims[prev.id];
+    claims[rewardId] = state.me;
+    state.claims = claims;
+    save(LS.claims, state.claims);
+    toast(`Claimed ${r.emoji} ${r.name}!`);
+    render();
+  }
+  function releaseReward(rewardId) {
+    const claims = { ...state.claims };
+    delete claims[rewardId];
+    state.claims = claims;
+    save(LS.claims, state.claims);
+    toast("Prize released — pick another!");
+    render();
   }
 
   // ---- Camper modal -------------------------------------------------------

@@ -94,5 +94,22 @@ const SCHEDULE = [
   },
 ];
 
+// Camp Store — "Pick Your Prize" board.
+// There are nine one-of-a-kind rewards, one for each cousin. A reward can
+// only be claimed by a single camper, and each camper holds one reward, so
+// every cousin ends the week with their own different prize.
+// `cost` is how many camp points it takes to claim it.
+const STORE = [
+  { id: "r-movie",   emoji: "🎬", name: "Movie Night Pick",      cost: 40, desc: "You choose what everyone watches on movie night." },
+  { id: "r-latenight", emoji: "🌙", name: "Stay-Up-Late Pass",   cost: 45, desc: "Stay up 30 extra minutes past camp bedtime." },
+  { id: "r-dessert", emoji: "🍦", name: "Dessert Boss",          cost: 25, desc: "First scoop, extra sprinkles — top of the dessert line all day." },
+  { id: "r-game",    emoji: "🎮", name: "Game Master",           cost: 35, desc: "You pick the next big game the whole camp plays." },
+  { id: "r-frontseat", emoji: "🛶", name: "Front Seat Pass",     cost: 30, desc: "Ride shotgun / sit up front on the next camp outing." },
+  { id: "r-helper",  emoji: "👑", name: "Mimi's Helper",         cost: 45, desc: "Be Mimi's special assistant for a whole day." },
+  { id: "r-chore",   emoji: "🧹", name: "Skip-a-Chore Pass",     cost: 30, desc: "Get out of one camp chore, no questions asked." },
+  { id: "r-mystery", emoji: "🎟️", name: "Mystery Prize",         cost: 50, desc: "A surprise from Mimi's prize box — nobody knows what's inside!" },
+  { id: "r-smore",   emoji: "🍫", name: "S'more Master",         cost: 25, desc: "Unlimited s'mores at the next bonfire. Yes, unlimited." },
+];
+
 // Make available to app.js
-window.CAMP_DATA = { CAMPERS, SCHEDULE };
+window.CAMP_DATA = { CAMPERS, SCHEDULE, STORE };

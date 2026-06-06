@@ -510,6 +510,155 @@ select.day-filter {
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+/* ---------- Section headings (Awards) ---------- */
+.section-title { font-size: 19px; margin: 22px 0 4px; }
+.section-note { color: var(--ink-soft); font-weight: 700; font-size: 13px; margin: 0 0 12px; }
+.section-note b { color: var(--ink); }
+
+/* ---------- Camp Card ---------- */
+.camp-card {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  background: linear-gradient(135deg, var(--cc, var(--sun)) 0%, #ffffff 240%);
+  color: #fff;
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow-lg);
+  margin-bottom: 8px;
+}
+.cc-avatar {
+  font-size: 38px;
+  width: 64px; height: 64px;
+  display: grid; place-items: center;
+  background: rgba(255,255,255,.28);
+  border-radius: 18px;
+  flex: 0 0 auto;
+}
+.cc-info { flex: 1; min-width: 0; }
+.cc-name { font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 21px; line-height: 1.1; }
+.cc-sub { font-weight: 700; opacity: .9; font-size: 13px; margin-bottom: 8px; }
+.cc-stats { display: flex; gap: 8px; }
+.cc-stat {
+  background: rgba(255,255,255,.22);
+  border-radius: 12px;
+  padding: 6px 8px;
+  text-align: center;
+  flex: 1;
+}
+.cc-stat b { display: block; font-family: "Baloo 2", sans-serif; font-size: 18px; }
+.cc-stat span { font-size: 10.5px; font-weight: 800; opacity: .92; line-height: 1.1; display: block; }
+
+/* ---------- Camp Store ---------- */
+.store-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+.store-tile {
+  text-align: left;
+  background: var(--cream);
+  border: 2px solid rgba(58,46,37,.08);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: "Nunito", sans-serif;
+  transition: transform .1s ease;
+}
+.store-tile:active { transform: scale(.97); }
+.store-tile.mine { border-color: var(--grass); background: #effbf4; }
+.store-tile.taken { opacity: .55; cursor: not-allowed; background: #f4f0ea; }
+.st-emoji { font-size: 30px; }
+.st-name { font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 16px; }
+.st-desc { color: var(--ink-soft); font-weight: 600; font-size: 12.5px; flex: 1; }
+.st-foot { margin-top: 4px; }
+.st-cost { font-weight: 800; color: #b8860b; background: #fff4cf; padding: 3px 10px; border-radius: 999px; font-size: 13px; }
+.st-cost.short { color: #a35; background: #ffe1e6; }
+.st-claimed { font-weight: 800; color: var(--grass); font-size: 13px; }
+.st-owner { font-weight: 800; color: var(--ink-soft); font-size: 13px; }
+
+/* ---------- Trophy Case ---------- */
+.trophy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: 10px;
+}
+.trophy {
+  background: var(--cream);
+  border-radius: var(--radius-sm);
+  padding: 12px 8px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(58,46,37,.05);
+}
+.trophy.locked { opacity: .65; background: #f4f0ea; }
+.tr-emoji { font-size: 32px; line-height: 1; }
+.trophy.locked .tr-emoji { filter: grayscale(1); opacity: .6; }
+.tr-label { font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 13.5px; margin-top: 4px; }
+.tr-hint { font-size: 11px; font-weight: 700; color: var(--ink-soft); margin-top: 2px; line-height: 1.2; }
+.trophy.got .tr-hint { color: var(--grass); }
+
+/* ---------- Certificate ---------- */
+.certificate {
+  background:
+    repeating-linear-gradient(45deg, rgba(244,180,0,.05) 0 10px, transparent 10px 20px),
+    var(--cream);
+  border: 3px double var(--gold);
+  border-radius: var(--radius);
+  padding: 22px 18px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+.cert-top { font-family: "Baloo 2", sans-serif; font-weight: 800; color: var(--sun-dark); letter-spacing: .5px; }
+.cert-award { text-transform: uppercase; letter-spacing: 3px; font-size: 11px; font-weight: 800; color: var(--ink-soft); margin-top: 6px; }
+.cert-name { font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 28px; margin: 8px 0 2px; }
+.cert-title { font-weight: 800; color: var(--sky); font-size: 17px; }
+.cert-blurb { font-weight: 700; color: var(--ink-soft); font-size: 13.5px; margin: 8px auto 14px; max-width: 320px; }
+.cert-stats { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 14px; }
+.cert-stats span { background: var(--sand); border-radius: 999px; padding: 5px 11px; font-weight: 800; font-size: 12.5px; }
+.cert-sign { font-weight: 700; color: var(--ink-soft); font-size: 13px; }
+.cert-sign span { font-family: "Baloo 2", sans-serif; font-size: 20px; color: var(--ink); }
+
+/* ---------- Camp roster ---------- */
+.roster-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--cream);
+  border: 1px solid rgba(58,46,37,.05);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  margin-bottom: 8px;
+  cursor: pointer;
+  font-family: "Nunito", sans-serif;
+  text-align: left;
+}
+.roster-row.me { outline: 3px solid var(--sun); }
+.ros-name { font-weight: 800; flex: 1; min-width: 0; }
+.ros-name small { display: block; font-weight: 700; color: var(--ink-soft); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ros-pts { font-weight: 800; color: #b8860b; background: #fff4cf; padding: 4px 10px; border-radius: 999px; font-size: 13px; flex: 0 0 auto; }
+
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }
+}
+
+/* ---------- Print: just the certificate ---------- */
+@media print {
+  .app-header, .tabbar, .toast, .section-title, .section-note,
+  .store-grid, .trophy-grid, .camp-card, .roster-row, .btn,
+  .view-title, .view-sub, .empty { display: none !important; }
+  body { background: #fff; }
+  .view { padding: 0; }
+  .certificate {
+    box-shadow: none;
+    border-color: #c9a227;
+    margin: 0;
+    page-break-inside: avoid;
+  }
 }
