@@ -183,7 +183,7 @@
     const frag = document.createElement("div");
     const head = document.createElement("div");
     head.innerHTML = `<h2 class="view-title">Camp Awards 🏆</h2>
-      <p class="view-sub">Tap a prize to claim it · tap a cousin to see their trophies.</p>`;
+      <p class="view-sub">Tap a prize to claim it · tap a traveler to see their trophies.</p>`;
     frag.appendChild(head);
 
     // --- Camp Store: tap a prize, then tap who's claiming it ----------------
