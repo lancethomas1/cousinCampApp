@@ -14,9 +14,9 @@
 // square photo in the photos/ folder and point to it here. Cousins without a
 // photo fall back to their emoji automatically.
 const CAMPERS = [
-  { id: "laila",   name: "Laila",   emoji: "🦄", color: "#e84393", parents: "Chris" },
+  { id: "laila",   name: "Laila",   emoji: "🦄", color: "#e84393", parents: "Chris", photo: "photos/laila.jpg" },
   { id: "william", name: "William", emoji: "🧢", color: "#ef6c4d", parents: "Lance & Betsy", photo: "photos/william.jpg" },
-  { id: "sophie",  name: "Sophie",  emoji: "🦋", color: "#2980b9", parents: "Chris" },
+  { id: "sophie",  name: "Sophie",  emoji: "🦋", color: "#2980b9", parents: "Chris", photo: "photos/sophie.jpg" },
   { id: "samuel",  name: "Samuel",  emoji: "⚽", color: "#27ae60", parents: "Lance & Betsy", photo: "photos/samuel.jpg" },
   { id: "logan",   name: "Logan",   emoji: "🦖", color: "#8e44ad", parents: "Jason & Sera" },
   { id: "zoe",     name: "Zoe",     emoji: "🌈", color: "#f39c12", parents: "Jason & Sera" },
