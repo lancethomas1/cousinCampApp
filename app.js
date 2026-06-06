@@ -44,6 +44,11 @@
       </div>`;
     el.appendChild(head);
 
+    const label = document.createElement("div");
+    label.className = "kidrow-label";
+    label.textContent = "Who checked in?";
+    el.appendChild(label);
+
     const kidrow = document.createElement("div");
     kidrow.className = "kidrow";
     CAMPERS.forEach((c) => {

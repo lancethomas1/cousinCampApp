@@ -10,10 +10,11 @@
   "use strict";
 
   const C = window.CampCore;
-  const { CAMPERS, KUDOS, BONUS_QUICK, PARENT_BADGES } = C.data;
+  const { CAMPERS, KUDOS, BONUS_QUICK, PARENT_BADGES, STORE } = C.data;
   const {
-    state, setRender, initShared,
+    state, setRender, initShared, Store,
     pointsFor, kudosCountFor, parentBadgesFor, hasParentBadge, awardsFor,
+    camperById, claimedBy, claimOf,
     targetCamper, setTarget, giveKudos, giveBonus, toggleParentBadge, undoAward,
     allParentNames, currentParent, ownKidIds, isOwnKid, setParent, clearParent,
     toast, escapeHtml, camperFace, timeAgo,
@@ -143,6 +144,7 @@
       none.innerHTML = `<div class="big">🙂</div><h3>No cousins to award</h3>
         <p>Everyone shown is one of your own kids. Another grown-up can award them.</p>`;
       frag.appendChild(none);
+      frag.appendChild(buildStoreSection());
       view.replaceChildren(frag);
       return;
     }
@@ -274,7 +276,95 @@
     }
     frag.appendChild(feedWrap);
 
+    // --- Camp Store: claim or release prizes on a cousin's behalf -----------
+    frag.appendChild(buildStoreSection());
+
     view.replaceChildren(frag);
+  }
+
+  // ---- Camp Store (grown-up kiosk) ----------------------------------------
+  // A camper-agnostic board: tap a prize, then tap which cousin is claiming
+  // it. Tap a claimed prize to release it. Mirrors the campers' Awards tab so
+  // a grown-up can run the store from Mission Control. Claims sync to every
+  // device through the same Store the campers' app uses.
+  function buildStoreSection() {
+    const section = document.createElement("div");
+    section.className = "store-section";
+    section.innerHTML = `<h3 class="section-title">🏪 Camp Store — Manage Prizes</h3>
+      <p class="section-note">Tap a prize, then tap which cousin is claiming it. Tap a claimed prize to release it.</p>`;
+    const grid = document.createElement("div");
+    grid.className = "store-grid";
+    STORE.forEach((r) => {
+      const owner = claimedBy(r.id);
+      const ownerCamper = owner ? camperById(owner) : null;
+      const tile = document.createElement("button");
+      tile.type = "button";
+      tile.className = "store-tile" + (owner ? " claimed" : "");
+      tile.innerHTML = `
+        <div class="st-emoji">${r.emoji}</div>
+        <div class="st-name">${escapeHtml(r.name)}</div>
+        <div class="st-desc">${escapeHtml(r.desc)}</div>
+        <div class="st-foot">
+          ${owner
+            ? `<span class="st-owner">${ownerCamper.emoji} ${escapeHtml(ownerCamper.name)} · tap to release</span>`
+            : `<span class="st-cost">⭐ ${r.cost}</span>`}
+        </div>`;
+      tile.addEventListener("click", () =>
+        owner ? openReleaseConfirm(r, ownerCamper) : openClaimPicker(r)
+      );
+      grid.appendChild(tile);
+    });
+    section.appendChild(grid);
+    return section;
+  }
+
+  // Kiosk claim: tap a prize, then tap which cousin is claiming it. Only
+  // cousins who can afford the prize are tappable.
+  function openClaimPicker(prize) {
+    const overlay = document.createElement("div");
+    overlay.className = "modal";
+    overlay.innerHTML = `
+      <div class="modal-backdrop" data-close></div>
+      <div class="modal-card" role="dialog" aria-modal="true">
+        <h2>${prize.emoji} ${escapeHtml(prize.name)}</h2>
+        <p class="modal-sub">Costs ⭐ ${prize.cost} — tap who's claiming it.</p>
+        <div class="camper-grid"></div>
+        <button class="btn-ghost" type="button" data-close>Close</button>
+      </div>`;
+    const grid = overlay.querySelector(".camper-grid");
+    CAMPERS.forEach((c) => {
+      const has = claimOf(c.id);
+      const afford = pointsFor(c.id) >= prize.cost;
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "camper-pick" + (afford ? "" : " disabled");
+      btn.disabled = !afford;
+      btn.innerHTML = `${camperFace(c, "ce")}${escapeHtml(c.name)}` +
+        `<small class="cp-pts">⭐ ${pointsFor(c.id)}${has ? " · has " + has.emoji : afford ? "" : " · need more"}</small>`;
+      if (afford) btn.addEventListener("click", () => { Store.claim(c.id, prize.id); close(); });
+      grid.appendChild(btn);
+    });
+    function close() { overlay.remove(); }
+    overlay.querySelectorAll("[data-close]").forEach((e) => e.addEventListener("click", close));
+    document.body.appendChild(overlay);
+  }
+
+  // Tap a claimed prize to release it back to the store.
+  function openReleaseConfirm(prize, ownerCamper) {
+    const overlay = document.createElement("div");
+    overlay.className = "modal";
+    overlay.innerHTML = `
+      <div class="modal-backdrop" data-close></div>
+      <div class="modal-card" role="dialog" aria-modal="true">
+        <h2>${prize.emoji} ${escapeHtml(prize.name)}</h2>
+        <p class="modal-sub">Claimed by ${ownerCamper.emoji} ${escapeHtml(ownerCamper.name)}. Release it so another cousin can claim it?</p>
+        <button class="btn" type="button" id="rel-go" style="width:100%;justify-content:center">Release prize</button>
+        <button class="btn-ghost" type="button" data-close style="margin-top:8px;width:100%">Keep it</button>
+      </div>`;
+    function close() { overlay.remove(); }
+    overlay.querySelector("#rel-go").addEventListener("click", () => { Store.release(prize.id); close(); });
+    overlay.querySelectorAll("[data-close]").forEach((e) => e.addEventListener("click", close));
+    document.body.appendChild(overlay);
   }
 
   // ---- Boot ---------------------------------------------------------------
