@@ -263,13 +263,16 @@
   // ---- Campers & activities ----------------------------------------------
   const camperById = (id) => CAMPERS.find((c) => c.id === id) || null;
   const allActivities = () => SCHEDULE.flatMap((d) => d.activities.map((a) => ({ ...a, date: d.date })));
+  // Only points-earning activities — informational slots (a.info) are excluded
+  // from scoring, progress, and badge math; kids can't check them in.
+  const scoringActivities = () => allActivities().filter((a) => !a.info);
 
   function doneMap(camperId) { return state.done[camperId] || {}; }
   function isDone(camperId, activityId) { return !!doneMap(camperId)[activityId]; }
-  // Points from checked-off activities only.
+  // Points from checked-off activities only (informational slots don't score).
   function activityPointsFor(camperId) {
     const dm = doneMap(camperId);
-    return allActivities().reduce((sum, a) => sum + (dm[a.id] ? a.points : 0), 0);
+    return scoringActivities().reduce((sum, a) => sum + (dm[a.id] ? a.points : 0), 0);
   }
   // Grand total = activity points + everything grown-ups have awarded.
   function pointsFor(camperId) {
@@ -277,12 +280,15 @@
   }
   function completedCount(camperId) {
     const dm = doneMap(camperId);
-    return allActivities().filter((a) => dm[a.id]).length;
+    return scoringActivities().filter((a) => dm[a.id]).length;
   }
-  // True if the camper finished every activity on a given day.
+  // True if the camper finished every points-earning activity on a given day.
+  // Informational slots (a.info) don't need checking, so they're skipped.
   function completedDay(camperId, date) {
     const day = SCHEDULE.find((d) => d.date === date);
-    return !!day && day.activities.every((a) => isDone(camperId, a.id));
+    if (!day) return false;
+    const todo = day.activities.filter((a) => !a.info);
+    return todo.length > 0 && todo.every((a) => isDone(camperId, a.id));
   }
   function anyFullDay(camperId) { return SCHEDULE.some((d) => completedDay(camperId, d.date)); }
   function fullDayCount(camperId) { return SCHEDULE.filter((d) => completedDay(camperId, d.date)).length; }
@@ -663,7 +669,7 @@
     state, LS, load, save,
     setRender, initShared, startShared, Store, Photos,
     // campers & activities
-    camperById, allActivities, doneMap, isDone,
+    camperById, allActivities, scoringActivities, doneMap, isDone,
     activityPointsFor, awardPointsFor, pointsFor,
     completedCount, completedDay, anyFullDay, fullDayCount,
     // store
