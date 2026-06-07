@@ -1156,6 +1156,8 @@ select.day-filter {
   padding: 9px 12px;
 }
 .fr-emoji { font-size: 26px; flex: 0 0 auto; }
+/* When the feed row's leading glyph is a real photo (e.g. a cousin's cheer). */
+.fr-emoji.avatar-photo { width: 34px; height: 34px; border-radius: 50%; }
 .fr-body { flex: 1; min-width: 0; }
 .fr-label { font-weight: 800; font-size: 14px; line-height: 1.2; }
 .fr-time { font-weight: 700; font-size: 11.5px; color: var(--ink-soft); }
