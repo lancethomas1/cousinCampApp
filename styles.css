@@ -269,6 +269,19 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
   border-radius: 999px;
   white-space: nowrap;
 }
+.activity-info-tag {
+  margin-left: auto;
+  font-weight: 800;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  color: var(--ink-soft);
+  background: var(--inset);
+  border: 1px solid var(--line);
+  padding: 2px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
 .activity-title { font-weight: 800; font-size: 20px; line-height: 1.15; color: var(--ink); margin: 5px 0 3px; font-family: "Baloo 2", sans-serif; }
 .activity-desc { color: var(--ink-soft); font-size: 14.5px; font-weight: 600; margin: 0 0 7px; }
 .activity-loc { font-size: 13px; font-weight: 700; color: var(--ink-soft); }
@@ -303,6 +316,22 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
   border-top-color: var(--edge);
   overflow: hidden;
 }
+/* Informational "heads up" slots — meals, baths, travel, bedtime. Muted and
+   slimmer than a points-earning task, with no check-in row. */
+.activity-card.info {
+  background: var(--inset);
+  box-shadow: none;
+  opacity: .82;
+}
+.activity-card.info .activity-head { padding: 11px 14px; }
+.activity-card.info .activity-emoji {
+  font-size: 26px;
+  width: 42px;
+  height: 42px;
+  background: var(--cream);
+  opacity: .9;
+}
+.activity-card.info .activity-title { font-size: 16px; color: var(--ink-soft); }
 .activity-head {
   display: flex;
   gap: 13px;
