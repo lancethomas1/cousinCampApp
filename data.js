@@ -40,11 +40,19 @@ const GROWNUPS = [
 // descriptions to match the rest of the plans. You can add or remove
 // activities freely. `era` (optional) shows as the day's theme banner.
 //
-// `info: true` (optional) marks a slot as an informational "heads up" — meals,
-// getting dressed, baths, bedtime, travel, and other routine moments that just
-// happen. Info items show as muted FYI cards: no points, no check-in faces, and
-// they don't count toward the daily progress bar or activity badges. Drop the
-// flag (or set it false) to turn any item back into a points-earning task.
+// HOW POINTS WORK: every cousin does every activity, so there's no per-kid
+// "check in." Instead, points come from getting *prepared*. Give an activity a
+// `prep` checklist and it becomes a "Get Prepared" card — each cousin ticks
+// their own items (sunscreen on, towel packed, …) and earns the activity's
+// `points` once their whole list is checked.
+//
+// `prep: ["Sunscreen on", "Towel packed"]` (optional) — turns an activity into
+// a points-earning prepared card. Without it, an activity is just shown on the
+// schedule for reference (no points, nothing to tick).
+//
+// `info: true` (optional) styles a reference slot as a muted "heads up" card —
+// meals, getting dressed, baths, bedtime, and other routine moments. (An item
+// with `prep` is always a prepared card; `info` only affects no-prep slots.)
 const SCHEDULE = [
   {
     date: "2026-06-22",
@@ -63,12 +71,12 @@ const SCHEDULE = [
       { id: "d1-a10", time: "10:30 AM", title: "Time Machine: Guess Who?!", emoji: "❓", location: "Living Room",      points: 10, desc: "Can you guess who steps out of the Time Machine?" },
       { id: "d1-a11", time: "11:00 AM", title: "60s Craft: Paper Mâché",   emoji: "🎨", location: "Craft Table",      points: 15, desc: "Paper mâché plus Heber birthday decorations." },
       { id: "d1-a12", time: "12:00 PM", title: "Lunch",                    emoji: "🍽️", location: "Mimi's Kitchen",   points: 5,  info: true, desc: "Refuel together." },
-      { id: "d1-a13", time: "1:00 PM",  title: "Pool at Rebecca's",        emoji: "🏊", location: "Rebecca's",        points: 10, desc: "Splash and swim." },
+      { id: "d1-a13", time: "1:00 PM",  title: "Pool at Rebecca's",        emoji: "🏊", location: "Rebecca's",        points: 10, prep: ["Sunscreen on", "Swimsuit on", "Towel packed", "Water bottle filled"], desc: "Splash and swim." },
       { id: "d1-a14", time: "3:30 PM",  title: "Home",                     emoji: "🏡", location: "Mimi's",           points: 5,  info: true, desc: "Back to base." },
       { id: "d1-a15", time: "4:00 PM",  title: "Slang Hats with Christopher", emoji: "🎩", location: "Living Room",   points: 10, desc: "Time travelers through the decades of slang." },
       { id: "d1-a16", time: "5:00 PM",  title: "Time Travel TV Show",      emoji: "📺", location: "TV Room",          points: 10, desc: "Watch a show from another decade." },
       { id: "d1-a17", time: "5:30 PM",  title: "Dinner on the Porch",      emoji: "🍽️", location: "Back Porch",       points: 5,  info: true, desc: "Eat together outside." },
-      { id: "d1-a18", time: "6:30 PM",  title: "Fishing",                  emoji: "🎣", location: "The Pond",         points: 10, desc: "Cast a line and see what bites." },
+      { id: "d1-a18", time: "6:30 PM",  title: "Fishing",                  emoji: "🎣", location: "The Pond",         points: 10, prep: ["Bug spray on", "Hat on", "Grabbed a fishing pole"], desc: "Cast a line and see what bites." },
       { id: "d1-a19", time: "8:30 PM",  title: "Sera's Birthday Cake",     emoji: "🎂", location: "Back Porch",       points: 10, desc: "Happy birthday, Sera!" },
       { id: "d1-a20", time: "8:45 PM",  title: "Baths",                    emoji: "🛁", location: "Upstairs",         points: 5,  info: true, desc: "Scrub up before bed." },
       { id: "d1-a21", time: "9:00 PM",  title: "Jerry Stories",            emoji: "📖", location: "Upstairs",         points: 5,  desc: "Story time with Jerry." },
@@ -83,17 +91,17 @@ const SCHEDULE = [
       { id: "d2-a1",  time: "6:30 AM",  title: "TV Room Opens",            emoji: "📺", location: "TV Room",          points: 5,  info: true, desc: "Quiet time — not before 6:30!" },
       { id: "d2-a2",  time: "7:45 AM",  title: "Breakfast",                emoji: "🥞", location: "Mimi's Kitchen",   points: 5,  info: true, desc: "Start the day together." },
       { id: "d2-a3",  time: "8:15 AM",  title: "Get Dressed",              emoji: "👕", location: "Upstairs",         points: 5,  info: true, desc: "Ready for the day." },
-      { id: "d2-a4",  time: "8:20 AM",  title: "Capoeira with Chris",      emoji: "🥋", location: "Back Yard",        points: 10, desc: "Move and groove, Brazilian style." },
+      { id: "d2-a4",  time: "8:20 AM",  title: "Capoeira with Chris",      emoji: "🥋", location: "Back Yard",        points: 10, prep: ["Comfy clothes on", "Shoes tied", "Water bottle filled"], desc: "Move and groove, Brazilian style." },
       { id: "d2-a5",  time: "8:30 AM",  title: "Meeting on the Porch",     emoji: "🎤", location: "Back Porch",       points: 5,  desc: "Papaw leads songs." },
       { id: "d2-a6",  time: "8:35 AM",  title: "Guess the Decade",         emoji: "🕰️", location: "Time Line",        points: 10, desc: "Timeline's out — guess the decade!" },
       { id: "d2-a7",  time: "9:00 AM",  title: "Finish Paper Mâché",       emoji: "🎨", location: "Craft Table",      points: 10, desc: "Finish yesterday's masterpiece." },
       { id: "d2-a8",  time: "10:00 AM", title: "Leave for Church",         emoji: "⛪", location: "Church",           points: 10, desc: "Start practicing for the Variety Show: The Evolution of Music & Dance." },
       { id: "d2-a9",  time: "12:00 PM", title: "Lunch at Home",            emoji: "🍽️", location: "Mimi's Kitchen",   points: 5,  info: true, desc: "Refuel together." },
-      { id: "d2-a10", time: "1:00 PM",  title: "Swim at Rebecca's",        emoji: "🏊", location: "Rebecca's",        points: 10, desc: "Cool off in the pool." },
+      { id: "d2-a10", time: "1:00 PM",  title: "Swim at Rebecca's",        emoji: "🏊", location: "Rebecca's",        points: 10, prep: ["Sunscreen on", "Swimsuit on", "Towel packed", "Water bottle filled"], desc: "Cool off in the pool." },
       { id: "d2-a11", time: "4:00 PM",  title: "Games and Crafts",         emoji: "🎲", location: "Craft Table",      points: 10, desc: "Play and create." },
       { id: "d2-a12", time: "5:00 PM",  title: "Free Willy with Lance",    emoji: "🐳", location: "TV Room",          points: 10, desc: "Movie time with Uncle Lance." },
       { id: "d2-a13", time: "5:30 PM",  title: "Dinner with Sera & Jason", emoji: "🍽️", location: "Back Porch",       points: 5,  info: true, desc: "Sera and Jason cook." },
-      { id: "d2-a14", time: "6:30 PM",  title: "Futrell Farm",             emoji: "🚜", location: "Futrell Farm",     points: 10, desc: "Adventure on the farm." },
+      { id: "d2-a14", time: "6:30 PM",  title: "Futrell Farm",             emoji: "🚜", location: "Futrell Farm",     points: 10, prep: ["Closed-toe shoes on", "Bug spray on", "Hat on"], desc: "Adventure on the farm." },
       { id: "d2-a15", time: "8:30 PM",  title: "Baths",                    emoji: "🛁", location: "Upstairs",         points: 5,  info: true, desc: "Scrub up before bed." },
       { id: "d2-a16", time: "9:00 PM",  title: "Story or Book",            emoji: "📖", location: "Upstairs",         points: 5,  desc: "Wind down with a story." },
       { id: "d2-a17", time: "9:15 PM",  title: "Bed",                      emoji: "😴", location: "Upstairs",         points: 5,  info: true, desc: "Lights out, time travelers." },
@@ -106,13 +114,13 @@ const SCHEDULE = [
     activities: [
       { id: "d3-a1",  time: "6:30 AM",  title: "TV Room Opens",            emoji: "📺", location: "TV Room",            points: 5,  info: true, desc: "Quiet time — not before 6:30!" },
       { id: "d3-a2",  time: "7:45 AM",  title: "Breakfast",                emoji: "🥞", location: "Mimi's Kitchen",     points: 5,  info: true, desc: "Start the day together." },
-      { id: "d3-a3",  time: "8:15 AM",  title: "Get Dressed & Pack",       emoji: "🎒", location: "Upstairs",           points: 10, desc: "Bathing suit under your clothes — and pack for the cabin!" },
+      { id: "d3-a3",  time: "8:15 AM",  title: "Get Dressed & Pack",       emoji: "🎒", location: "Upstairs",           points: 10, prep: ["Swimsuit on under clothes", "Cabin bag packed", "PJs & toothbrush packed"], desc: "Bathing suit under your clothes — and pack for the cabin!" },
       { id: "d3-a4",  time: "8:30 AM",  title: "Meeting on the Porch",     emoji: "🎤", location: "Back Porch",         points: 5,  desc: "Plan out the day." },
       { id: "d3-a5",  time: "9:00 AM",  title: "Leave for Putt Putt",      emoji: "🚗", location: "On the Road",        points: 5,  info: true, desc: "Load up and head out." },
-      { id: "d3-a6",  time: "10:00 AM", title: "Putt Putt at Maggie's",    emoji: "⛳", location: "Maggie's",           points: 15, desc: "Mini golf showdown!" },
+      { id: "d3-a6",  time: "10:00 AM", title: "Putt Putt at Maggie's",    emoji: "⛳", location: "Maggie's",           points: 15, prep: ["Hat or sunglasses on", "Sunscreen on", "Water bottle filled"], desc: "Mini golf showdown!" },
       { id: "d3-a7",  time: "12:00 PM", title: "Picnic Lunch",             emoji: "🧺", location: "Picnic Spot",        points: 5,  info: true, desc: "Eat outside together." },
-      { id: "d3-a8",  time: "1:00 PM",  title: "Pool at Kentucky Dam Lodge", emoji: "🏊", location: "Kentucky Dam Lodge", points: 10, desc: "Splash and swim." },
-      { id: "d3-a9",  time: "4:00 PM",  title: "Check in to Cabin",        emoji: "🏕️", location: "The Cabin",          points: 10, desc: "Settle in, then practice the Evolution of Music & Dance." },
+      { id: "d3-a8",  time: "1:00 PM",  title: "Pool at Kentucky Dam Lodge", emoji: "🏊", location: "Kentucky Dam Lodge", points: 10, prep: ["Sunscreen on", "Swimsuit on", "Towel packed", "Water bottle filled"], desc: "Splash and swim." },
+      { id: "d3-a9",  time: "4:00 PM",  title: "Check in to Cabin",        emoji: "🏕️", location: "The Cabin",          points: 10, prep: ["Bag carried in", "Bed picked", "Stuff unpacked"], desc: "Settle in, then practice the Evolution of Music & Dance." },
       { id: "d3-a10", time: "5:00 PM",  title: "Pizza",                    emoji: "🍕", location: "The Cabin",          points: 5,  info: true, desc: "Pizza night!" },
       { id: "d3-a11", time: "8:30 PM",  title: "Movie: Back to the Future", emoji: "🎬", location: "The Cabin",          points: 10, desc: "Great Scott — movie time!" },
     ],
@@ -124,17 +132,17 @@ const SCHEDULE = [
     activities: [
       { id: "d4-a1",  time: "6:30 AM",  title: "TV Room Opens",            emoji: "📺", location: "TV Room",            points: 5,  info: true, desc: "Quiet time — not before 6:30!" },
       { id: "d4-a2",  time: "8:00 AM",  title: "Breakfast",                emoji: "🥞", location: "The Cabin",          points: 5,  info: true, desc: "Start the day together." },
-      { id: "d4-a3",  time: "9:00 AM",  title: "Practice Variety Show",    emoji: "🎭", location: "The Cabin",          points: 15, desc: "Rehearse at the cabin." },
+      { id: "d4-a3",  time: "9:00 AM",  title: "Practice Variety Show",    emoji: "🎭", location: "The Cabin",          points: 15, prep: ["Costume ready", "Know your part", "Listening ears on"], desc: "Rehearse at the cabin." },
       { id: "d4-a4",  time: "10:00 AM", title: "Check Out of Hotel",       emoji: "🧳", location: "The Cabin",          points: 5,  info: true, desc: "Pack up and check out." },
-      { id: "d4-a5",  time: "10:15 AM", title: "Swim in Pool",             emoji: "🏊", location: "The Pool",           points: 10, desc: "One more swim — snacks too!" },
+      { id: "d4-a5",  time: "10:15 AM", title: "Swim in Pool",             emoji: "🏊", location: "The Pool",           points: 10, prep: ["Sunscreen on", "Swimsuit on", "Towel packed", "Snack grabbed"], desc: "One more swim — snacks too!" },
       { id: "d4-a6",  time: "12:00 PM", title: "Lunch Out",                emoji: "🍽️", location: "Out",                points: 5,  info: true, desc: "Lunch on the town." },
       { id: "d4-a7",  time: "1:30 PM",  title: "Church: Practice Variety Show", emoji: "⛪", location: "Church",        points: 15, desc: "Dress rehearsal on the big stage." },
       { id: "d4-a8",  time: "3:30 PM",  title: "Sera, Korea",              emoji: "🇰🇷", location: "Church",             points: 10, desc: "Sera shares about Korea." },
       { id: "d4-a9",  time: "4:00 PM",  title: "Soccer, Games or Andy Griffith", emoji: "⚽", location: "Outside",     points: 10, desc: "Soccer, games, or the Andy Griffith Show." },
       { id: "d4-a10", time: "5:00 PM",  title: "TV Time",                  emoji: "📺", location: "TV Room",            points: 5,  info: true, desc: "Relax before the show." },
       { id: "d4-a11", time: "5:30 PM",  title: "Dinner",                   emoji: "🍽️", location: "Mimi's Kitchen",     points: 5,  info: true, desc: "Eat up before showtime." },
-      { id: "d4-a12", time: "6:30 PM",  title: "Variety Show",             emoji: "🌟", location: "Show Stage",         points: 20, desc: "The big show — parents come at 7:00!" },
-      { id: "d4-a13", time: "8:00 PM",  title: "Water Balloon Fight",     emoji: "🎈", location: "Back Yard",          points: 10, desc: "Soak everyone!" },
+      { id: "d4-a12", time: "6:30 PM",  title: "Variety Show",             emoji: "🌟", location: "Show Stage",         points: 20, prep: ["Costume on", "Hair & makeup done", "Props ready", "Lines & moves practiced"], desc: "The big show — parents come at 7:00!" },
+      { id: "d4-a13", time: "8:00 PM",  title: "Water Balloon Fight",     emoji: "🎈", location: "Back Yard",          points: 10, prep: ["Play clothes on", "Filled some balloons", "Ready to get soaked!"], desc: "Soak everyone!" },
       { id: "d4-a14", time: "8:30 PM",  title: "Baths",                    emoji: "🛁", location: "Upstairs",           points: 5,  info: true, desc: "Scrub up before bed." },
       { id: "d4-a15", time: "9:00 PM",  title: "Bed",                      emoji: "😴", location: "Upstairs",           points: 5,  info: true, desc: "Lights out — what a day!" },
     ],
