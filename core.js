@@ -14,13 +14,14 @@
   "use strict";
 
   const { CAMPERS, SCHEDULE, STORE, PHOTO_ALBUM_URL, KUDOS, BONUS_QUICK, PARENT_BADGES } = window.CAMP_DATA;
+  const GROWNUPS = window.CAMP_DATA.GROWNUPS || [];
 
   // ---- Storage helpers ----------------------------------------------------
   const LS = {
     me: "cc.me",                 // current camper id (stays local to each device)
     done: "cc.done",             // { camperId: { activityId: true } }
     claims: "cc.claims",         // { rewardId: camperId } — one prize per camper
-    awards: "cc.awards",         // { camperId: [ {id,type,refId,emoji,label,points,note,ts} ] }
+    awards: "cc.awards",         // { camperId: [ {id,type,refId,emoji,label,points,note,by,ts} ] }
     pass: "cc.pass",             // remembered family passcode (shared mode)
     target: "cc.target",         // camper a grown-up is awarding to (stays local)
     parent: "cc.parent",         // grown-up's first name in the parents app (local)
@@ -312,6 +313,10 @@
   function kudosCountFor(camperId) {
     return awardsFor(camperId).filter((a) => a.type === "kudos").length;
   }
+  // Cousin-to-cousin cheers a camper has received (recognition only, 0 points).
+  function cheersCountFor(camperId) {
+    return awardsFor(camperId).filter((a) => a.type === "cheer").length;
+  }
   // Special parent badges a camper currently holds.
   function parentBadgesFor(camperId) {
     const held = new Set(awardsFor(camperId).filter((a) => a.type === "badge").map((a) => a.refId));
@@ -319,6 +324,25 @@
   }
   function hasParentBadge(camperId, badgeId) {
     return awardsFor(camperId).some((a) => a.type === "badge" && a.refId === badgeId);
+  }
+  // Leaderboard of grown-ups by how much recognition they've handed out.
+  // Tallies every award tagged with a `by` name across all campers (cousin
+  // cheers carry no `by`, so they're naturally excluded). Returns rows of
+  // { name, awards, kudos, points } sorted most-generous first — by total
+  // awards given, then points, then name.
+  function awarderTally() {
+    const rows = new Map();
+    CAMPERS.forEach((c) => awardsFor(c.id).forEach((a) => {
+      if (!a.by) return;
+      const key = String(a.by).toLowerCase();
+      const row = rows.get(key) || { name: a.by, awards: 0, kudos: 0, points: 0 };
+      row.awards += 1;
+      if (a.type === "kudos") row.kudos += 1;
+      row.points += a.points || 0;
+      rows.set(key, row);
+    }));
+    return [...rows.values()].sort((x, y) =>
+      y.awards - x.awards || y.points - x.points || x.name.localeCompare(y.name));
   }
   // The camper a grown-up is currently awarding to in the parents app.
   function targetCamper() {
@@ -339,15 +363,22 @@
   function camperParents(c) {
     return String((c && c.parents) || "").split(/[,&]|\band\b/i).map((s) => s.trim()).filter(Boolean);
   }
-  // Every distinct grown-up name across all campers, in first-seen order.
-  function allParentNames() {
+  // The full grown-up roster for the parents' app sign-in: every parent derived
+  // from the campers, plus the extra GROWNUPS (grandparents, etc.). Each entry
+  // has the `name` they sign in with and a `label` shown on the sign-in chip.
+  // Grown-ups with no kids of their own can award any cousin.
+  function grownupRoster() {
     const out = [], seen = new Set();
-    CAMPERS.forEach((c) => camperParents(c).forEach((n) => {
-      const k = n.toLowerCase();
-      if (!seen.has(k)) { seen.add(k); out.push(n); }
-    }));
+    const add = (name, label) => {
+      const k = name.toLowerCase();
+      if (!seen.has(k)) { seen.add(k); out.push({ name, label: label || name }); }
+    };
+    CAMPERS.forEach((c) => camperParents(c).forEach((n) => add(n)));
+    GROWNUPS.forEach((g) => add(g.name, g.nickname ? `${g.nickname} (${g.name})` : g.name));
     return out;
   }
+  // Every distinct grown-up name (parents + extra grown-ups), in first-seen order.
+  function allParentNames() { return grownupRoster().map((g) => g.name); }
   // Is the signed-in name a recognized parent? Returns the name, or null.
   function currentParent() {
     const name = state.parent;
@@ -384,7 +415,22 @@
     const c = targetCamper(); if (!c || blockOwnKid(c)) return;
     const k = kudosById(kudosId); if (!k) return;
     toast(`${k.emoji} ${k.label} for ${c.name} +${k.points}`);
-    Store.award(c.id, { type: "kudos", refId: k.id, emoji: k.emoji, label: k.label, points: k.points });
+    Store.award(c.id, { type: "kudos", refId: k.id, emoji: k.emoji, label: k.label, points: k.points, by: state.parent || null });
+  }
+  // A cousin-to-cousin cheer from the campers' app. Recognition only — worth
+  // 0 points so kids can't trade points to game the leaderboard. Recorded as
+  // a "cheer" award on the recipient, tagged with who sent it. Returns whether
+  // the cheer was sent (false if it was a no-op, e.g. cheering yourself).
+  function giveCheer(fromId, toId, kudosId) {
+    const from = camperById(fromId), to = camperById(toId), k = kudosById(kudosId);
+    if (!from || !to || !k) return false;
+    if (from.id === to.id) { toast("Pick a different cousin to cheer! 😊"); return false; }
+    toast(`${k.emoji} ${from.name} cheered ${to.name}!`);
+    Store.award(to.id, {
+      type: "cheer", refId: k.id, emoji: k.emoji, label: k.label, points: 0,
+      from: from.id, note: `cheer from ${from.name}`,
+    });
+    return true;
   }
   function giveBonus(points, note) {
     const c = targetCamper(); if (!c || blockOwnKid(c)) return;
@@ -392,13 +438,13 @@
     if (!pts) { toast("Enter some points first"); return; }
     const clean = (note || "").trim();
     toast(`${pts > 0 ? "+" : ""}${pts} for ${c.name}${clean ? " — " + clean : ""}`);
-    Store.award(c.id, { type: "bonus", emoji: pts < 0 ? "➖" : "➕", label: "Bonus points", points: pts, note: clean });
+    Store.award(c.id, { type: "bonus", emoji: pts < 0 ? "➖" : "➕", label: "Bonus points", points: pts, note: clean, by: state.parent || null });
   }
   function toggleParentBadge(badgeId) {
     const c = targetCamper(); if (!c || blockOwnKid(c)) return;
     const b = parentBadgeById(badgeId); if (!b) return;
     toast(hasParentBadge(c.id, badgeId) ? `Took back ${b.emoji} ${b.label}` : `${b.emoji} ${b.label} for ${c.name}!`);
-    Store.toggleBadge(c.id, { type: "badge", refId: b.id, emoji: b.emoji, label: b.label, points: 0 });
+    Store.toggleBadge(c.id, { type: "badge", refId: b.id, emoji: b.emoji, label: b.label, points: 0, by: state.parent || null });
   }
   function undoAward(camperId, awardId) {
     toast("Award removed");
@@ -613,7 +659,7 @@
 
   // ---- Public surface -----------------------------------------------------
   window.CampCore = {
-    data: { CAMPERS, SCHEDULE, STORE, KUDOS, BONUS_QUICK, PARENT_BADGES, PHOTO_ALBUM_URL },
+    data: { CAMPERS, GROWNUPS, SCHEDULE, STORE, KUDOS, BONUS_QUICK, PARENT_BADGES, PHOTO_ALBUM_URL },
     state, LS, load, save,
     setRender, initShared, startShared, Store, Photos,
     // campers & activities
@@ -623,10 +669,10 @@
     // store
     rewardById, claimedBy, claimOf, spentBy, balanceFor,
     // parent awards
-    kudosById, parentBadgeById, awardsFor, kudosCountFor, parentBadgesFor, hasParentBadge,
-    targetCamper, setTarget, giveKudos, giveBonus, toggleParentBadge, undoAward,
+    kudosById, parentBadgeById, awardsFor, kudosCountFor, cheersCountFor, parentBadgesFor, hasParentBadge, awarderTally,
+    targetCamper, setTarget, giveKudos, giveCheer, giveBonus, toggleParentBadge, undoAward,
     // parent identity & fairness rule
-    allParentNames, currentParent, ownKidIds, isOwnKid, setParent, clearParent,
+    allParentNames, grownupRoster, currentParent, ownKidIds, isOwnKid, setParent, clearParent,
     // formatting & utils
     todayISO, fmtDow, dayNum, fmtLong, toast, escapeHtml, camperFace, uid, timeAgo,
     initPullToRefresh,

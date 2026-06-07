@@ -13,10 +13,10 @@
   const { CAMPERS, KUDOS, BONUS_QUICK, PARENT_BADGES, STORE } = C.data;
   const {
     state, setRender, initShared, Store,
-    pointsFor, kudosCountFor, parentBadgesFor, hasParentBadge, awardsFor,
+    pointsFor, kudosCountFor, parentBadgesFor, hasParentBadge, awardsFor, awarderTally,
     camperById, claimedBy, claimOf,
     targetCamper, setTarget, giveKudos, giveBonus, toggleParentBadge, undoAward,
-    allParentNames, currentParent, ownKidIds, isOwnKid, setParent, clearParent,
+    allParentNames, grownupRoster, currentParent, ownKidIds, isOwnKid, setParent, clearParent,
     toast, escapeHtml, camperFace, timeAgo,
   } = C;
   const view = document.getElementById("view");
@@ -53,16 +53,18 @@
     input.addEventListener("keydown", (e) => { if (e.key === "Enter") submit(); });
     card.append(input, go);
 
-    // Quick-pick buttons for the grown-ups we already know about.
-    const known = allParentNames();
+    // Quick-pick buttons for the grown-ups we already know about (parents plus
+    // grandparents & other helpers). The chip shows a friendly label but signs
+    // in under the grown-up's name.
+    const known = grownupRoster();
     if (known.length) {
       const quick = document.createElement("div");
       quick.className = "name-quick";
-      known.forEach((name) => {
+      known.forEach(({ name, label }) => {
         const b = document.createElement("button");
         b.type = "button";
         b.className = "btn-ghost name-chip";
-        b.textContent = name;
+        b.textContent = label;
         b.addEventListener("click", () => enterAs(name));
         quick.appendChild(b);
       });
@@ -144,6 +146,7 @@
       none.innerHTML = `<div class="big">🙂</div><h3>No cousins to award</h3>
         <p>Everyone shown is one of your own kids. Another grown-up can award them.</p>`;
       frag.appendChild(none);
+      frag.appendChild(buildAwarderLeaderboard());
       frag.appendChild(buildStoreSection());
       view.replaceChildren(frag);
       return;
@@ -261,11 +264,14 @@
         const row = document.createElement("div");
         row.className = "feed-row";
         const pts = a.points ? `<span class="fr-pts ${a.points < 0 ? "neg" : ""}">${a.points > 0 ? "+" : ""}${a.points}</span>` : "";
+        // Who handed out this award: the grown-up's name for parent awards, or
+        // the cousin's for a cheer. Older awards predate tracking, so fall back.
+        const by = a.by || (a.type === "cheer" && a.from ? (camperById(a.from) || {}).name : "");
         row.innerHTML = `
           <div class="fr-emoji">${a.emoji}</div>
           <div class="fr-body">
             <div class="fr-label">${escapeHtml(a.label)}${a.note ? ` — ${escapeHtml(a.note)}` : ""}</div>
-            <div class="fr-time">${timeAgo(a.ts)}</div>
+            <div class="fr-time">${timeAgo(a.ts)}${by ? ` · by ${escapeHtml(by)}` : ""}</div>
           </div>
           ${pts}
           <button class="fr-undo" type="button" aria-label="Remove award">✕</button>`;
@@ -276,10 +282,43 @@
     }
     frag.appendChild(feedWrap);
 
+    // --- Leaderboard: most generous grown-ups ------------------------------
+    frag.appendChild(buildAwarderLeaderboard());
+
     // --- Camp Store: claim or release prizes on a cousin's behalf -----------
     frag.appendChild(buildStoreSection());
 
     view.replaceChildren(frag);
+  }
+
+  // ---- Leaderboard: most generous grown-ups -------------------------------
+  // A friendly, all-cousins tally of who's handed out the most kudos & points,
+  // built from the `by` tag on each award. The signed-in grown-up is highlighted.
+  function buildAwarderLeaderboard() {
+    const wrap = document.createElement("div");
+    wrap.className = "awarder-board";
+    wrap.innerHTML = `<h3 class="section-title">🏆 Most Generous Grown-ups</h3>
+      <p class="section-note">Who's handed out the most kudos &amp; points across all the cousins.</p>`;
+    const rows = awarderTally();
+    if (rows.length === 0) {
+      wrap.innerHTML += `<p class="section-note">No awards handed out yet — give some kudos to get on the board! 🌟</p>`;
+      return wrap;
+    }
+    const medals = ["🥇", "🥈", "🥉"];
+    const here = (state.parent || "").trim().toLowerCase();
+    rows.forEach((r, i) => {
+      const isMe = !!here && r.name.toLowerCase() === here;
+      const row = document.createElement("div");
+      row.className = "roster-row" + (isMe ? " me" : "");
+      const medal = medals[i] || `#${i + 1}`;
+      row.innerHTML = `
+        <div class="lb-avatar" style="background:rgba(255,206,77,.18)">${medal}</div>
+        <div class="ros-name">${escapeHtml(r.name)}${isMe ? ` <span class="ros-you">you</span>` : ""}
+          <small>${r.kudos} kudos · ⭐ ${r.points} pts given</small></div>
+        <div class="ros-pts">${r.awards} award${r.awards === 1 ? "" : "s"}</div>`;
+      wrap.appendChild(row);
+    });
+    return wrap;
   }
 
   // ---- Camp Store (grown-up kiosk) ----------------------------------------

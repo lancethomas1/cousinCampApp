@@ -10,13 +10,13 @@
   "use strict";
 
   const C = window.CampCore;
-  const { CAMPERS, SCHEDULE, STORE, PHOTO_ALBUM_URL } = C.data;
+  const { CAMPERS, SCHEDULE, STORE, KUDOS, PHOTO_ALBUM_URL } = C.data;
   const {
     state, LS, save, Store, Photos, setRender, initShared,
     camperById, allActivities, isDone,
     pointsFor, balanceFor, completedCount, anyFullDay, fullDayCount,
     rewardById, claimedBy, claimOf,
-    kudosCountFor, parentBadgesFor,
+    kudosCountFor, cheersCountFor, giveCheer, parentBadgesFor,
     todayISO, fmtDow, dayNum, fmtLong, toast, escapeHtml, camperFace,
   } = C;
   const view = document.getElementById("view");
@@ -25,7 +25,7 @@
   // Each activity shows every cousin's face. A kid taps their own face to
   // check in (tap again to undo) — no "who am I" switching needed, so the
   // whole crew can share one iPad.
-  function activityRow(a) {
+  function activityRow(a, interactive = true) {
     const el = document.createElement("div");
     el.className = "activity-card";
 
@@ -43,6 +43,10 @@
         <div class="activity-loc">📍 ${escapeHtml(a.location)}</div>
       </div>`;
     el.appendChild(head);
+
+    // Check-in faces only appear on Today — activities can only be completed
+    // for the current day. On the Schedule tab the cards are informational.
+    if (!interactive) return el;
 
     const label = document.createElement("div");
     label.className = "kidrow-label";
@@ -89,7 +93,7 @@
     const hero = document.createElement("div");
     hero.className = "hero";
     hero.innerHTML = `
-      <div class="eyebrow">🕰️ Today at Cousin Camp</div>
+      <div class="eyebrow">🚂 Today at Cousin Camp</div>
       <h2>${escapeHtml(day.title)}</h2>
       <p>${day.era ? escapeHtml(day.era) + " · " : ""}${fmtLong(iso)}</p>
       <div class="hero-progress"><span style="width:${pct}%"></span></div>
@@ -107,7 +111,7 @@
     const frag = document.createElement("div");
     const head = document.createElement("div");
     head.innerHTML = `<h2 class="view-title">Journey Through Time 🗓️</h2>
-      <p class="view-sub">Five days of Cousin Camp — tap your face to check in!</p>`;
+      <p class="view-sub">Five days of Cousin Camp — head to Today to check in!</p>`;
     frag.appendChild(head);
 
     SCHEDULE.forEach((day) => {
@@ -124,7 +128,7 @@
         ${day.date === today ? '<span class="today-pill">TODAY</span>' : ""}
       `;
       block.appendChild(dh);
-      day.activities.forEach((a) => block.appendChild(activityRow({ ...a, date: day.date })));
+      day.activities.forEach((a) => block.appendChild(activityRow({ ...a, date: day.date }, false)));
       frag.appendChild(block);
     });
     view.replaceChildren(frag);
@@ -505,7 +509,7 @@
     const cert = document.createElement("div");
     cert.className = "certificate";
     cert.innerHTML = `
-      <div class="cert-top">🕰️ Cousin Camp 2026 🕰️</div>
+      <div class="cert-top">🚂 Cousin Camp 2026 🚂</div>
       <div class="cert-award">Time Machine Travelers · Official Certificate</div>
       <div class="cert-name">${escapeHtml(camper.name)}</div>
       <div class="cert-title">${superl.emoji} ${escapeHtml(superl.title)}</div>
@@ -627,7 +631,7 @@
     // Crew totals — what we've all done together this week.
     const crewPoints = CAMPERS.reduce((s, c) => s + pointsFor(c.id), 0);
     const crewBadges = CAMPERS.reduce((s, c) => s + badgesEarned(c.id).length + parentBadgesFor(c.id).length, 0);
-    const crewKudos = CAMPERS.reduce((s, c) => s + kudosCountFor(c.id), 0);
+    const crewCheers = CAMPERS.reduce((s, c) => s + cheersCountFor(c.id), 0);
     const crewPrizes = CAMPERS.filter((c) => claimOf(c.id)).length;
 
     const totals = document.createElement("div");
@@ -640,34 +644,75 @@
         <div class="cc-stats">
           <div class="cc-stat"><b>${crewPoints}</b><span>points earned</span></div>
           <div class="cc-stat"><b>${crewBadges}</b><span>badges</span></div>
-          <div class="cc-stat"><b>${crewKudos}</b><span>kudos</span></div>
+          <div class="cc-stat"><b>${crewCheers}</b><span>cheers 👏</span></div>
           <div class="cc-stat"><b>${crewPrizes}</b><span>prizes</span></div>
         </div>
       </div>`;
     frag.appendChild(totals);
 
     // Everyone's board — ranked by points, highest to lowest (ties broken by name).
+    const me = camperById(state.me);
     const board = document.createElement("div");
     board.innerHTML = `<h3 class="section-title">🌟 Our Time Travelers</h3>
-      <p class="section-note">Tap a cousin to cheer them on (and switch travelers).</p>`;
+      <p class="section-note">${me
+        ? `Tap a cousin to send them a cheer 👏 — tap your own row to switch travelers.`
+        : `Tap your face up top to pick your traveler, then cheer on your cousins! 👏`}</p>`;
     [...CAMPERS].sort((a, b) => pointsFor(b.id) - pointsFor(a.id) || a.name.localeCompare(b.name)).forEach((c) => {
       const badges = badgesEarned(c.id).length + parentBadgesFor(c.id).length;
+      const isMe = c.id === state.me;
       const row = document.createElement("button");
       row.type = "button";
-      row.className = "roster-row" + (c.id === state.me ? " me" : "");
+      row.className = "roster-row" + (isMe ? " me" : "");
       row.innerHTML = `
         <div class="lb-avatar" style="background:${c.color}22">${camperFace(c)}</div>
-        <div class="ros-name">${escapeHtml(c.name)}
-          <small>${badges} badges · ${kudosCountFor(c.id)} kudos</small></div>
+        <div class="ros-name">${escapeHtml(c.name)}${isMe ? ` <span class="ros-you">you</span>` : ""}
+          <small>${badges} badges · 👏 ${cheersCountFor(c.id)} cheers</small></div>
         <div class="ros-pts">⭐ ${pointsFor(c.id)}</div>`;
+      // Tap a cousin to cheer them; tap yourself (or with no traveler set) to
+      // open the traveler picker instead.
       row.addEventListener("click", () => {
-        state.me = c.id; save(LS.me, c.id); updateWhoami(); render();
+        if (isMe || !me) { openCamperModal(); return; }
+        openCheerPicker(c);
       });
       board.appendChild(row);
     });
     frag.appendChild(board);
 
     view.replaceChildren(frag);
+  }
+
+  // Cousin-to-cousin cheer: pick a kudos card to send to `toCamper` from the
+  // active traveler. Cheers are recognition only — they add 0 points — so the
+  // cards show no point value here.
+  function openCheerPicker(toCamper) {
+    const me = camperById(state.me);
+    if (!me) { toast("Pick your traveler first! 👆"); openCamperModal(); return; }
+    if (me.id === toCamper.id) { openCamperModal(); return; }
+    const overlay = document.createElement("div");
+    overlay.className = "modal";
+    overlay.innerHTML = `
+      <div class="modal-backdrop" data-close></div>
+      <div class="modal-card" role="dialog" aria-modal="true">
+        <h2>${toCamper.emoji} Cheer ${escapeHtml(toCamper.name)}!</h2>
+        <p class="modal-sub">From ${escapeHtml(me.name)} — tap a cheer to send it. Cheers are just for fun, no points. 🎉</p>
+        <div class="kudos-grid"></div>
+        <button class="btn-ghost" type="button" data-close>Close</button>
+      </div>`;
+    const grid = overlay.querySelector(".kudos-grid");
+    KUDOS.forEach((k) => {
+      const tile = document.createElement("button");
+      tile.type = "button";
+      tile.className = "kudos-tile";
+      tile.innerHTML = `
+        <div class="kt-emoji">${k.emoji}</div>
+        <div class="kt-label">${escapeHtml(k.label)}</div>
+        <div class="kt-desc">${escapeHtml(k.desc)}</div>`;
+      tile.addEventListener("click", () => { giveCheer(me.id, toCamper.id, k.id); close(); });
+      grid.appendChild(tile);
+    });
+    function close() { overlay.remove(); }
+    overlay.querySelectorAll("[data-close]").forEach((e) => e.addEventListener("click", close));
+    document.body.appendChild(overlay);
   }
 
   // ---- Router -------------------------------------------------------------
