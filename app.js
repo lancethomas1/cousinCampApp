@@ -13,7 +13,7 @@
   const { CAMPERS, SCHEDULE, STORE, KUDOS, PHOTO_ALBUM_URL } = C.data;
   const {
     state, LS, save, Store, Photos, setRender, initShared,
-    camperById, allActivities, isDone,
+    camperById, allActivities, scoringActivities, isDone,
     pointsFor, balanceFor, completedCount, anyFullDay, fullDayCount,
     rewardById, claimedBy, claimOf,
     kudosCountFor, cheersCountFor, giveCheer, parentBadgesFor,
@@ -27,7 +27,14 @@
   // whole crew can share one iPad.
   function activityRow(a, interactive = true) {
     const el = document.createElement("div");
-    el.className = "activity-card";
+    // Informational slots (meals, baths, travel…) are heads-up only: muted card,
+    // no points badge, no check-in faces — they just tell you what's happening.
+    el.className = "activity-card" + (a.info ? " info" : "");
+
+    // Points-earning items show their star; info items show a quiet "FYI" tag.
+    const tag = a.info
+      ? `<span class="activity-info-tag">ℹ️ Heads up</span>`
+      : `<span class="activity-points">⭐ ${a.points}</span>`;
 
     const head = document.createElement("div");
     head.className = "activity-head";
@@ -36,7 +43,7 @@
       <div class="activity-body">
         <div class="activity-top">
           <span class="activity-time">${a.time}</span>
-          <span class="activity-points">⭐ ${a.points}</span>
+          ${tag}
         </div>
         <div class="activity-title">${escapeHtml(a.title)}</div>
         <p class="activity-desc">${escapeHtml(a.desc)}</p>
@@ -44,9 +51,9 @@
       </div>`;
     el.appendChild(head);
 
-    // Check-in faces only appear on Today — activities can only be completed
-    // for the current day. On the Schedule tab the cards are informational.
-    if (!interactive) return el;
+    // Check-in faces only appear on Today, and only for points-earning items —
+    // info slots can't be "completed". On the Schedule tab cards are read-only.
+    if (!interactive || a.info) return el;
 
     const label = document.createElement("div");
     label.className = "kidrow-label";
@@ -83,9 +90,12 @@
     const day = SCHEDULE.find((d) => d.date === iso);
     const frag = document.createElement("div");
 
-    // Camp-wide progress: every cousin's check-off across today's activities.
-    const totalChecks = day.activities.length * CAMPERS.length;
-    const doneChecks = day.activities.reduce(
+    // Camp-wide progress: every cousin's check-off across today's points-earning
+    // activities. Informational slots (a.info) aren't checked in, so they're
+    // left out of the totals.
+    const todoToday = day.activities.filter((a) => !a.info);
+    const totalChecks = todoToday.length * CAMPERS.length;
+    const doneChecks = todoToday.reduce(
       (s, a) => s + CAMPERS.filter((c) => isDone(c.id, a.id)).length, 0
     );
     const pct = totalChecks ? Math.round((doneChecks / totalChecks) * 100) : 0;
@@ -123,7 +133,7 @@
         <div class="day-badge"><div class="dow">${fmtDow(day.date)}</div><div class="dnum">${dayNum(day.date)}</div></div>
         <div>
           <h3>${escapeHtml(day.title)}</h3>
-          <div class="day-theme">${day.era ? escapeHtml(day.era) : day.activities.length + " activities"}</div>
+          <div class="day-theme">${day.era ? escapeHtml(day.era) : day.activities.filter((a) => !a.info).length + " activities"}</div>
         </div>
         ${day.date === today ? '<span class="today-pill">TODAY</span>' : ""}
       `;
@@ -345,7 +355,7 @@
   // claims one unique prize, and earns an Awards Day certificate. Badges
   // earned from activities are shown alongside special honors handed out by
   // grown-ups from the parents app.
-  const TOTAL_ACTS = allActivities().length;
+  const TOTAL_ACTS = scoringActivities().length;
   const BADGES = [
     { id: "cadet",     emoji: "🚀", label: "Time Cadet",      hint: "Complete your very first activity",     test: (c) => completedCount(c) >= 1 },
     { id: "going",     emoji: "⭐", label: "Getting Going",   hint: "Complete 5 activities",                 test: (c) => completedCount(c) >= 5 },
