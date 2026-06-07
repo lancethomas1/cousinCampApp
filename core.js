@@ -323,6 +323,22 @@
   function cheersCountFor(camperId) {
     return awardsFor(camperId).filter((a) => a.type === "cheer").length;
   }
+  // Cousin-to-cousin cheers a camper has GIVEN to others. Cheers live on the
+  // recipient, tagged with `from`, so count every recipient's cheers from this id.
+  function cheersGivenBy(camperId) {
+    return CAMPERS.reduce((n, c) =>
+      n + awardsFor(c.id).filter((a) => a.type === "cheer" && a.from === camperId).length, 0);
+  }
+  // A newest-first list of every cheer in camp, flattened across recipients.
+  // Each row is { from, to, emoji, label, ts }. `limit` caps the result.
+  function recentCheers(limit) {
+    const out = [];
+    CAMPERS.forEach((c) => awardsFor(c.id).forEach((a) => {
+      if (a.type === "cheer") out.push({ from: a.from, to: c.id, emoji: a.emoji, label: a.label, ts: a.ts });
+    }));
+    out.sort((x, y) => (y.ts || 0) - (x.ts || 0));
+    return limit ? out.slice(0, limit) : out;
+  }
   // Special parent badges a camper currently holds.
   function parentBadgesFor(camperId) {
     const held = new Set(awardsFor(camperId).filter((a) => a.type === "badge").map((a) => a.refId));
@@ -675,7 +691,7 @@
     // store
     rewardById, claimedBy, claimOf, spentBy, balanceFor,
     // parent awards
-    kudosById, parentBadgeById, awardsFor, kudosCountFor, cheersCountFor, parentBadgesFor, hasParentBadge, awarderTally,
+    kudosById, parentBadgeById, awardsFor, kudosCountFor, cheersCountFor, cheersGivenBy, recentCheers, parentBadgesFor, hasParentBadge, awarderTally,
     targetCamper, setTarget, giveKudos, giveCheer, giveBonus, toggleParentBadge, undoAward,
     // parent identity & fairness rule
     allParentNames, grownupRoster, currentParent, ownKidIds, isOwnKid, setParent, clearParent,

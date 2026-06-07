@@ -16,8 +16,8 @@
     camperById, allActivities, scoringActivities, isDone,
     pointsFor, balanceFor, completedCount, anyFullDay, fullDayCount,
     rewardById, claimedBy, claimOf,
-    kudosCountFor, cheersCountFor, giveCheer, parentBadgesFor,
-    todayISO, fmtDow, dayNum, fmtLong, toast, escapeHtml, camperFace,
+    kudosCountFor, cheersCountFor, cheersGivenBy, recentCheers, giveCheer, parentBadgesFor,
+    todayISO, fmtDow, dayNum, fmtLong, toast, escapeHtml, camperFace, timeAgo,
   } = C;
   const view = document.getElementById("view");
 
@@ -676,7 +676,7 @@
       row.innerHTML = `
         <div class="lb-avatar" style="background:${c.color}22">${camperFace(c)}</div>
         <div class="ros-name">${escapeHtml(c.name)}${isMe ? ` <span class="ros-you">you</span>` : ""}
-          <small>${badges} badges · 👏 ${cheersCountFor(c.id)} cheers</small></div>
+          <small>${badges} badges · 👏 ${cheersCountFor(c.id)} got · ${cheersGivenBy(c.id)} gave</small></div>
         <div class="ros-pts">⭐ ${pointsFor(c.id)}</div>`;
       // Tap a cousin to cheer them; tap yourself (or with no traveler set) to
       // open the traveler picker instead.
@@ -687,6 +687,32 @@
       board.appendChild(row);
     });
     frag.appendChild(board);
+
+    // Recent cheers — who's been cheering whom across camp (newest first).
+    const feedWrap = document.createElement("div");
+    feedWrap.innerHTML = `<h3 class="section-title">👏 Recent Cheers</h3>`;
+    const cheers = recentCheers(15);
+    if (cheers.length === 0) {
+      feedWrap.innerHTML += `<p class="section-note">No cheers yet — tap a cousin above to send the first one! 🎉</p>`;
+    } else {
+      const list = document.createElement("div");
+      list.className = "award-feed";
+      cheers.forEach((ch) => {
+        const from = camperById(ch.from), to = camperById(ch.to);
+        if (!from || !to) return;
+        const row = document.createElement("div");
+        row.className = "feed-row";
+        row.innerHTML = `
+          ${camperFace(from, "fr-emoji")}
+          <div class="fr-body">
+            <div class="fr-label">${escapeHtml(from.name)} cheered ${escapeHtml(to.name)} ${ch.emoji}</div>
+            <div class="fr-time">${escapeHtml(ch.label)} · ${timeAgo(ch.ts)}</div>
+          </div>`;
+        list.appendChild(row);
+      });
+      feedWrap.appendChild(list);
+    }
+    frag.appendChild(feedWrap);
 
     view.replaceChildren(frag);
   }
