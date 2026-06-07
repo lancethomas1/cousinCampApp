@@ -18,11 +18,11 @@ const CAMPERS = [
   { id: "william", name: "William", emoji: "🧢", color: "#ef6c4d", parents: "Lance & Betsy", photo: "photos/william.jpg" },
   { id: "sophie",  name: "Sophie",  emoji: "🦋", color: "#2980b9", parents: "Chris", photo: "photos/sophie.jpg" },
   { id: "samuel",  name: "Samuel",  emoji: "⚽", color: "#27ae60", parents: "Lance & Betsy", photo: "photos/samuel.jpg" },
-  { id: "logan",   name: "Logan",   emoji: "🦖", color: "#8e44ad", parents: "Jason & Sera" },
-  { id: "zoe",     name: "Zoe",     emoji: "🌈", color: "#f39c12", parents: "Jason & Sera" },
+  { id: "logan",   name: "Logan",   emoji: "🦖", color: "#8e44ad", parents: "Jason & Sera", photo: "photos/logan.jpg" },
+  { id: "zoe",     name: "Zoe",     emoji: "🌈", color: "#f39c12", parents: "Jason & Sera", photo: "photos/zoe.jpg" },
   { id: "leo",     name: "Leo",     emoji: "🦁", color: "#16a085", parents: "Lance & Betsy", photo: "photos/leo.jpg" },
   { id: "ava",     name: "Ava",     emoji: "🌸", color: "#d63384", parents: "Shannon & Vinny", photo: "photos/ava.jpg" },
-  { id: "noel",    name: "Noel",    emoji: "🐥", color: "#00b894", parents: "Jason & Sera" },
+  { id: "noel",    name: "Noel",    emoji: "🐥", color: "#00b894", parents: "Jason & Sera", photo: "photos/noel.jpg" },
 ];
 
 // Extra grown-ups who help run camp but have no kids of their own here
