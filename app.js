@@ -13,7 +13,7 @@
   const { CAMPERS, SCHEDULE, STORE, KUDOS, PHOTO_ALBUM_URL } = C.data;
   const {
     state, LS, save, Store, Photos, setRender, initShared,
-    camperById, allActivities, scoringActivities, isDone,
+    camperById, allActivities, prepActivities, hasPrep, prepKey, prepDoneCount, isPrepared, isDone,
     pointsFor, balanceFor, completedCount, anyFullDay, fullDayCount,
     rewardById, claimedBy, claimOf,
     kudosCountFor, cheersCountFor, cheersGivenBy, recentCheers, giveCheer, parentBadgesFor,
@@ -22,19 +22,21 @@
   const view = document.getElementById("view");
 
   // ---- Activity row markup (shared-iPad kiosk) ---------------------------
-  // Each activity shows every cousin's face. A kid taps their own face to
-  // check in (tap again to undo) — no "who am I" switching needed, so the
-  // whole crew can share one iPad.
+  // Every cousin does every activity, so there's no per-kid "check in." Some
+  // activities need prep (a.prep) — those become "Get Prepared" cards: each prep
+  // item shows a row of cousin faces, and a cousin earns the activity's points
+  // once they've ticked every item on their own list. Activities without prep
+  // are reference-only (a.info ones render as muted "heads up" cards).
   function activityRow(a, interactive = true) {
     const el = document.createElement("div");
-    // Informational slots (meals, baths, travel…) are heads-up only: muted card,
-    // no points badge, no check-in faces — they just tell you what's happening.
-    el.className = "activity-card" + (a.info ? " info" : "");
+    const prepCard = hasPrep(a);
+    el.className = "activity-card" + (prepCard ? " prep" : (a.info ? " info" : ""));
 
-    // Points-earning items show their star; info items show a quiet "FYI" tag.
-    const tag = a.info
-      ? `<span class="activity-info-tag">ℹ️ Heads up</span>`
-      : `<span class="activity-points">⭐ ${a.points}</span>`;
+    // Prep cards show the points you can earn; routine slots show a quiet FYI
+    // tag; plain reference activities show neither.
+    const tag = prepCard
+      ? `<span class="activity-points">⭐ ${a.points}</span>`
+      : (a.info ? `<span class="activity-info-tag">ℹ️ Heads up</span>` : "");
 
     const head = document.createElement("div");
     head.className = "activity-head";
@@ -51,37 +53,54 @@
       </div>`;
     el.appendChild(head);
 
-    // Check-in faces only appear on Today, and only for points-earning items —
-    // info slots can't be "completed". On the Schedule tab cards are read-only.
-    if (!interactive || a.info) return el;
+    if (!prepCard) return el;
+    // On the Schedule tab cards are read-only — show the prep list as a preview
+    // so kids know what to pack ahead of time. Today gets the tappable faces.
+    if (!interactive) { el.appendChild(prepPreview(a)); return el; }
 
-    const label = document.createElement("div");
-    label.className = "kidrow-label";
-    label.textContent = "Who checked in?";
-    el.appendChild(label);
+    a.prep.forEach((item, i) => {
+      const key = prepKey(a.id, i);
+      const label = document.createElement("div");
+      label.className = "kidrow-label prep-item-label";
+      label.textContent = item;
+      el.appendChild(label);
 
-    const kidrow = document.createElement("div");
-    kidrow.className = "kidrow";
-    CAMPERS.forEach((c) => {
-      const done = isDone(c.id, a.id);
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "kid-check" + (done ? " done" : "");
-      btn.style.setProperty("--kc", c.color);
-      btn.setAttribute("aria-pressed", done ? "true" : "false");
-      btn.setAttribute("aria-label", `Mark ${c.name} ${done ? "not done" : "done"} for ${a.title}`);
-      btn.innerHTML = `
-        <span class="kc-avatar">${camperFace(c, "kc-emoji")}<span class="kc-check">✓</span></span>
-        <span class="kc-name">${escapeHtml(c.name)}</span>`;
-      btn.addEventListener("click", () => {
-        const turningOn = !isDone(c.id, a.id);
-        if (turningOn) toast(`+${a.points} ${c.name} ✅`);
-        Store.toggle(c.id, a.id, turningOn);
+      const kidrow = document.createElement("div");
+      kidrow.className = "kidrow";
+      CAMPERS.forEach((c) => {
+        const done = isDone(c.id, key);
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "kid-check" + (done ? " done" : "");
+        btn.style.setProperty("--kc", c.color);
+        btn.setAttribute("aria-pressed", done ? "true" : "false");
+        btn.setAttribute("aria-label", `${c.name} — ${item} — ${done ? "not done" : "done"}`);
+        btn.innerHTML = `
+          <span class="kc-avatar">${camperFace(c, "kc-emoji")}<span class="kc-check">✓</span></span>
+          <span class="kc-name">${escapeHtml(c.name)}</span>`;
+        btn.addEventListener("click", () => {
+          const turningOn = !isDone(c.id, key);
+          if (turningOn) {
+            // Did this tick finish the whole checklist for this cousin?
+            const allReady = a.prep.every((_, j) => j === i || isDone(c.id, prepKey(a.id, j)));
+            toast(allReady ? `🎒 ${c.name} is ready! +${a.points}` : `✓ ${c.name}: ${item}`);
+          }
+          Store.toggle(c.id, key, turningOn);
+        });
+        kidrow.appendChild(btn);
       });
-      kidrow.appendChild(btn);
+      el.appendChild(kidrow);
     });
-    el.appendChild(kidrow);
     return el;
+  }
+
+  // Read-only prep list shown under prepared cards on the Schedule tab.
+  function prepPreview(a) {
+    const box = document.createElement("div");
+    box.className = "prep-preview";
+    box.innerHTML = `<div class="prep-preview-head">🎒 Get prepared</div>` +
+      a.prep.map((item) => `<div class="prep-preview-item">▢ ${escapeHtml(item)}</div>`).join("");
+    return box;
   }
 
   // ---- TODAY view ---------------------------------------------------------
@@ -90,13 +109,12 @@
     const day = SCHEDULE.find((d) => d.date === iso);
     const frag = document.createElement("div");
 
-    // Camp-wide progress: every cousin's check-off across today's points-earning
-    // activities. Informational slots (a.info) aren't checked in, so they're
-    // left out of the totals.
-    const todoToday = day.activities.filter((a) => !a.info);
-    const totalChecks = todoToday.length * CAMPERS.length;
-    const doneChecks = todoToday.reduce(
-      (s, a) => s + CAMPERS.filter((c) => isDone(c.id, a.id)).length, 0
+    // Camp-wide progress: how many cousins are fully prepared across today's
+    // prep activities (the ones that earn points). Days with no prep show 0/0.
+    const prepToday = day.activities.filter(hasPrep);
+    const totalChecks = prepToday.length * CAMPERS.length;
+    const doneChecks = prepToday.reduce(
+      (s, a) => s + CAMPERS.filter((c) => isPrepared(c.id, a)).length, 0
     );
     const pct = totalChecks ? Math.round((doneChecks / totalChecks) * 100) : 0;
 
@@ -107,7 +125,9 @@
       <h2>${escapeHtml(day.title)}</h2>
       <p>${day.era ? escapeHtml(day.era) + " · " : ""}${fmtLong(iso)}</p>
       <div class="hero-progress"><span style="width:${pct}%"></span></div>
-      <div class="hero-progress-label">👇 Tap your face to check in! · ${doneChecks}/${totalChecks} done today</div>
+      <div class="hero-progress-label">${totalChecks
+        ? `🎒 Tap your face as you get ready! · ${doneChecks}/${totalChecks} prepped today`
+        : `🎉 No prep needed today — just have fun!`}</div>
     `;
     frag.appendChild(hero);
 
@@ -121,7 +141,7 @@
     const frag = document.createElement("div");
     const head = document.createElement("div");
     head.innerHTML = `<h2 class="view-title">Journey Through Time 🗓️</h2>
-      <p class="view-sub">Five days of Cousin Camp — head to Today to check in!</p>`;
+      <p class="view-sub">Five days of Cousin Camp — head to Today to get prepared!</p>`;
     frag.appendChild(head);
 
     SCHEDULE.forEach((day) => {
@@ -133,7 +153,7 @@
         <div class="day-badge"><div class="dow">${fmtDow(day.date)}</div><div class="dnum">${dayNum(day.date)}</div></div>
         <div>
           <h3>${escapeHtml(day.title)}</h3>
-          <div class="day-theme">${day.era ? escapeHtml(day.era) : day.activities.filter((a) => !a.info).length + " activities"}</div>
+          <div class="day-theme">${day.era ? escapeHtml(day.era) : day.activities.length + " activities"}</div>
         </div>
         ${day.date === today ? '<span class="today-pill">TODAY</span>' : ""}
       `;
@@ -355,16 +375,16 @@
   // claims one unique prize, and earns an Awards Day certificate. Badges
   // earned from activities are shown alongside special honors handed out by
   // grown-ups from the parents app.
-  const TOTAL_ACTS = scoringActivities().length;
+  const TOTAL_ACTS = prepActivities().length;
   const BADGES = [
-    { id: "cadet",     emoji: "🚀", label: "Time Cadet",      hint: "Complete your very first activity",     test: (c) => completedCount(c) >= 1 },
-    { id: "going",     emoji: "⭐", label: "Getting Going",   hint: "Complete 5 activities",                 test: (c) => completedCount(c) >= 5 },
-    { id: "dynamo",    emoji: "🌟", label: "Daily Dynamo",    hint: "Finish every activity in any one day",  test: (c) => anyFullDay(c) },
-    { id: "twoday",    emoji: "📅", label: "Two-Day Trekker", hint: "Finish two full days of camp",          test: (c) => fullDayCount(c) >= 2 },
-    { id: "halfway",   emoji: "🎯", label: "Time Traveler",   hint: "Complete half of all activities",       test: (c) => completedCount(c) >= Math.ceil(TOTAL_ACTS / 2) },
-    { id: "prize",     emoji: "🏆", label: "Prize Winner",    hint: "Claim a prize from the Camp Store",     test: (c) => !!claimOf(c) },
-    { id: "champion",  emoji: "👑", label: "Time Champion",   hint: "Complete 16 activities",                test: (c) => completedCount(c) >= 16 },
-    { id: "master",    emoji: "🎖️", label: "Master of Time",  hint: "Complete every single activity",        test: (c) => completedCount(c) >= TOTAL_ACTS },
+    { id: "cadet",     emoji: "🚀", label: "Time Cadet",      hint: "Get ready for your first activity",          test: (c) => completedCount(c) >= 1 },
+    { id: "going",     emoji: "⭐", label: "Getting Going",   hint: "Get ready for 3 activities",                 test: (c) => completedCount(c) >= 3 },
+    { id: "dynamo",    emoji: "🌟", label: "Daily Dynamo",    hint: "Get fully prepped for a whole day",          test: (c) => anyFullDay(c) },
+    { id: "twoday",    emoji: "📅", label: "Two-Day Trekker", hint: "Get fully prepped for two whole days",       test: (c) => fullDayCount(c) >= 2 },
+    { id: "halfway",   emoji: "🎯", label: "Time Traveler",   hint: "Get ready for half the activities",          test: (c) => completedCount(c) >= Math.ceil(TOTAL_ACTS / 2) },
+    { id: "prize",     emoji: "🏆", label: "Prize Winner",    hint: "Claim a prize from the Camp Store",          test: (c) => !!claimOf(c) },
+    { id: "champion",  emoji: "👑", label: "Time Champion",   hint: "Get ready for 10 activities",                test: (c) => completedCount(c) >= 10 },
+    { id: "master",    emoji: "🎖️", label: "Master of Time",  hint: "Get ready for every single activity",        test: (c) => completedCount(c) >= TOTAL_ACTS },
   ];
   const badgesEarned = (camperId) => BADGES.filter((b) => b.test(camperId));
 
@@ -525,7 +545,7 @@
       <div class="cert-title">${superl.emoji} ${escapeHtml(superl.title)}</div>
       <p class="cert-blurb">${escapeHtml(superl.blurb)}</p>
       <div class="cert-stats">
-        <span>🎯 ${completedCount(camper.id)} activities</span>
+        <span>🎯 ${completedCount(camper.id)} prepped</span>
         <span>🏅 ${badgeCount} badges</span>
         <span>⭐ ${pointsFor(camper.id)} points</span>
         ${reward ? `<span>${reward.emoji} ${escapeHtml(reward.name)}</span>` : ""}
@@ -537,11 +557,11 @@
   // Pick a celebratory superlative based on what the camper did most.
   function pickSuperlative(camperId) {
     const done = completedCount(camperId);
-    if (done >= TOTAL_ACTS)        return { emoji: "🎖️", title: "Master of All Time", blurb: "Did every single thing at camp. Mimi is amazed!" };
-    if (done >= 16)               return { emoji: "👑", title: "Time Champion", blurb: "A true champion of Cousin Camp." };
+    if (done >= TOTAL_ACTS)        return { emoji: "🎖️", title: "Master of All Time", blurb: "Got ready for every single thing at camp. Mimi is amazed!" };
+    if (done >= 10)               return { emoji: "👑", title: "Time Champion", blurb: "A true champion of Cousin Camp." };
     if (fullDayCount(camperId) >= 2) return { emoji: "🌟", title: "All-Day Adventurer", blurb: "Jumped into camp from sunup to sundown." };
     if (done >= Math.ceil(TOTAL_ACTS / 2)) return { emoji: "🚀", title: "Time-Travel All-Star", blurb: "Made the most of the journey all week long." };
-    if (done >= 5)                return { emoji: "⭐", title: "Rising Star", blurb: "Off to a fantastic start at camp." };
+    if (done >= 3)                return { emoji: "⭐", title: "Rising Star", blurb: "Off to a fantastic start at camp." };
     return { emoji: "⏳", title: "Time Travelers Graduate", blurb: "A wonderful week of memories with the cousins." };
   }
 

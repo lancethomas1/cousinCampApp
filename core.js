@@ -263,32 +263,43 @@
   // ---- Campers & activities ----------------------------------------------
   const camperById = (id) => CAMPERS.find((c) => c.id === id) || null;
   const allActivities = () => SCHEDULE.flatMap((d) => d.activities.map((a) => ({ ...a, date: d.date })));
-  // Only points-earning activities — informational slots (a.info) are excluded
-  // from scoring, progress, and badge math; kids can't check them in.
-  const scoringActivities = () => allActivities().filter((a) => !a.info);
+  // Every cousin does every activity, so there's no per-kid "check in." Points
+  // come from getting *prepared*: an activity earns points only if it carries a
+  // `prep` checklist, and a camper earns them by ticking the whole list.
+  const hasPrep = (a) => Array.isArray(a.prep) && a.prep.length > 0;
+  const prepActivities = () => allActivities().filter(hasPrep);
+  // Stable key for one prep item's per-camper state, stored in the done map.
+  const prepKey = (activityId, i) => `${activityId}#${i}`;
 
   function doneMap(camperId) { return state.done[camperId] || {}; }
   function isDone(camperId, activityId) { return !!doneMap(camperId)[activityId]; }
-  // Points from checked-off activities only (informational slots don't score).
-  function activityPointsFor(camperId) {
+  // How many of an activity's prep items a camper has ticked.
+  function prepDoneCount(camperId, a) {
     const dm = doneMap(camperId);
-    return scoringActivities().reduce((sum, a) => sum + (dm[a.id] ? a.points : 0), 0);
+    return hasPrep(a) ? a.prep.reduce((n, _, i) => n + (dm[prepKey(a.id, i)] ? 1 : 0), 0) : 0;
   }
-  // Grand total = activity points + everything grown-ups have awarded.
+  // A camper is "prepared" for an activity once every prep item is ticked.
+  function isPrepared(camperId, a) {
+    return hasPrep(a) && prepDoneCount(camperId, a) === a.prep.length;
+  }
+  // Points are earned per activity by completing its full prep checklist.
+  function activityPointsFor(camperId) {
+    return prepActivities().reduce((sum, a) => sum + (isPrepared(camperId, a) ? a.points : 0), 0);
+  }
+  // Grand total = prep points + everything grown-ups have awarded.
   function pointsFor(camperId) {
     return activityPointsFor(camperId) + awardPointsFor(camperId);
   }
+  // How many activities a camper is fully prepared for (used by badges).
   function completedCount(camperId) {
-    const dm = doneMap(camperId);
-    return scoringActivities().filter((a) => dm[a.id]).length;
+    return prepActivities().filter((a) => isPrepared(camperId, a)).length;
   }
-  // True if the camper finished every points-earning activity on a given day.
-  // Informational slots (a.info) don't need checking, so they're skipped.
+  // True if the camper is prepared for every prep activity on a given day.
   function completedDay(camperId, date) {
     const day = SCHEDULE.find((d) => d.date === date);
     if (!day) return false;
-    const todo = day.activities.filter((a) => !a.info);
-    return todo.length > 0 && todo.every((a) => isDone(camperId, a.id));
+    const todo = day.activities.filter(hasPrep);
+    return todo.length > 0 && todo.every((a) => isPrepared(camperId, a));
   }
   function anyFullDay(camperId) { return SCHEDULE.some((d) => completedDay(camperId, d.date)); }
   function fullDayCount(camperId) { return SCHEDULE.filter((d) => completedDay(camperId, d.date)).length; }
@@ -685,7 +696,7 @@
     state, LS, load, save,
     setRender, initShared, startShared, Store, Photos,
     // campers & activities
-    camperById, allActivities, scoringActivities, doneMap, isDone,
+    camperById, allActivities, prepActivities, hasPrep, prepKey, prepDoneCount, isPrepared, doneMap, isDone,
     activityPointsFor, awardPointsFor, pointsFor,
     completedCount, completedDay, anyFullDay, fullDayCount,
     // store

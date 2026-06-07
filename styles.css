@@ -332,6 +332,38 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
   opacity: .9;
 }
 .activity-card.info .activity-title { font-size: 16px; color: var(--ink-soft); }
+
+/* Prepared cards — the points-earning activities. A gold accent and a
+   prep-checklist label set them apart from plain reference cards. */
+.activity-card.prep { border-left: 4px solid var(--gold); }
+.prep-item-label {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 14px;
+  color: var(--ink);
+}
+.prep-item-label::before { content: "☐ "; color: var(--ink-soft); }
+
+/* Read-only prep list shown under prepared cards on the Schedule tab. */
+.prep-preview {
+  background: var(--inset);
+  border-top: 1px solid var(--line);
+  padding: 10px 16px 12px;
+}
+.prep-preview-head {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--ink-soft);
+  margin-bottom: 5px;
+}
+.prep-preview-item {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  padding: 2px 0;
+}
 .activity-head {
   display: flex;
   gap: 13px;
