@@ -119,7 +119,10 @@
     const pct = totalChecks ? Math.round((doneChecks / totalChecks) * 100) : 0;
 
     const hero = document.createElement("div");
-    hero.className = "hero";
+    // Start in the correct state for the current scroll position. Setting the
+    // class before the hero is inserted means no collapse animation fires on
+    // re-renders (e.g. each check-in) — only on an actual scroll past the line.
+    hero.className = "hero" + (heroShouldCompact() ? " compact" : "");
     hero.innerHTML = `
       <div class="eyebrow">🚂 Today at Cousin Camp</div>
       <h2>${escapeHtml(day.title)}</h2>
@@ -813,9 +816,12 @@
       document.documentElement.style.setProperty("--header-h", appHeader.offsetHeight + "px");
     }
   }
+  // True once the page has scrolled far enough to collapse the hero down to
+  // its prep-progress bar.
+  function heroShouldCompact() { return window.scrollY > 24; }
   function syncStickyHero() {
     const hero = view.querySelector(".hero");
-    if (hero) hero.classList.toggle("compact", window.scrollY > 24);
+    if (hero) hero.classList.toggle("compact", heroShouldCompact());
   }
 
   function go(route) {
