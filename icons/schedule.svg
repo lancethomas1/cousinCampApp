@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
+  <defs>
+    <clipPath id="schBody"><rect x="26" y="30" width="76" height="78" rx="11"/></clipPath>
+  </defs>
+  <g transform="rotate(-3 64 70)">
+    <!-- Board (flat cel shading) -->
+    <g clip-path="url(#schBody)">
+      <rect x="26" y="30" width="76" height="78" fill="#332f34"/>
+      <polygon points="26,74 102,64 102,108 26,108" fill="#1d1b20"/>
+      <rect x="26" y="30" width="76" height="3.5" fill="#585360"/>
+    </g>
+    <rect x="26" y="30" width="76" height="78" rx="11" fill="none" stroke="#16141a" stroke-width="3"/>
+
+    <!-- Top clip -->
+    <rect x="50" y="20" width="28" height="16" rx="5" fill="#d4a52e"/>
+    <rect x="56" y="15" width="16" height="9" rx="4.5" fill="#16141a"/>
+
+    <!-- Agenda rows: cyan check + brass line -->
+    <g>
+      <rect x="38" y="48" width="9" height="9" rx="2.5" fill="#5fd0e6"/>
+      <rect x="53" y="49" width="37" height="6" rx="3" fill="#585360"/>
+
+      <rect x="38" y="66" width="9" height="9" rx="2.5" fill="#5fd0e6"/>
+      <rect x="53" y="67" width="37" height="6" rx="3" fill="#585360"/>
+
+      <rect x="38" y="84" width="9" height="9" rx="2.5" fill="#5fd0e6"/>
+      <rect x="53" y="85" width="29" height="6" rx="3" fill="#585360"/>
+    </g>
+  </g>
+</svg>

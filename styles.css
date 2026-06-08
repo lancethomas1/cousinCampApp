@@ -758,8 +758,9 @@ select.day-filter {
   transition: color .18s ease, background .18s ease, box-shadow .18s ease;
 }
 .tab-icon {
-  font-size: 21px;
-  line-height: 1;
+  width: 28px;
+  height: 28px;
+  display: block;
   filter: drop-shadow(0 1px 2px rgba(0,0,0,.45));
   transition: transform .18s ease;
 }

@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
+  <defs>
+    <clipPath id="bowl">
+      <path d="M36 28 H92 V44 A28 28 0 0 1 64 72 A28 28 0 0 1 36 44 Z"/>
+    </clipPath>
+  </defs>
+
+  <!-- Shine sparks -->
+  <g fill="#fff6d8" opacity=".85">
+    <polygon points="100,24 103,32 111,34 103,37 100,45 97,37 89,34 97,32"/>
+  </g>
+
+  <!-- Handles -->
+  <g stroke="#d4a52e" stroke-width="7" stroke-linecap="round" fill="none">
+    <path d="M37 33 C16 33 16 60 41 62"/>
+    <path d="M91 33 C112 33 112 60 87 62"/>
+  </g>
+
+  <!-- Cup bowl (flat cel shading) -->
+  <g clip-path="url(#bowl)">
+    <rect x="34" y="26" width="60" height="50" fill="#ffce4d"/>
+    <polygon points="36,50 92,42 92,76 36,76" fill="#d4a52e"/>
+    <polygon points="36,28 58,28 36,54" fill="#fff0b8" opacity=".6"/>
+  </g>
+
+  <!-- Rim -->
+  <rect x="34" y="24" width="60" height="7" rx="3.5" fill="#16141a"/>
+
+  <!-- Cyan star -->
+  <polygon fill="#5fd0e6" stroke="#16141a" stroke-width="2.5" stroke-linejoin="round"
+    points="64,40 67.5,49.5 77,49.5 69.5,55.5 72,65 64,59 56,65 58.5,55.5 51,49.5 60.5,49.5"/>
+
+  <!-- Stem -->
+  <rect x="57" y="72" width="14" height="14" fill="#d4a52e"/>
+  <polygon points="64,72 71,72 71,86 64,86" fill="#a87f1f"/>
+
+  <!-- Base -->
+  <polygon points="44,86 84,86 90,102 38,102" fill="#d4a52e"/>
+  <polygon points="64,86 84,86 90,102 64,102" fill="#a87f1f"/>
+  <rect x="36" y="100" width="56" height="8" rx="3" fill="#16141a"/>
+</svg>
