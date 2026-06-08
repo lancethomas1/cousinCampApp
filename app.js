@@ -10,7 +10,7 @@
   "use strict";
 
   const C = window.CampCore;
-  const { CAMPERS, SCHEDULE, STORE, KUDOS, PHOTO_ALBUM_URL } = C.data;
+  const { CAMPERS, SCHEDULE, STORE, KUDOS, CHEERS, PHOTO_ALBUM_URL } = C.data;
   const {
     state, LS, save, Store, Photos, setRender, initShared,
     camperById, allActivities, prepActivities, hasPrep, prepKey, prepDoneCount, isPrepared, isDone,
@@ -737,7 +737,7 @@
     view.replaceChildren(frag);
   }
 
-  // Cousin-to-cousin cheer: pick a kudos card to send to `toCamper` from the
+  // Cousin-to-cousin cheer: pick a cheer card to send to `toCamper` from the
   // active traveler. Cheers are recognition only — they add 0 points — so the
   // cards show no point value here.
   function openCheerPicker(toCamper) {
@@ -757,7 +757,9 @@
       </div>`;
     const reasonInput = overlay.querySelector(".cheer-reason");
     const grid = overlay.querySelector(".kudos-grid");
-    KUDOS.forEach((k) => {
+    // The full deck — playful cheers first, then the kudos cards — so cousins
+    // can send any of them (always as 0-point recognition).
+    CHEERS.concat(KUDOS).forEach((k) => {
       const tile = document.createElement("button");
       tile.type = "button";
       tile.className = "kudos-tile";
