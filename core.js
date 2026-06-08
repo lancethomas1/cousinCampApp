@@ -548,7 +548,10 @@
   function camperFace(c, emojiClass) {
     if (c && c.photo) {
       const cls = emojiClass ? `${emojiClass} avatar-photo` : "avatar-photo";
-      return `<img class="${cls}" src="${escapeHtml(c.photo)}" alt="${escapeHtml(c.name)}" loading="lazy">`;
+      // Eager + synchronous decode so that when a re-render recreates these
+      // avatars (e.g. on every check-in), the cached image paints atomically
+      // instead of flashing a blank frame the way loading="lazy" does.
+      return `<img class="${cls}" src="${escapeHtml(c.photo)}" alt="${escapeHtml(c.name)}" loading="eager" decoding="sync">`;
     }
     const e = c ? c.emoji : "";
     return emojiClass ? `<span class="${emojiClass}">${e}</span>` : e;
