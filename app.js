@@ -790,6 +790,23 @@
       t.classList.toggle("active", t.dataset.route === state.route)
     );
     view.scrollTop = 0;
+    window.scrollTo(0, 0);
+    syncStickyHero();
+  }
+
+  // ---- Sticky "Today" hero ------------------------------------------------
+  // The hero ("Today at Cousin Camp") is pinned beneath the app header via
+  // CSS. We feed it the header's live height and, once the page scrolls,
+  // collapse it so the prep-progress bar becomes the primary element on top.
+  const appHeader = document.querySelector(".app-header");
+  function syncHeaderHeight() {
+    if (appHeader) {
+      document.documentElement.style.setProperty("--header-h", appHeader.offsetHeight + "px");
+    }
+  }
+  function syncStickyHero() {
+    const hero = view.querySelector(".hero");
+    if (hero) hero.classList.toggle("compact", window.scrollY > 24);
   }
 
   function go(route) {
@@ -808,6 +825,10 @@
   });
 
   // ---- Boot ---------------------------------------------------------------
+  window.addEventListener("scroll", syncStickyHero, { passive: true });
+  window.addEventListener("resize", () => { syncHeaderHeight(); syncStickyHero(); });
+  syncHeaderHeight();
+
   setRender(render);
   updateWhoami();
   const initial = location.hash.replace("#", "");
