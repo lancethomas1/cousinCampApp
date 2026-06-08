@@ -22,6 +22,7 @@
   --bar: #1c1a23;        /* bottom tab bar */
   --field: #1b1922;      /* form inputs */
   --muted: #211f27;      /* locked / disabled surfaces */
+  --page-bg: #17151d;    /* opaque page base (sticky headers) */
   --ink: #f1ece1;        /* primary text */
   --ink-soft: #a39c91;   /* muted text */
   --deep: #16141a;       /* ink that sits on top of an accent fill */
@@ -472,8 +473,8 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
   margin: 0 -16px 12px;
   padding: 10px 16px;
   /* Opaque backing so activity rows scrolling underneath don't ghost
-     through the header and make it unreadable. */
-  background: #17151d;
+     through the header. Theme-aware so text stays readable in light mode. */
+  background: var(--page-bg);
   border-bottom: 1px solid var(--line);
 }
 .day-badge {
@@ -1288,6 +1289,7 @@ select.day-filter {
     --bar: #ffffff;        /* bottom tab bar */
     --field: #ffffff;      /* form inputs */
     --muted: #ece8ef;      /* locked / disabled surfaces */
+    --page-bg: #eef0f6;    /* opaque page base (sticky headers) */
     --ink: #242029;        /* primary text */
     --ink-soft: #6c6573;   /* muted text */
     --line: rgba(40,30,50,.12);
