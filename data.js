@@ -206,6 +206,27 @@ const KUDOS = [
   { id: "k-extra",   emoji: "💪", label: "Extra Effort",  points: 15, desc: "Went above and beyond." },
 ];
 
+// Cousin-to-cousin cheer cards (the campers' app). Pure recognition — worth
+// 0 points — so kids can high-five each other all week without gaming the
+// leaderboard. Kept separate from KUDOS so cheers can be playful and kid-voiced.
+const CHEERS = [
+  { id: "c-waytogo",  emoji: "👏", label: "Way to Go",     desc: "Crushed it — nice work!" },
+  { id: "c-highfive", emoji: "🙌", label: "High Five",     desc: "Up high — you earned it!" },
+  { id: "c-yourock",  emoji: "🤩", label: "You Rock",      desc: "Just for being awesome." },
+  { id: "c-funny",    emoji: "😂", label: "Made Me Laugh", desc: "Funniest cousin at camp." },
+  { id: "c-buddy",    emoji: "🤝", label: "Best Buddy",    desc: "The best cousin to hang with." },
+  { id: "c-hero",     emoji: "🦸", label: "My Hero",       desc: "Saved the day for me." },
+  { id: "c-superstar",emoji: "🌟", label: "Superstar",     desc: "Shining bright today." },
+  { id: "c-strong",   emoji: "💪", label: "So Strong",     desc: "Powered through like a champ." },
+  { id: "c-creative", emoji: "🎨", label: "Super Creative", desc: "Coolest idea ever." },
+  { id: "c-fast",     emoji: "⚡", label: "Lightning Fast", desc: "Zoom — too quick to catch!" },
+  { id: "c-kind",     emoji: "❤️", label: "So Kind",       desc: "Made my day nicer." },
+  { id: "c-dancer",   emoji: "🕺", label: "Best Moves",    desc: "Dance floor legend." },
+  { id: "c-champ",    emoji: "🏆", label: "Champion",      desc: "A total winner in my book." },
+  { id: "c-party",    emoji: "🎉", label: "Party Starter", desc: "Brings the fun every time." },
+  { id: "c-brave",    emoji: "🦁", label: "So Brave",      desc: "Fearless and bold!" },
+];
+
 // Quick-tap bonus point amounts (a custom amount is always available too).
 const BONUS_QUICK = [5, 10, 25];
 
@@ -221,4 +242,4 @@ const PARENT_BADGES = [
 ];
 
 // Make available to app.js
-window.CAMP_DATA = { CAMPERS, GROWNUPS, SCHEDULE, STORE, PHOTO_ALBUM_URL, KUDOS, BONUS_QUICK, PARENT_BADGES };
+window.CAMP_DATA = { CAMPERS, GROWNUPS, SCHEDULE, STORE, PHOTO_ALBUM_URL, KUDOS, CHEERS, BONUS_QUICK, PARENT_BADGES };

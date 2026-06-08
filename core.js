@@ -13,7 +13,7 @@
 (function () {
   "use strict";
 
-  const { CAMPERS, SCHEDULE, STORE, PHOTO_ALBUM_URL, KUDOS, BONUS_QUICK, PARENT_BADGES } = window.CAMP_DATA;
+  const { CAMPERS, SCHEDULE, STORE, PHOTO_ALBUM_URL, KUDOS, CHEERS, BONUS_QUICK, PARENT_BADGES } = window.CAMP_DATA;
   const GROWNUPS = window.CAMP_DATA.GROWNUPS || [];
 
   // ---- Storage helpers ----------------------------------------------------
@@ -321,6 +321,7 @@
 
   // ---- Parent awards (kudos, bonus points, special badges) ----------------
   const kudosById = (id) => KUDOS.find((k) => k.id === id) || null;
+  const cheerById = (id) => CHEERS.find((c) => c.id === id) || null;
   const parentBadgeById = (id) => PARENT_BADGES.find((b) => b.id === id) || null;
   function awardsFor(camperId) { return state.awards[camperId] || []; }
   // Bonus points a camper has been awarded by grown-ups (kudos + bonus).
@@ -454,8 +455,8 @@
   // 0 points so kids can't trade points to game the leaderboard. Recorded as
   // a "cheer" award on the recipient, tagged with who sent it. Returns whether
   // the cheer was sent (false if it was a no-op, e.g. cheering yourself).
-  function giveCheer(fromId, toId, kudosId) {
-    const from = camperById(fromId), to = camperById(toId), k = kudosById(kudosId);
+  function giveCheer(fromId, toId, cheerId) {
+    const from = camperById(fromId), to = camperById(toId), k = cheerById(cheerId);
     if (!from || !to || !k) return false;
     if (from.id === to.id) { toast("Pick a different cousin to cheer! 😊"); return false; }
     toast(`${k.emoji} ${from.name} cheered ${to.name}!`);
@@ -692,7 +693,7 @@
 
   // ---- Public surface -----------------------------------------------------
   window.CampCore = {
-    data: { CAMPERS, GROWNUPS, SCHEDULE, STORE, KUDOS, BONUS_QUICK, PARENT_BADGES, PHOTO_ALBUM_URL },
+    data: { CAMPERS, GROWNUPS, SCHEDULE, STORE, KUDOS, CHEERS, BONUS_QUICK, PARENT_BADGES, PHOTO_ALBUM_URL },
     state, LS, load, save,
     setRender, initShared, startShared, Store, Photos,
     // campers & activities
@@ -702,7 +703,7 @@
     // store
     rewardById, claimedBy, claimOf, spentBy, balanceFor,
     // parent awards
-    kudosById, parentBadgeById, awardsFor, kudosCountFor, cheersCountFor, cheersGivenBy, recentCheers, parentBadgesFor, hasParentBadge, awarderTally,
+    kudosById, cheerById, parentBadgeById, awardsFor, kudosCountFor, cheersCountFor, cheersGivenBy, recentCheers, parentBadgesFor, hasParentBadge, awarderTally,
     targetCamper, setTarget, giveKudos, giveCheer, giveBonus, toggleParentBadge, undoAward,
     // parent identity & fairness rule
     allParentNames, grownupRoster, currentParent, ownKidIds, isOwnKid, setParent, clearParent,
