@@ -105,8 +105,9 @@ All the camp content lives in [`data.js`](./data.js):
 - **`STORE`** — the nine one-of-a-kind Camp Store prizes.
 - **`PHOTO_ALBUM_URL`** — the Google Photos shared album link.
 - **`KUDOS`** — the kudos cards grown-ups can award (emoji, label, point value).
-- **`CHEERS`** — the cousin-to-cousin cheer cards in the campers' app (emoji,
-  label, description). Recognition only — worth 0 points.
+- **`CHEERS`** — the playful cheer cards (emoji, label, description). They show
+  up in **both** apps — cousins send them on the Crew Cheers board and grown-ups
+  can hand them out from Mission Control — and are recognition only (0 points).
 - **`BONUS_QUICK`** — the quick-tap bonus point amounts in the parents app.
 - **`PARENT_BADGES`** — the special badges grown-ups can grant or take back.
 

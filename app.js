@@ -755,7 +755,9 @@
         <button class="btn-ghost" type="button" data-close>Close</button>
       </div>`;
     const grid = overlay.querySelector(".kudos-grid");
-    CHEERS.forEach((k) => {
+    // The full deck — playful cheers first, then the kudos cards — so cousins
+    // can send any of them (always as 0-point recognition).
+    CHEERS.concat(KUDOS).forEach((k) => {
       const tile = document.createElement("button");
       tile.type = "button";
       tile.className = "kudos-tile";

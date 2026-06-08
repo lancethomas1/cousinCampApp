@@ -10,7 +10,7 @@
   "use strict";
 
   const C = window.CampCore;
-  const { CAMPERS, KUDOS, BONUS_QUICK, PARENT_BADGES, STORE } = C.data;
+  const { CAMPERS, KUDOS, CHEERS, BONUS_QUICK, PARENT_BADGES, STORE } = C.data;
   const {
     state, setRender, initShared, Store,
     pointsFor, kudosCountFor, parentBadgesFor, hasParentBadge, awardsFor, awarderTally,
@@ -174,7 +174,9 @@
       <p class="section-note">Tap a card to award it to ${escapeHtml(me.name)}.</p>`;
     const kGrid = document.createElement("div");
     kGrid.className = "kudos-grid";
-    KUDOS.forEach((k) => {
+    // Point-bearing kudos first, then the playful 0-point cheer cards. The pts
+    // chip only shows when a card actually awards points (cheers say "cheer").
+    KUDOS.concat(CHEERS).forEach((k) => {
       const tile = document.createElement("button");
       tile.type = "button";
       tile.className = "kudos-tile";
@@ -182,7 +184,7 @@
         <div class="kt-emoji">${k.emoji}</div>
         <div class="kt-label">${escapeHtml(k.label)}</div>
         <div class="kt-desc">${escapeHtml(k.desc)}</div>
-        <div class="kt-pts">+${k.points}</div>`;
+        <div class="kt-pts">${k.points ? `+${k.points}` : "👏 cheer"}</div>`;
       tile.addEventListener("click", () => giveKudos(k.id));
       kGrid.appendChild(tile);
     });

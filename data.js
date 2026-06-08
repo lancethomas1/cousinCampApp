@@ -206,25 +206,31 @@ const KUDOS = [
   { id: "k-extra",   emoji: "💪", label: "Extra Effort",  points: 15, desc: "Went above and beyond." },
 ];
 
-// Cousin-to-cousin cheer cards (the campers' app). Pure recognition — worth
-// 0 points — so kids can high-five each other all week without gaming the
-// leaderboard. Kept separate from KUDOS so cheers can be playful and kid-voiced.
+// Playful, kid-voiced cheer cards. These show up in BOTH apps: cousins send
+// them as cheers on the Crew Cheers board, and grown-ups can hand them out from
+// Mission Control alongside KUDOS. They're recognition only — worth 0 points —
+// so they never tip the leaderboard no matter who gives them.
 const CHEERS = [
-  { id: "c-waytogo",  emoji: "👏", label: "Way to Go",     desc: "Crushed it — nice work!" },
-  { id: "c-highfive", emoji: "🙌", label: "High Five",     desc: "Up high — you earned it!" },
-  { id: "c-yourock",  emoji: "🤩", label: "You Rock",      desc: "Just for being awesome." },
-  { id: "c-funny",    emoji: "😂", label: "Made Me Laugh", desc: "Funniest cousin at camp." },
-  { id: "c-buddy",    emoji: "🤝", label: "Best Buddy",    desc: "The best cousin to hang with." },
-  { id: "c-hero",     emoji: "🦸", label: "My Hero",       desc: "Saved the day for me." },
-  { id: "c-superstar",emoji: "🌟", label: "Superstar",     desc: "Shining bright today." },
-  { id: "c-strong",   emoji: "💪", label: "So Strong",     desc: "Powered through like a champ." },
-  { id: "c-creative", emoji: "🎨", label: "Super Creative", desc: "Coolest idea ever." },
-  { id: "c-fast",     emoji: "⚡", label: "Lightning Fast", desc: "Zoom — too quick to catch!" },
-  { id: "c-kind",     emoji: "❤️", label: "So Kind",       desc: "Made my day nicer." },
-  { id: "c-dancer",   emoji: "🕺", label: "Best Moves",    desc: "Dance floor legend." },
-  { id: "c-champ",    emoji: "🏆", label: "Champion",      desc: "A total winner in my book." },
-  { id: "c-party",    emoji: "🎉", label: "Party Starter", desc: "Brings the fun every time." },
-  { id: "c-brave",    emoji: "🦁", label: "So Brave",      desc: "Fearless and bold!" },
+  { id: "c-waytogo",  emoji: "👏", label: "Way to Go",     points: 0, desc: "Crushed it — nice work!" },
+  { id: "c-highfive", emoji: "🙌", label: "High Five",     points: 0, desc: "Up high — you earned it!" },
+  { id: "c-yourock",  emoji: "🤩", label: "You Rock",      points: 0, desc: "Just for being awesome." },
+  { id: "c-funny",    emoji: "😂", label: "Made Me Laugh", points: 0, desc: "Funniest cousin at camp." },
+  { id: "c-buddy",    emoji: "🤝", label: "Best Buddy",    points: 0, desc: "The best cousin to hang with." },
+  { id: "c-hero",     emoji: "🦸", label: "My Hero",       points: 0, desc: "Saved the day for me." },
+  { id: "c-superstar",emoji: "🌟", label: "Superstar",     points: 0, desc: "Shining bright today." },
+  { id: "c-strong",   emoji: "💪", label: "So Strong",     points: 0, desc: "Powered through like a champ." },
+  { id: "c-creative", emoji: "🎨", label: "Super Creative", points: 0, desc: "Coolest idea ever." },
+  { id: "c-fast",     emoji: "⚡", label: "Lightning Fast", points: 0, desc: "Zoom — too quick to catch!" },
+  { id: "c-kind",     emoji: "❤️", label: "So Kind",       points: 0, desc: "Made my day nicer." },
+  { id: "c-dancer",   emoji: "🕺", label: "Best Moves",    points: 0, desc: "Dance floor legend." },
+  { id: "c-champ",    emoji: "🏆", label: "Champion",      points: 0, desc: "A total winner in my book." },
+  { id: "c-party",    emoji: "🎉", label: "Party Starter", points: 0, desc: "Brings the fun every time." },
+  { id: "c-brave",    emoji: "🦁", label: "So Brave",      points: 0, desc: "Fearless and bold!" },
+  { id: "c-brain",    emoji: "🧠", label: "Big Brain",     points: 0, desc: "Smartest idea today." },
+  { id: "c-vibes",    emoji: "🌈", label: "Good Vibes",    points: 0, desc: "Brings the sunshine." },
+  { id: "c-lucky",    emoji: "🍀", label: "Lucky Charm",   points: 0, desc: "My good-luck cousin." },
+  { id: "c-rocket",   emoji: "🚀", label: "Out of This World", points: 0, desc: "Totally amazing!" },
+  { id: "c-goat",     emoji: "🐐", label: "The G.O.A.T.",  points: 0, desc: "Greatest of all time!" },
 ];
 
 // Quick-tap bonus point amounts (a custom amount is always available too).

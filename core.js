@@ -322,6 +322,9 @@
   // ---- Parent awards (kudos, bonus points, special badges) ----------------
   const kudosById = (id) => KUDOS.find((k) => k.id === id) || null;
   const cheerById = (id) => CHEERS.find((c) => c.id === id) || null;
+  // Both apps draw from the same combined deck — parents and cousins can use
+  // any card. Look up an id in either set (kudos take priority on id clash).
+  const cardById = (id) => kudosById(id) || cheerById(id);
   const parentBadgeById = (id) => PARENT_BADGES.find((b) => b.id === id) || null;
   function awardsFor(camperId) { return state.awards[camperId] || []; }
   // Bonus points a camper has been awarded by grown-ups (kudos + bonus).
@@ -447,16 +450,17 @@
   // Award actions — persist through Store so they sync in shared mode.
   function giveKudos(kudosId) {
     const c = targetCamper(); if (!c || blockOwnKid(c)) return;
-    const k = kudosById(kudosId); if (!k) return;
-    toast(`${k.emoji} ${k.label} for ${c.name} +${k.points}`);
-    Store.award(c.id, { type: "kudos", refId: k.id, emoji: k.emoji, label: k.label, points: k.points, by: state.parent || null });
+    const k = cardById(kudosId); if (!k) return;
+    const pts = k.points || 0;
+    toast(pts ? `${k.emoji} ${k.label} for ${c.name} +${pts}` : `${k.emoji} ${k.label} for ${c.name}`);
+    Store.award(c.id, { type: "kudos", refId: k.id, emoji: k.emoji, label: k.label, points: pts, by: state.parent || null });
   }
   // A cousin-to-cousin cheer from the campers' app. Recognition only — worth
   // 0 points so kids can't trade points to game the leaderboard. Recorded as
   // a "cheer" award on the recipient, tagged with who sent it. Returns whether
   // the cheer was sent (false if it was a no-op, e.g. cheering yourself).
   function giveCheer(fromId, toId, cheerId) {
-    const from = camperById(fromId), to = camperById(toId), k = cheerById(cheerId);
+    const from = camperById(fromId), to = camperById(toId), k = cardById(cheerId);
     if (!from || !to || !k) return false;
     if (from.id === to.id) { toast("Pick a different cousin to cheer! 😊"); return false; }
     toast(`${k.emoji} ${from.name} cheered ${to.name}!`);
@@ -703,7 +707,7 @@
     // store
     rewardById, claimedBy, claimOf, spentBy, balanceFor,
     // parent awards
-    kudosById, cheerById, parentBadgeById, awardsFor, kudosCountFor, cheersCountFor, cheersGivenBy, recentCheers, parentBadgesFor, hasParentBadge, awarderTally,
+    kudosById, cheerById, cardById, parentBadgeById, awardsFor, kudosCountFor, cheersCountFor, cheersGivenBy, recentCheers, parentBadgesFor, hasParentBadge, awarderTally,
     targetCamper, setTarget, giveKudos, giveCheer, giveBonus, toggleParentBadge, undoAward,
     // parent identity & fairness rule
     allParentNames, grownupRoster, currentParent, ownKidIds, isOwnKid, setParent, clearParent,
