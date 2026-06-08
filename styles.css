@@ -35,7 +35,7 @@
   --shadow-lg: 0 16px 38px rgba(0,0,0,.58);
   --radius: 18px;
   --radius-sm: 12px;
-  --tab-h: 64px;
+  --tab-h: 72px;
 }
 
 * { box-sizing: border-box; }
@@ -731,8 +731,8 @@ select.day-filter {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  padding-top: 8px;
+  gap: 3px;
+  padding-top: 16px;
   font-family: "Nunito", sans-serif;
 }
 .tab-icon { font-size: 22px; line-height: 1; filter: grayscale(.5) opacity(.7); transition: transform .12s ease, filter .12s ease; }
