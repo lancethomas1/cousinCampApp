@@ -31,9 +31,10 @@ The project ships as **two separate apps that share the same camp data**:
     `data.js`) also shows as a backup button.
   - **🎉 Cheers** — *Crew Cheers*, a friendly crew board. Shows the whole crew's
     combined progress, then every traveler's stats side by side, ranked by points
-    from highest to lowest. Tap a cousin to send them a cheer 👏; each row shows
-    cheers **got** and **gave**, and a **Recent Cheers** feed lists who cheered
-    whom across camp.
+    from highest to lowest. Tap a cousin to send them a cheer 👏 — and add an
+    optional free-form reason for why; each row shows cheers **got** and **gave**,
+    and a **Recent Cheers** feed lists who cheered whom across camp (with the
+    reason, when one was given).
   - **🏆 Awards** — the Camp Store is a kiosk: tap a prize, then tap which cousin is
     claiming it (one prize each). Tap any cousin to see their trophy case (badges
     earned *and* parent-granted) and print their Awards Day certificate.

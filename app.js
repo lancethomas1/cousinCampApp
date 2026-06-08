@@ -725,7 +725,7 @@
         row.innerHTML = `
           ${camperFace(from, "fr-emoji")}
           <div class="fr-body">
-            <div class="fr-label">${escapeHtml(from.name)} cheered ${escapeHtml(to.name)} ${ch.emoji}</div>
+            <div class="fr-label">${escapeHtml(from.name)} cheered ${escapeHtml(to.name)} ${ch.emoji}${ch.reason ? ` — "${escapeHtml(ch.reason)}"` : ""}</div>
             <div class="fr-time">${escapeHtml(ch.label)} · ${timeAgo(ch.ts)}</div>
           </div>`;
         list.appendChild(row);
@@ -751,9 +751,11 @@
       <div class="modal-card" role="dialog" aria-modal="true">
         <h2>${toCamper.emoji} Cheer ${escapeHtml(toCamper.name)}!</h2>
         <p class="modal-sub">From ${escapeHtml(me.name)} — tap a cheer to send it. Cheers are just for fun, no points. 🎉</p>
+        <input class="bonus-note cheer-reason" type="text" placeholder="Why are you cheering? (optional)" maxlength="80" autocomplete="off" />
         <div class="kudos-grid"></div>
         <button class="btn-ghost" type="button" data-close>Close</button>
       </div>`;
+    const reasonInput = overlay.querySelector(".cheer-reason");
     const grid = overlay.querySelector(".kudos-grid");
     KUDOS.forEach((k) => {
       const tile = document.createElement("button");
@@ -763,7 +765,7 @@
         <div class="kt-emoji">${k.emoji}</div>
         <div class="kt-label">${escapeHtml(k.label)}</div>
         <div class="kt-desc">${escapeHtml(k.desc)}</div>`;
-      tile.addEventListener("click", () => { giveCheer(me.id, toCamper.id, k.id); close(); });
+      tile.addEventListener("click", () => { giveCheer(me.id, toCamper.id, k.id, reasonInput.value); close(); });
       grid.appendChild(tile);
     });
     function close() { overlay.remove(); }
