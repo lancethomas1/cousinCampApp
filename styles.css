@@ -1106,6 +1106,9 @@ select.day-filter {
 .ab-stats { display: flex; gap: 12px; margin-top: 4px; font-size: 12px; font-weight: 700; opacity: .95; }
 .ab-stats b { font-family: "Baloo 2", sans-serif; font-size: 14px; }
 
+/* Optional free-form reason on a cousin-to-cousin cheer. */
+.cheer-reason { margin-bottom: 14px; }
+
 /* Kudos board. */
 .kudos-grid {
   display: grid;
