@@ -789,6 +789,15 @@
     document.querySelectorAll(".tab").forEach((t) =>
       t.classList.toggle("active", t.dataset.route === state.route)
     );
+    // Note: don't reset scroll here — render() also runs on data updates
+    // (e.g. checking in a kid), and we want to stay put on the tapped item.
+    // Scroll-to-top happens only on route changes (see go()/hashchange).
+    syncStickyHero();
+  }
+
+  // Jump back to the top and re-evaluate the sticky hero — used on route
+  // changes so a new tab always starts at the top with the hero expanded.
+  function resetScroll() {
     view.scrollTop = 0;
     window.scrollTo(0, 0);
     syncStickyHero();
@@ -814,6 +823,7 @@
     state.route = route;
     if (location.hash !== "#" + route) location.hash = route;
     render();
+    resetScroll();
   }
 
   document.querySelectorAll(".tab").forEach((tab) =>
@@ -821,7 +831,7 @@
   );
   window.addEventListener("hashchange", () => {
     const r = location.hash.replace("#", "");
-    if (routes[r] && r !== state.route) { state.route = r; render(); }
+    if (routes[r] && r !== state.route) { state.route = r; render(); resetScroll(); }
   });
 
   // ---- Boot ---------------------------------------------------------------
