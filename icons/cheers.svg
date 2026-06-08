@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
+  <!-- Party popper cone (brass, cel shaded) -->
+  <g>
+    <polygon points="22,106 60,62 88,90" fill="#d4a52e"/>
+    <polygon points="22,106 75,76 88,90" fill="#a87f1f"/>
+    <g stroke="#16141a" stroke-width="3" stroke-linecap="round">
+      <line x1="40" y1="80" x2="55" y2="95"/>
+      <line x1="51" y1="70" x2="67" y2="86"/>
+    </g>
+    <line x1="60" y1="62" x2="88" y2="90" stroke="#16141a" stroke-width="3.5" stroke-linecap="round"/>
+  </g>
+
+  <!-- Confetti burst (angular shards + streamers) -->
+  <g>
+    <path d="M62 60 Q82 36 100 44" stroke="#46c279" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    <path d="M68 54 Q94 46 106 60" stroke="#5fd0e6" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+
+    <polygon points="72,50 82,46 79,58" fill="#5fd0e6"/>
+    <rect x="91" y="60" width="11" height="11" rx="2.5" fill="#ffce4d" transform="rotate(22 96 65)"/>
+    <polygon points="96,36 108,38 100,46" fill="#46c279"/>
+    <circle cx="86" cy="30" r="4.5" fill="#5fd0e6"/>
+    <rect x="68" y="30" width="10" height="10" rx="2.5" fill="#ff8a96" transform="rotate(-18 73 35)"/>
+    <polygon points="108,52 120,50 112,62" fill="#bff0fb"/>
+    <circle cx="108" cy="30" r="4" fill="#ffce4d"/>
+  </g>
+</svg>
