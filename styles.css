@@ -183,8 +183,13 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
   box-shadow: var(--shadow-lg);
   border: 1px solid var(--line);
   border-top-color: rgba(86,207,230,.35);
-  position: relative;
+  /* Pin the hero just beneath the (already sticky) app header so it rides
+     along on scroll. --header-h is measured in app.js. */
+  position: sticky;
+  top: var(--header-h, 64px);
+  z-index: 15;
   overflow: hidden;
+  transition: padding .25s ease, box-shadow .25s ease;
 }
 .hero::after {
   content: "";
@@ -202,9 +207,12 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
 }
 /* Keep all hero copy layered above the decorative train. */
 .hero > * { position: relative; z-index: 1; }
-.hero .eyebrow { font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; font-size: 12px; color: #8fe3f3; }
+.hero .eyebrow { font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; font-size: 12px; color: #8fe3f3; max-height: 22px; }
 .hero h2 { font-size: 28px; margin: 4px 0 6px; }
-.hero p { margin: 0; font-weight: 700; opacity: .92; }
+.hero p { margin: 0; font-weight: 700; opacity: .92; max-height: 48px; }
+.hero .eyebrow,
+.hero h2,
+.hero p { transition: font-size .25s ease, margin .25s ease, max-height .25s ease, opacity .2s ease; overflow: hidden; }
 .hero-progress {
   margin-top: 14px;
   background: rgba(255,255,255,.14);
@@ -221,6 +229,19 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
   transition: width .4s ease;
 }
 .hero-progress-label { font-size: 13px; font-weight: 800; margin-top: 6px; }
+
+/* Once the page scrolls, collapse the hero's heading/date and let the
+   prep-progress bar become the primary, pinned element up top. */
+.hero.compact { padding: 12px 16px 13px; }
+.hero.compact .eyebrow,
+.hero.compact p { max-height: 0; margin: 0; opacity: 0; pointer-events: none; }
+.hero.compact h2 {
+  font-size: 16px;
+  margin: 0 0 2px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.hero.compact .hero-progress { margin-top: 0; }
 
 /* ---------- Activity rows ---------- */
 .activity {
