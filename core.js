@@ -13,7 +13,7 @@
 (function () {
   "use strict";
 
-  const { CAMPERS, SCHEDULE, STORE, PHOTO_ALBUM_URL, KUDOS, CHEERS, BONUS_QUICK, PARENT_BADGES } = window.CAMP_DATA;
+  const { CAMPERS, SCHEDULE, STORE, KUDOS, CHEERS, BONUS_QUICK, PARENT_BADGES } = window.CAMP_DATA;
   const GROWNUPS = window.CAMP_DATA.GROWNUPS || [];
 
   // ---- Storage helpers ----------------------------------------------------
@@ -38,7 +38,6 @@
     done: load(LS.done, {}),
     claims: load(LS.claims, {}),
     awards: load(LS.awards, {}),
-    photos: [],                      // shared gallery (Firebase Storage), live
     route: "today",
     target: load(LS.target, null),  // who the grown-up is awarding to
     parent: load(LS.parent, null),  // signed-in grown-up's first name (parents app)
@@ -55,7 +54,7 @@
   // In shared mode the whole camp's `done` + `claims` + `awards` live in one
   // Firestore doc whose id is derived from the family passcode, and every
   // device gets live updates. In local mode everything stays in this browser.
-  const Sync = { mode: "local", app: null, db: null, ref: null, storage: null, campId: null };
+  const Sync = { mode: "local", app: null, db: null, ref: null, campId: null };
 
   const firebaseConfigured = () => {
     const c = window.FIREBASE_CONFIG;
@@ -77,13 +76,11 @@
       const campId = await passToCampId(passcode);
       Sync.campId = campId;
       Sync.ref = Sync.db.collection("camps").doc(campId);
-      Sync.storage = (typeof firebase.storage === "function") ? firebase.storage() : null;
       Sync.mode = "shared";
       // Start from a clean slate; live data arrives via the snapshot below.
       state.done = {};
       state.claims = {};
       state.awards = {};
-      state.photos = [];
       Sync.ref.onSnapshot(
         (snap) => {
           const d = snap.data() || {};
@@ -93,11 +90,6 @@
           rerender();
         },
         (err) => { console.error("sync error", err); toast("Sync error — check connection"); }
-      );
-      // Live shared photo gallery (own subcollection, newest first).
-      Sync.ref.collection("photos").orderBy("ts", "desc").onSnapshot(
-        (snap) => { state.photos = snap.docs.map((doc) => ({ id: doc.id, ...doc.data() })); rerender(); },
-        (err) => { console.error("photos sync error", err); }
       );
       return true;
     } catch (e) {
@@ -557,69 +549,6 @@
     return emojiClass ? `<span class="${emojiClass}">${e}</span>` : e;
   }
 
-  // ---- Shared photo gallery (Firebase Storage + Firestore) ----------------
-  // Photos upload to Storage at camps/{campId}/photos and their metadata to a
-  // Firestore subcollection, so every device sees the same gallery live.
-  // Images are downscaled in the browser first to stay well within free tier.
-  function downscaleImage(file, maxDim, quality) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onerror = reject;
-      reader.onload = () => {
-        const img = new Image();
-        img.onerror = reject;
-        img.onload = () => {
-          let { width, height } = img;
-          if (width > height && width > maxDim) { height = Math.round(height * maxDim / width); width = maxDim; }
-          else if (height > maxDim) { width = Math.round(width * maxDim / height); height = maxDim; }
-          const canvas = document.createElement("canvas");
-          canvas.width = width; canvas.height = height;
-          canvas.getContext("2d").drawImage(img, 0, 0, width, height);
-          canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("encode failed")), "image/jpeg", quality);
-        };
-        img.src = reader.result;
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-
-  const Photos = {
-    // True when uploads/live gallery are available (shared mode + Storage SDK).
-    enabled() { return Sync.mode === "shared" && !!Sync.storage; },
-    list() { return state.photos; },
-    // Upload one image file: downscale → Storage → Firestore metadata.
-    async add(file, meta) {
-      if (!Photos.enabled()) { toast("Photo sharing needs the shared camp"); return false; }
-      if (!file || !file.type || !file.type.startsWith("image/")) return false;
-      try {
-        const blob = await downscaleImage(file, 1280, 0.72);
-        const id = uid();
-        const path = `camps/${Sync.campId}/photos/${id}.jpg`;
-        const ref = Sync.storage.ref().child(path);
-        await ref.put(blob, { contentType: "image/jpeg" });
-        const url = await ref.getDownloadURL();
-        await Sync.ref.collection("photos").doc(id).set({
-          url, path, ts: Date.now(), by: (meta && meta.by) || null,
-        });
-        return true;
-      } catch (e) { console.error("photo upload failed", e); toast("Upload failed — try again"); return false; }
-    },
-    // Upload several files; returns how many succeeded.
-    async addMany(files) {
-      let ok = 0;
-      for (const f of Array.from(files || [])) { if (await Photos.add(f)) ok++; }
-      if (ok) toast(`${ok} photo${ok > 1 ? "s" : ""} added 📸`);
-      return ok;
-    },
-    async remove(photo) {
-      try {
-        await Sync.ref.collection("photos").doc(photo.id).delete();
-        if (photo.path && Sync.storage) { try { await Sync.storage.ref().child(photo.path).delete(); } catch (_) {} }
-        toast("Photo removed");
-      } catch (e) { console.error(e); toast("Couldn't remove photo"); }
-    },
-  };
-
   // ---- Pull to refresh ----------------------------------------------------
   // A custom pull-down gesture, since standalone (home-screen) PWAs have no
   // browser chrome and therefore no built-in pull-to-refresh. Only engages
@@ -702,9 +631,9 @@
 
   // ---- Public surface -----------------------------------------------------
   window.CampCore = {
-    data: { CAMPERS, GROWNUPS, SCHEDULE, STORE, KUDOS, CHEERS, BONUS_QUICK, PARENT_BADGES, PHOTO_ALBUM_URL },
+    data: { CAMPERS, GROWNUPS, SCHEDULE, STORE, KUDOS, CHEERS, BONUS_QUICK, PARENT_BADGES },
     state, LS, load, save,
-    setRender, initShared, startShared, Store, Photos,
+    setRender, initShared, startShared, Store,
     // campers & activities
     camperById, allActivities, prepActivities, hasPrep, prepKey, prepDoneCount, isPrepared, doneMap, isDone,
     activityPointsFor, awardPointsFor, pointsFor,
