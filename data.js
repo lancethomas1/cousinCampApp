@@ -3,7 +3,7 @@
  * -------------------------------------------------------------
  * THEME (2026): Time Machine Travelers 🕰️
  * Each day Mimi's time machine lands in a different era.
- * Edit this file to change the schedule, travelers, or prizes.
+ * Edit this file to change the schedule or travelers.
  * Dates are ISO strings (YYYY-MM-DD). Times are display strings.
  */
 
@@ -170,23 +170,6 @@ const SCHEDULE = [
   },
 ];
 
-// Camp Store — "Pick Your Prize" board.
-// There are nine one-of-a-kind rewards, one for each time traveler. A reward
-// can only be claimed by a single camper, and each camper holds one reward, so
-// every cousin ends the week with their own different prize.
-// `cost` is how many time points it takes to claim it.
-const STORE = [
-  { id: "r-movie",     emoji: "🎬", name: "Time-Screen Movie Pick", cost: 40, desc: "You choose what the whole camp watches on movie night." },
-  { id: "r-latenight", emoji: "🌙", name: "Stay-Up-Late Pass",      cost: 45, desc: "Bend the timeline — stay up 30 extra minutes past bedtime." },
-  { id: "r-dessert",   emoji: "🍦", name: "Dessert Captain",        cost: 25, desc: "First scoop, extra sprinkles — top of the dessert line all day." },
-  { id: "r-game",      emoji: "🎮", name: "Game Master",            cost: 35, desc: "You pick the next big game the whole camp plays." },
-  { id: "r-copilot",   emoji: "🛸", name: "Time Machine Co-Pilot",  cost: 30, desc: "Ride up front / sit shotgun on the next camp outing." },
-  { id: "r-helper",    emoji: "👑", name: "Mimi's Time Captain",    cost: 45, desc: "Be Mimi's special right-hand helper for a whole day." },
-  { id: "r-chore",     emoji: "⏭️", name: "Time-Skip a Chore",      cost: 30, desc: "Fast-forward past one camp chore, no questions asked." },
-  { id: "r-mystery",   emoji: "🎟️", name: "Mystery from the Future", cost: 50, desc: "A surprise from Mimi's prize box — nobody knows what's inside!" },
-  { id: "r-smore",     emoji: "🍫", name: "S'more Master",          cost: 25, desc: "Unlimited s'mores at the next bonfire. Yes, unlimited." },
-];
-
 // ---------------------------------------------------------------------------
 // PARENT AWARDS — recognition that grown-ups hand out.
 // At Cousin Camp the grown-ups (Mimi, parents, aunts & uncles) award the extra
@@ -194,7 +177,7 @@ const STORE = [
 //   • Kudos cards  — in-the-moment recognition, each worth bonus points
 //   • Bonus points — a custom amount with an optional note
 //   • Parent badges — special one-of-a-kind honors for the trophy case
-// In shared mode these sync to every device alongside points and prizes.
+// In shared mode these sync to every device alongside points.
 // Edit these arrays to change what grown-ups can hand out.
 // ---------------------------------------------------------------------------
 
@@ -254,4 +237,4 @@ const PARENT_BADGES = [
 ];
 
 // Make available to app.js
-window.CAMP_DATA = { CAMPERS, GROWNUPS, SCHEDULE, STORE, KUDOS, CHEERS, BONUS_QUICK, PARENT_BADGES };
+window.CAMP_DATA = { CAMPERS, GROWNUPS, SCHEDULE, KUDOS, CHEERS, BONUS_QUICK, PARENT_BADGES };

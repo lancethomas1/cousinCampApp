@@ -10,12 +10,11 @@
   "use strict";
 
   const C = window.CampCore;
-  const { CAMPERS, SCHEDULE, STORE, KUDOS, CHEERS } = C.data;
+  const { CAMPERS, SCHEDULE, KUDOS, CHEERS } = C.data;
   const {
     state, LS, save, Store, setRender, initShared,
     camperById, allActivities, prepActivities, hasPrep, prepKey, prepDoneCount, isPrepared, isDone,
-    pointsFor, balanceFor, completedCount, anyFullDay, fullDayCount,
-    rewardById, claimedBy, claimOf,
+    pointsFor, completedCount, anyFullDay, fullDayCount,
     kudosCountFor, cheersCountFor, cheersGivenBy, recentCheers, giveCheer, parentBadgesFor,
     todayISO, fmtDow, dayNum, fmtLong, toast, escapeHtml, camperFace, timeAgo,
   } = C;
@@ -239,7 +238,6 @@
     { id: "dynamo",    emoji: "🌟", label: "Daily Dynamo",    hint: "Get fully prepped for a whole day",          test: (c) => anyFullDay(c) },
     { id: "twoday",    emoji: "📅", label: "Two-Day Trekker", hint: "Get fully prepped for two whole days",       test: (c) => fullDayCount(c) >= 2 },
     { id: "halfway",   emoji: "🎯", label: "Time Traveler",   hint: "Get ready for half the activities",          test: (c) => completedCount(c) >= Math.ceil(TOTAL_ACTS / 2) },
-    { id: "prize",     emoji: "🏆", label: "Prize Winner",    hint: "Claim a prize from the Camp Store",          test: (c) => !!claimOf(c) },
     { id: "champion",  emoji: "👑", label: "Time Champion",   hint: "Get ready for 10 activities",                test: (c) => completedCount(c) >= 10 },
     { id: "master",    emoji: "🎖️", label: "Master of Time",  hint: "Get ready for every single activity",        test: (c) => completedCount(c) >= TOTAL_ACTS },
   ];
@@ -249,37 +247,8 @@
     const frag = document.createElement("div");
     const head = document.createElement("div");
     head.innerHTML = `<h2 class="view-title">Camp Awards 🏆</h2>
-      <p class="view-sub">Tap a prize to claim it · tap a traveler to see their trophies.</p>`;
+      <p class="view-sub">Tap a traveler to see their trophies.</p>`;
     frag.appendChild(head);
-
-    // --- Camp Store: tap a prize, then tap who's claiming it ----------------
-    const storeSection = document.createElement("div");
-    storeSection.innerHTML = `<h3 class="section-title">🏪 Camp Store — Pick Your Prize</h3>
-      <p class="section-note">Each prize goes to just one cousin. Tap a prize, then tap whose it is.</p>`;
-    const storeGrid = document.createElement("div");
-    storeGrid.className = "store-grid";
-    STORE.forEach((r) => {
-      const owner = claimedBy(r.id);
-      const ownerCamper = owner ? camperById(owner) : null;
-      const tile = document.createElement("button");
-      tile.type = "button";
-      tile.className = "store-tile" + (owner ? " claimed" : "");
-      tile.innerHTML = `
-        <div class="st-emoji">${r.emoji}</div>
-        <div class="st-name">${escapeHtml(r.name)}</div>
-        <div class="st-desc">${escapeHtml(r.desc)}</div>
-        <div class="st-foot">
-          ${owner
-            ? `<span class="st-owner">${ownerCamper.emoji} ${escapeHtml(ownerCamper.name)} · tap to release</span>`
-            : `<span class="st-cost">⭐ ${r.cost}</span>`}
-        </div>`;
-      tile.addEventListener("click", () =>
-        owner ? openReleaseConfirm(r, ownerCamper) : openClaimPicker(r)
-      );
-      storeGrid.appendChild(tile);
-    });
-    storeSection.appendChild(storeGrid);
-    frag.appendChild(storeSection);
 
     // --- Selected cousin's detail (set by tapping the roster below) ---------
     if (state.me && camperById(state.me)) {
@@ -291,14 +260,13 @@
     roster.innerHTML = `<h3 class="section-title">🧑‍🚀 The Time Crew</h3>
       <p class="section-note">Tap a cousin to see their trophy case &amp; certificate.</p>`;
     CAMPERS.forEach((c) => {
-      const r = claimOf(c.id);
       const row = document.createElement("button");
       row.type = "button";
       row.className = "roster-row" + (c.id === state.me ? " me" : "");
       row.innerHTML = `
         <div class="lb-avatar" style="background:${c.color}22">${camperFace(c)}</div>
         <div class="ros-name">${escapeHtml(c.name)}
-          <small>${c.parents ? "👪 " + escapeHtml(c.parents) + " · " : ""}${badgesEarned(c.id).length + parentBadgesFor(c.id).length} badges · ${r ? r.emoji + " " + escapeHtml(r.name) : "no prize yet"}</small></div>
+          <small>${c.parents ? "👪 " + escapeHtml(c.parents) + " · " : ""}${badgesEarned(c.id).length + parentBadgesFor(c.id).length} badges</small></div>
         <div class="ros-pts">⭐ ${pointsFor(c.id)}</div>`;
       row.addEventListener("click", () => {
         state.me = c.id; save(LS.me, c.id); updateWhoami(); render();
@@ -329,7 +297,7 @@
         <div class="cc-name">${escapeHtml(me.name)}</div>
         <div class="cc-sub">Cousin Camp Time Traveler</div>
         <div class="cc-stats">
-          <div class="cc-stat"><b>${balanceFor(me.id)}</b><span>points to spend</span></div>
+          <div class="cc-stat"><b>${pointsFor(me.id)}</b><span>points</span></div>
           <div class="cc-stat"><b>${kudosCountFor(me.id)}</b><span>kudos</span></div>
           <div class="cc-stat"><b>${myBadges.length + myParentBadges.length}</b><span>badges</span></div>
         </div>
@@ -391,7 +359,6 @@
   // Build a printable certificate card with a fun superlative.
   function buildCertificate(camper) {
     const badgeCount = badgesEarned(camper.id).length + parentBadgesFor(camper.id).length;
-    const reward = claimOf(camper.id);
     const superl = pickSuperlative(camper.id);
     const cert = document.createElement("div");
     cert.className = "certificate";
@@ -405,7 +372,6 @@
         <span>🎯 ${completedCount(camper.id)} prepped</span>
         <span>🏅 ${badgeCount} badges</span>
         <span>⭐ ${pointsFor(camper.id)} points</span>
-        ${reward ? `<span>${reward.emoji} ${escapeHtml(reward.name)}</span>` : ""}
       </div>
       <div class="cert-sign">With love,<br><span>Mimi 👵</span></div>`;
     return cert;
@@ -420,54 +386,6 @@
     if (done >= Math.ceil(TOTAL_ACTS / 2)) return { emoji: "🚀", title: "Time-Travel All-Star", blurb: "Made the most of the journey all week long." };
     if (done >= 3)                return { emoji: "⭐", title: "Rising Star", blurb: "Off to a fantastic start at camp." };
     return { emoji: "⏳", title: "Time Travelers Graduate", blurb: "A wonderful week of memories with the cousins." };
-  }
-
-  // Kiosk claim: tap a prize, then tap which cousin is claiming it.
-  function openClaimPicker(prize) {
-    const overlay = document.createElement("div");
-    overlay.className = "modal";
-    overlay.innerHTML = `
-      <div class="modal-backdrop" data-close></div>
-      <div class="modal-card" role="dialog" aria-modal="true">
-        <h2>${prize.emoji} ${escapeHtml(prize.name)}</h2>
-        <p class="modal-sub">Costs ⭐ ${prize.cost} — tap who's claiming it.</p>
-        <div class="camper-grid"></div>
-        <button class="btn-ghost" type="button" data-close>Close</button>
-      </div>`;
-    const grid = overlay.querySelector(".camper-grid");
-    CAMPERS.forEach((c) => {
-      const has = claimOf(c.id);
-      const afford = pointsFor(c.id) >= prize.cost;
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "camper-pick" + (afford ? "" : " disabled");
-      btn.disabled = !afford;
-      btn.innerHTML = `${camperFace(c, "ce")}${escapeHtml(c.name)}` +
-        `<small class="cp-pts">⭐ ${pointsFor(c.id)}${has ? " · has " + has.emoji : afford ? "" : " · need more"}</small>`;
-      if (afford) btn.addEventListener("click", () => { Store.claim(c.id, prize.id); close(); });
-      grid.appendChild(btn);
-    });
-    function close() { overlay.remove(); }
-    overlay.querySelectorAll("[data-close]").forEach((e) => e.addEventListener("click", close));
-    document.body.appendChild(overlay);
-  }
-
-  // Tap a claimed prize to release it back to the store.
-  function openReleaseConfirm(prize, ownerCamper) {
-    const overlay = document.createElement("div");
-    overlay.className = "modal";
-    overlay.innerHTML = `
-      <div class="modal-backdrop" data-close></div>
-      <div class="modal-card" role="dialog" aria-modal="true">
-        <h2>${prize.emoji} ${escapeHtml(prize.name)}</h2>
-        <p class="modal-sub">Claimed by ${ownerCamper.emoji} ${escapeHtml(ownerCamper.name)}. Release it so another cousin can claim it?</p>
-        <button class="btn" type="button" id="rel-go" style="width:100%;justify-content:center">Release prize</button>
-        <button class="btn-ghost" type="button" data-close style="margin-top:8px;width:100%">Keep it</button>
-      </div>`;
-    function close() { overlay.remove(); }
-    overlay.querySelector("#rel-go").addEventListener("click", () => { Store.release(prize.id); close(); });
-    overlay.querySelectorAll("[data-close]").forEach((e) => e.addEventListener("click", close));
-    document.body.appendChild(overlay);
   }
 
   // ---- Camper modal -------------------------------------------------------
@@ -519,7 +437,6 @@
     const crewPoints = CAMPERS.reduce((s, c) => s + pointsFor(c.id), 0);
     const crewBadges = CAMPERS.reduce((s, c) => s + badgesEarned(c.id).length + parentBadgesFor(c.id).length, 0);
     const crewCheers = CAMPERS.reduce((s, c) => s + cheersCountFor(c.id), 0);
-    const crewPrizes = CAMPERS.filter((c) => claimOf(c.id)).length;
 
     const totals = document.createElement("div");
     totals.className = "camp-card";
@@ -532,7 +449,6 @@
           <div class="cc-stat"><b>${crewPoints}</b><span>points earned</span></div>
           <div class="cc-stat"><b>${crewBadges}</b><span>badges</span></div>
           <div class="cc-stat"><b>${crewCheers}</b><span>cheers 👏</span></div>
-          <div class="cc-stat"><b>${crewPrizes}</b><span>prizes</span></div>
         </div>
       </div>`;
     frag.appendChild(totals);
