@@ -916,40 +916,6 @@ select.day-filter {
 .cc-stat b { display: block; font-family: "Baloo 2", sans-serif; font-size: 18px; }
 .cc-stat span { font-size: 10.5px; font-weight: 800; opacity: .92; line-height: 1.1; display: block; }
 
-/* ---------- Camp Store ---------- */
-.store-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 10px;
-}
-.store-tile {
-  text-align: left;
-  background: var(--cream);
-  border: 2px solid var(--line);
-  border-top-color: var(--edge);
-  border-radius: var(--radius-sm);
-  padding: 12px;
-  cursor: pointer;
-  box-shadow: var(--shadow);
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-family: "Nunito", sans-serif;
-  transition: transform .1s ease;
-}
-.store-tile:active { transform: scale(.97); }
-.store-tile.mine { border-color: var(--grass); background: rgba(70,194,121,.14); }
-.store-tile.taken { opacity: .5; cursor: not-allowed; background: var(--muted); }
-.store-tile.claimed { border-color: var(--grass); background: rgba(70,194,121,.14); }
-.st-emoji { font-size: 30px; }
-.st-name { font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 16px; }
-.st-desc { color: var(--ink-soft); font-weight: 600; font-size: 12.5px; flex: 1; }
-.st-foot { margin-top: 4px; }
-.st-cost { font-weight: 800; color: var(--gold); background: rgba(255,206,77,.16); padding: 3px 10px; border-radius: 999px; font-size: 13px; }
-.st-cost.short { color: var(--danger); background: rgba(255,107,122,.16); }
-.st-claimed { font-weight: 800; color: var(--grass); font-size: 13px; }
-.st-owner { font-weight: 800; color: var(--ink-soft); font-size: 13px; }
-
 /* ---------- Trophy Case ---------- */
 .trophy-grid {
   display: grid;
@@ -1373,7 +1339,7 @@ select.day-filter {
 /* ---------- Print: just the certificate (forced light for ink) ---------- */
 @media print {
   .app-header, .tabbar, .toast, .section-title, .section-note,
-  .store-grid, .trophy-grid, .camp-card, .roster-row, .btn,
+  .trophy-grid, .camp-card, .roster-row, .btn,
   .target-picker, .award-banner, .kudos-grid, .bonus-card, .award-feed,
   .view-title, .view-sub, .empty, .gate { display: none !important; }
   body { background: #fff; }

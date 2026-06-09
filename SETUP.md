@@ -1,8 +1,8 @@
 # Turning on the Shared Camp 🔗
 
-By default the app runs in **local mode** (each phone keeps its own points and
-prizes). Follow these one-time steps to make it a **shared camp** where every
-cousin sees the same points, prize board, and badges live across all devices.
+By default the app runs in **local mode** (each phone keeps its own points).
+Follow these one-time steps to make it a **shared camp** where every
+cousin sees the same points and badges live across all devices.
 
 It uses **Firebase Firestore** (Google) — free for a family-sized app.
 

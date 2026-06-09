@@ -35,9 +35,8 @@ The project ships as **two separate apps that share the same camp data**:
     optional free-form reason for why; each row shows cheers **got** and **gave**,
     and a **Recent Cheers** feed lists who cheered whom across camp (with the
     reason, when one was given).
-  - **🏆 Awards** — the Camp Store is a kiosk: tap a prize, then tap which cousin is
-    claiming it (one prize each). Tap any cousin to see their trophy case (badges
-    earned *and* parent-granted) and print their Awards Day certificate.
+  - **🏆 Awards** — tap any cousin to see their trophy case (badges earned *and*
+    parent-granted) and print their Awards Day certificate.
 - **Grown-ups' app — [`parent.html`](./parent.html)** (a separate link for parents)
   - **Lite sign-in:** grown-ups enter their **first name** to start (remembered on
     that device; tap **Switch** to change).
@@ -65,7 +64,7 @@ instantly shows up in that cousin's points and trophy case in the campers' app.
 Both apps work two ways:
 
 - **Local mode (default):** everything stays on each device. No setup.
-- **Shared mode:** points, prize claims, badges, and parent awards sync live
+- **Shared mode:** points, badges, and parent awards sync live
   across all phones via Firebase, gated by a family passcode. See
   **[SETUP.md](./SETUP.md)** to turn it on (paste your Firebase config into
   `firebase-config.js`).
@@ -85,9 +84,9 @@ or any static host.
 
 ## How data is stored
 
-- **Local mode:** your camper, completed activities, and prize claims are saved in
+- **Local mode:** your camper and completed activities are saved in
   your browser's `localStorage`, on your own device.
-- **Shared mode:** completions, prize claims, and parent awards live in one
+- **Shared mode:** completions and parent awards live in one
   Firestore document (keyed by a hash of the family passcode), so every device
   stays in sync.
 
@@ -103,7 +102,6 @@ All the camp content lives in [`data.js`](./data.js):
   best, and any cousin without one simply falls back to their emoji.
 - **`SCHEDULE`** — each day's title and activities
   (time, title, emoji, location, point value, description).
-- **`STORE`** — the nine one-of-a-kind Camp Store prizes.
 - **`PHOTO_ALBUM_URL`** — the Google Photos shared album link.
 - **`KUDOS`** — the kudos cards grown-ups can award (emoji, label, point value).
 - **`CHEERS`** — the playful cheer cards (emoji, label, description). They show
@@ -126,7 +124,7 @@ ISO `YYYY-MM-DD`.
 | `core.js` | Shared model — state, Firestore sync, persistence, points/awards |
 | `app.js` | Campers' views — Today, Schedule, Photos, Cheers, Awards |
 | `parent.js` | Grown-ups' view — kudos, bonus points & special badges |
-| `data.js` | Camp schedule, campers, prizes, album link, kudos & badges (edit me!) |
+| `data.js` | Camp schedule, campers, album link, kudos & badges (edit me!) |
 | `firebase-config.js` | Your Firebase project config (for shared mode) |
 | `firestore.rules` | Security rules for the shared database |
 | `icons/` | App icons (clock for campers, medal for grown-ups) — favicons, iOS home-screen, PWA |

@@ -4,7 +4,7 @@
      • index.html / app.js  — the campers' app
      • parent.html / parent.js — the grown-ups' award app
    It owns app state, the Firestore shared-sync layer, the
-   persistence Store, and all the points/awards/prize helpers.
+   persistence Store, and all the points/awards helpers.
    Each app loads this first, registers a render callback with
    CampCore.setRender(), then draws its own views on top.
    Exposed as window.CampCore.
@@ -13,14 +13,13 @@
 (function () {
   "use strict";
 
-  const { CAMPERS, SCHEDULE, STORE, PHOTO_ALBUM_URL, KUDOS, CHEERS, BONUS_QUICK, PARENT_BADGES } = window.CAMP_DATA;
+  const { CAMPERS, SCHEDULE, PHOTO_ALBUM_URL, KUDOS, CHEERS, BONUS_QUICK, PARENT_BADGES } = window.CAMP_DATA;
   const GROWNUPS = window.CAMP_DATA.GROWNUPS || [];
 
   // ---- Storage helpers ----------------------------------------------------
   const LS = {
     me: "cc.me",                 // current camper id (stays local to each device)
     done: "cc.done",             // { camperId: { activityId: true } }
-    claims: "cc.claims",         // { rewardId: camperId } — one prize per camper
     awards: "cc.awards",         // { camperId: [ {id,type,refId,emoji,label,points,note,by,ts} ] }
     pass: "cc.pass",             // remembered family passcode (shared mode)
     target: "cc.target",         // camper a grown-up is awarding to (stays local)
@@ -36,7 +35,6 @@
   const state = {
     me: load(LS.me, null),
     done: load(LS.done, {}),
-    claims: load(LS.claims, {}),
     awards: load(LS.awards, {}),
     photos: [],                      // shared gallery (Firebase Storage), live
     route: "today",
@@ -52,7 +50,7 @@
   function rerender() { renderFn(); }
 
   // ---- Shared sync (Firebase Firestore) or local fallback -----------------
-  // In shared mode the whole camp's `done` + `claims` + `awards` live in one
+  // In shared mode the whole camp's `done` + `awards` live in one
   // Firestore doc whose id is derived from the family passcode, and every
   // device gets live updates. In local mode everything stays in this browser.
   const Sync = { mode: "local", app: null, db: null, ref: null, storage: null, campId: null };
@@ -81,14 +79,12 @@
       Sync.mode = "shared";
       // Start from a clean slate; live data arrives via the snapshot below.
       state.done = {};
-      state.claims = {};
       state.awards = {};
       state.photos = [];
       Sync.ref.onSnapshot(
         (snap) => {
           const d = snap.data() || {};
           state.done = d.done || {};
-          state.claims = d.claims || {};
           state.awards = d.awards || {};
           rerender();
         },
@@ -107,12 +103,12 @@
   }
 
   // Run a mutation against the shared doc atomically (read-modify-write).
-  // `mutate(next)` edits { done, claims, awards } in place; throw to abort.
+  // `mutate(next)` edits { done, awards } in place; throw to abort.
   async function sharedWrite(mutate) {
     await Sync.db.runTransaction(async (t) => {
       const snap = await t.get(Sync.ref);
       const d = snap.exists ? snap.data() : {};
-      const next = { done: d.done || {}, claims: d.claims || {}, awards: d.awards || {} };
+      const next = { done: d.done || {}, awards: d.awards || {} };
       mutate(next);
       t.set(Sync.ref, next);
     });
@@ -135,44 +131,6 @@
         } catch (e) { toast("Couldn't save — try again"); }
       } else {
         save(LS.done, state.done);
-      }
-    },
-    async claim(camperId, rewardId) {
-      const r = rewardById(rewardId);
-      if (Sync.mode === "shared") {
-        try {
-          await sharedWrite((n) => {
-            const owner = n.claims[rewardId];
-            if (owner && owner !== camperId) throw new Error("taken");
-            for (const rid of Object.keys(n.claims)) if (n.claims[rid] === camperId) delete n.claims[rid];
-            n.claims[rewardId] = camperId;
-          });
-          toast(`Claimed ${r.emoji} ${r.name}!`);
-        } catch (e) {
-          toast(e.message === "taken" ? "Already claimed by another cousin!" : "Couldn't save — try again");
-        }
-      } else {
-        const prev = claimOf(camperId);
-        const claims = { ...state.claims };
-        if (prev) delete claims[prev.id];
-        claims[rewardId] = camperId;
-        state.claims = claims;
-        save(LS.claims, state.claims);
-        toast(`Claimed ${r.emoji} ${r.name}!`);
-        rerender();
-      }
-    },
-    async release(rewardId) {
-      if (Sync.mode === "shared") {
-        try { await sharedWrite((n) => { delete n.claims[rewardId]; }); toast("Prize released — pick another!"); }
-        catch (e) { toast("Couldn't save — try again"); }
-      } else {
-        const claims = { ...state.claims };
-        delete claims[rewardId];
-        state.claims = claims;
-        save(LS.claims, state.claims);
-        toast("Prize released — pick another!");
-        rerender();
       }
     },
     // Append a parent award (kudos / bonus / badge) to a camper's log.
@@ -303,21 +261,6 @@
   }
   function anyFullDay(camperId) { return SCHEDULE.some((d) => completedDay(camperId, d.date)); }
   function fullDayCount(camperId) { return SCHEDULE.filter((d) => completedDay(camperId, d.date)).length; }
-
-  // ---- Camp Store / prize claims -----------------------------------------
-  const rewardById = (id) => STORE.find((r) => r.id === id) || null;
-  const claimedBy = (rewardId) => state.claims[rewardId] || null;
-  // Which reward (if any) a camper currently holds. One prize per camper.
-  function claimOf(camperId) {
-    const id = Object.keys(state.claims).find((rid) => state.claims[rid] === camperId);
-    return id ? rewardById(id) : null;
-  }
-  function spentBy(camperId) {
-    const r = claimOf(camperId);
-    return r ? r.cost : 0;
-  }
-  // Spendable balance = points earned minus the prize they're holding.
-  function balanceFor(camperId) { return pointsFor(camperId) - spentBy(camperId); }
 
   // ---- Parent awards (kudos, bonus points, special badges) ----------------
   const kudosById = (id) => KUDOS.find((k) => k.id === id) || null;
@@ -700,15 +643,13 @@
 
   // ---- Public surface -----------------------------------------------------
   window.CampCore = {
-    data: { CAMPERS, GROWNUPS, SCHEDULE, STORE, KUDOS, CHEERS, BONUS_QUICK, PARENT_BADGES, PHOTO_ALBUM_URL },
+    data: { CAMPERS, GROWNUPS, SCHEDULE, KUDOS, CHEERS, BONUS_QUICK, PARENT_BADGES, PHOTO_ALBUM_URL },
     state, LS, load, save,
     setRender, initShared, startShared, Store, Photos,
     // campers & activities
     camperById, allActivities, prepActivities, hasPrep, prepKey, prepDoneCount, isPrepared, doneMap, isDone,
     activityPointsFor, awardPointsFor, pointsFor,
     completedCount, completedDay, anyFullDay, fullDayCount,
-    // store
-    rewardById, claimedBy, claimOf, spentBy, balanceFor,
     // parent awards
     kudosById, cheerById, cardById, parentBadgeById, awardsFor, kudosCountFor, cheersCountFor, cheersGivenBy, recentCheers, parentBadgesFor, hasParentBadge, awarderTally,
     targetCamper, setTarget, giveKudos, giveCheer, giveBonus, toggleParentBadge, undoAward,
