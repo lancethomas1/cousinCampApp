@@ -458,17 +458,73 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
 .kc-name { font-size: 11px; font-weight: 800; color: var(--ink-soft); line-height: 1; }
 .kid-check.done .kc-name { color: var(--ink); }
 
+/* ---------- Day-pill navigator (schedule) ---------- */
+/* A pinned row of one pill per camp day. Tap a pill to jump straight to that
+   day; the pill for the day in view stays highlighted. Sits just beneath the
+   app header; the day headers below stick under it (--daybar-h, measured in
+   app.js). The negative margins let it bleed to the view edges. */
+.daybar {
+  position: sticky;
+  top: var(--header-h, 64px);
+  z-index: 14;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin: -4px -16px 16px;
+  padding: 10px 16px;
+  background: var(--page-bg);
+  border-bottom: 1px solid var(--line);
+}
+.daybar::-webkit-scrollbar { display: none; }
+.daypill {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 52px;
+  padding: 7px 10px;
+  border-radius: 14px;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--ink);
+  background: var(--cream);
+  border: 1px solid var(--line);
+  transition: background .15s ease, border-color .15s ease, color .15s ease;
+}
+.daypill .dp-dow { font-size: 10.5px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-soft); }
+.daypill .dp-num { font-size: 18px; font-weight: 800; line-height: 1; font-family: "Baloo 2", sans-serif; }
+/* The current camp day always wears a dot so it's findable even when another
+   day is the active (in-view) pill. */
+.daypill.is-today .dp-num::after {
+  content: "";
+  display: block;
+  width: 5px; height: 5px;
+  margin: 3px auto 0;
+  border-radius: 50%;
+  background: var(--sun);
+}
+.daypill.active {
+  background: var(--sun);
+  border-color: transparent;
+  color: var(--deep);
+}
+.daypill.active .dp-dow { color: var(--deep); opacity: .8; }
+.daypill.active.is-today .dp-num::after { background: var(--deep); }
+
 /* ---------- Day section (schedule) ---------- */
 .day-block { margin-bottom: 22px; }
 .day-head {
   display: flex;
   align-items: center;
   gap: 10px;
-  /* Stick each day's header just beneath the app header as you scroll, so
-     you always know which day you're looking at. --header-h is measured in
-     app.js; the negative margins let the bar bleed to the view edges. */
+  /* Stick each day's header just beneath the app header and the day-pill bar
+     as you scroll, so you always know which day you're looking at. --header-h
+     and --daybar-h are measured in app.js; the negative margins let the bar
+     bleed to the view edges. */
   position: sticky;
-  top: var(--header-h, 64px);
+  top: calc(var(--header-h, 64px) + var(--daybar-h, 56px));
   z-index: 12;
   margin: 0 -16px 12px;
   padding: 10px 16px;
