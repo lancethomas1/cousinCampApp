@@ -1,0 +1,13 @@
+{
+  "name": "cousin-camp-app",
+  "private": true,
+  "description": "Tooling for the Cousin Camp static site (screenshots in Claude Code on the web). The app itself needs no build step.",
+  "type": "module",
+  "scripts": {
+    "serve": "python3 -m http.server 8000",
+    "screenshot": "node scripts/screenshot.mjs"
+  },
+  "devDependencies": {
+    "puppeteer": "^25.1.0"
+  }
+}
