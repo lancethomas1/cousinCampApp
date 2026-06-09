@@ -23,12 +23,6 @@ The project ships as **two separate apps that share the same camp data**:
   - **📅 Today / 🗓️ Schedule** — each activity shows every cousin's face; a kid taps
     their **own face** to check in (tap again to undo), so the whole crew can share
     one iPad without switching profiles.
-  - **📸 Photos** — *Snapshots in Time*. A **live shared gallery**: tap **Add
-    photos** and they upload to Firebase Storage and stream into the grid for
-    everyone (see [SETUP.md](./SETUP.md) to enable Storage). Optionally, an
-    **Import from Google Photos** button (Google Picker API) lets you hand-pick
-    existing photos to copy in. A Google Photos album link (`PHOTO_ALBUM_URL` in
-    `data.js`) also shows as a backup button.
   - **🎉 Cheers** — *Crew Cheers*, a friendly crew board. Shows the whole crew's
     combined progress, then every traveler's stats side by side, ranked by points
     from highest to lowest. Tap a cousin to send them a cheer 👏 — and add an
@@ -102,7 +96,6 @@ All the camp content lives in [`data.js`](./data.js):
   best, and any cousin without one simply falls back to their emoji.
 - **`SCHEDULE`** — each day's title and activities
   (time, title, emoji, location, point value, description).
-- **`PHOTO_ALBUM_URL`** — the Google Photos shared album link.
 - **`KUDOS`** — the kudos cards grown-ups can award (emoji, label, point value).
 - **`CHEERS`** — the playful cheer cards (emoji, label, description). They show
   up in **both** apps — cousins send them on the Crew Cheers board and grown-ups
@@ -122,9 +115,9 @@ ISO `YYYY-MM-DD`.
 | `parent.html` | Grown-ups' app shell — the separate Award Center link |
 | `styles.css` | Shared theme, mobile-first layout, print styles |
 | `core.js` | Shared model — state, Firestore sync, persistence, points/awards |
-| `app.js` | Campers' views — Today, Schedule, Photos, Cheers, Awards |
+| `app.js` | Campers' views — Today, Schedule, Cheers, Awards |
 | `parent.js` | Grown-ups' view — kudos, bonus points & special badges |
-| `data.js` | Camp schedule, campers, album link, kudos & badges (edit me!) |
+| `data.js` | Camp schedule, campers, kudos & badges (edit me!) |
 | `firebase-config.js` | Your Firebase project config (for shared mode) |
 | `firestore.rules` | Security rules for the shared database |
 | `icons/` | App icons (clock for campers, medal for grown-ups) — favicons, iOS home-screen, PWA |

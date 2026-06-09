@@ -1,7 +1,7 @@
 // Screenshot the Cousin Camp app with headless Chrome (Puppeteer).
 //
 // The app is a static, mobile-first site with hash routing (#today,
-// #schedule, #photos, #cheers, #awards). This script serves the repo over a
+// #schedule, #cheers, #awards). This script serves the repo over a
 // tiny local HTTP server, opens a route in a phone-sized viewport, waits for
 // the view to render, and writes a PNG.
 //
@@ -57,7 +57,6 @@ const url = `http://127.0.0.1:${port}/index.html#${route}`;
 const READY = {
   today: ".hero",
   schedule: ".daybar",
-  photos: ".view-title",
   cheers: ".view-title",
   awards: ".view-title",
 };

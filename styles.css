@@ -559,14 +559,7 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
   margin-left: auto;
 }
 
-/* ---------- Photos ---------- */
-.photo-toolbar {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-}
+/* ---------- Buttons & controls ---------- */
 .btn {
   border: none;
   background: var(--sun);
@@ -603,48 +596,6 @@ select.day-filter {
   font-family: "Nunito", sans-serif;
   color: var(--ink);
   font-size: 14px;
-}
-.photo-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
-  gap: 8px;
-}
-.photo-item {
-  position: relative;
-  aspect-ratio: 1;
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--line);
-  background: var(--sand);
-}
-.photo-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.photo-tag {
-  position: absolute;
-  left: 6px;
-  bottom: 6px;
-  background: rgba(0,0,0,.6);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 999px;
-}
-.photo-del {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(0,0,0,.6);
-  color: #fff;
-  font-size: 15px;
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-  line-height: 1;
 }
 
 /* ---------- Awards ---------- */
@@ -985,47 +936,6 @@ select.day-filter {
 .ros-name small { display: block; font-weight: 700; color: var(--ink-soft); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ros-you { display: inline-block; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: var(--sun-dark); background: rgba(86,207,230,.16); padding: 1px 7px; border-radius: 999px; vertical-align: middle; }
 .ros-pts { font-weight: 800; color: var(--gold); background: rgba(255,206,77,.16); padding: 4px 10px; border-radius: 999px; font-size: 13px; flex: 0 0 auto; }
-
-/* ---------- Shared photo album card ---------- */
-.album-card { text-align: center; padding: 26px 18px; }
-.album-emoji { font-size: 52px; line-height: 1; margin-bottom: 8px; }
-.album-card h3 { font-size: 20px; margin-bottom: 6px; }
-.album-card p { color: var(--ink-soft); font-weight: 700; margin: 0 auto 16px; max-width: 360px; }
-.album-btn { font-size: 16px; padding: 13px 20px; }
-.album-hint { font-size: 12.5px; margin-top: 14px; }
-
-/* ---------- Live shared gallery ---------- */
-.gallery-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
-  gap: 8px;
-}
-.gallery-item {
-  position: relative;
-  aspect-ratio: 1;
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--line);
-  background: var(--sand);
-}
-.gallery-item img { width: 100%; height: 100%; object-fit: cover; display: block; cursor: pointer; }
-.gallery-del {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(0,0,0,.6);
-  color: #fff;
-  font-size: 14px;
-  line-height: 1;
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-}
 
 /* ---------- Passcode gate ---------- */
 .gate {
