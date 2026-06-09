@@ -457,18 +457,16 @@
   }
   // A cousin-to-cousin cheer from the campers' app. Recognition only — worth
   // 0 points so kids can't trade points to game the leaderboard. Recorded as
-  // a "cheer" award on the recipient, tagged with who sent it. An optional
-  // free-form `reason` lets the sender say why they're cheering. Returns whether
+  // a "cheer" award on the recipient, tagged with who sent it. Returns whether
   // the cheer was sent (false if it was a no-op, e.g. cheering yourself).
-  function giveCheer(fromId, toId, cheerId, reason) {
+  function giveCheer(fromId, toId, cheerId) {
     const from = camperById(fromId), to = camperById(toId), k = cardById(cheerId);
     if (!from || !to || !k) return false;
     if (from.id === to.id) { toast("Pick a different cousin to cheer! 😊"); return false; }
-    const why = (reason || "").trim();
     toast(`${k.emoji} ${from.name} cheered ${to.name}!`);
     Store.award(to.id, {
       type: "cheer", refId: k.id, emoji: k.emoji, label: k.label, points: 0,
-      from: from.id, reason: why, note: `cheer from ${from.name}`,
+      from: from.id, note: `cheer from ${from.name}`,
     });
     return true;
   }
