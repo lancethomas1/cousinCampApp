@@ -19,13 +19,3 @@ window.FIREBASE_CONFIG = {
   appId: "1:981929551490:web:2135c67001be83c867769b",
   measurementId: "G-YZ6LESHDNK",
 };
-
-/*
- * Optional: "Import from Google Photos" (Picker API).
- * Paste the OAuth 2.0 Web client ID from Google Cloud here to show an
- * "Import from Google Photos" button on the Photos tab. Leave blank to hide it.
- * The client ID is not a secret. See SETUP.md → "Import from Google Photos".
- */
-window.GOOGLE_PICKER = {
-  clientId: "",
-};

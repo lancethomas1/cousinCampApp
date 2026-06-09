@@ -1,7 +1,7 @@
 /* ============================================================
    Cousin Camp — campers' app (vanilla JS, no build step)
    The shared model lives in core.js (window.CampCore); this file
-   is just the campers' views: Today, Schedule, Photos, Awards.
+   is just the campers' views: Today, Schedule, Cheers, Awards.
    Grown-ups hand out kudos & badges from the separate parents
    app (parent.html) — this app only shows what was earned.
    ============================================================ */
@@ -10,9 +10,9 @@
   "use strict";
 
   const C = window.CampCore;
-  const { CAMPERS, SCHEDULE, STORE, KUDOS, CHEERS, PHOTO_ALBUM_URL } = C.data;
+  const { CAMPERS, SCHEDULE, STORE, KUDOS, CHEERS } = C.data;
   const {
-    state, LS, save, Store, Photos, setRender, initShared,
+    state, LS, save, Store, setRender, initShared,
     camperById, allActivities, prepActivities, hasPrep, prepKey, prepDoneCount, isPrepared, isDone,
     pointsFor, balanceFor, completedCount, anyFullDay, fullDayCount,
     rewardById, claimedBy, claimOf,
@@ -225,212 +225,6 @@
       pill.classList.toggle("active", on);
       if (on) pill.scrollIntoView({ block: "nearest", inline: "nearest" });
     });
-  }
-
-  // ---- Import from Google Photos (Picker API) -----------------------------
-  // The only sanctioned way to read someone's Google Photos: they pick photos
-  // in Google's picker, we download the picks and store them in our gallery.
-  // Requires an OAuth Web client id (GOOGLE_PICKER.clientId) + Firebase Storage.
-  const PICKER_SCOPE = "https://www.googleapis.com/auth/photospicker.mediaitems.readonly";
-  const pickerCfg = () => window.GOOGLE_PICKER || {};
-  function pickerAvailable() {
-    return Photos.enabled() && !!pickerCfg().clientId &&
-      !!(window.google && google.accounts && google.accounts.oauth2);
-  }
-  function parseSeconds(v) {
-    const m = v && String(v).match(/([\d.]+)s/);
-    return m ? Math.round(parseFloat(m[1]) * 1000) : 0;
-  }
-  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
-  // Get a short-lived access token for the picker scope (popup, user gesture).
-  function getPickerToken() {
-    return new Promise((resolve, reject) => {
-      try {
-        const tc = google.accounts.oauth2.initTokenClient({
-          client_id: pickerCfg().clientId,
-          scope: PICKER_SCOPE,
-          callback: (resp) => (resp && resp.access_token) ? resolve(resp.access_token) : reject(new Error("no token")),
-          error_callback: (err) => reject(err || new Error("oauth error")),
-        });
-        tc.requestAccessToken();
-      } catch (e) { reject(e); }
-    });
-  }
-  async function pickerApi(path, token, opts) {
-    const res = await fetch("https://photospicker.googleapis.com/v1/" + path, {
-      method: (opts && opts.method) || "GET",
-      headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" },
-      body: (opts && opts.body) ? JSON.stringify(opts.body) : undefined,
-    });
-    if (!res.ok) throw new Error("Picker API " + res.status);
-    return res.status === 204 ? {} : res.json();
-  }
-
-  async function importFromGooglePhotos(btn) {
-    // Pre-open a tab during the click gesture so the picker isn't popup-blocked.
-    const pickerWin = window.open("", "_blank");
-    let token;
-    try { token = await getPickerToken(); }
-    catch (e) { if (pickerWin) pickerWin.close(); toast("Google sign-in cancelled"); return; }
-
-    btn.disabled = true;
-    const label = btn.innerHTML;
-    try {
-      btn.innerHTML = "⏳ Opening Google Photos…";
-      const session = await pickerApi("sessions", token, { method: "POST", body: {} });
-      if (pickerWin) pickerWin.location.href = session.pickerUri;
-      else window.open(session.pickerUri, "_blank");
-      toast("Pick your photos in the Google Photos tab…");
-
-      const interval = parseSeconds(session.pollingConfig && session.pollingConfig.pollInterval) || 4000;
-      const timeoutMs = parseSeconds(session.pollingConfig && session.pollingConfig.timeoutIn) || 5 * 60 * 1000;
-      const start = Date.now();
-      let ready = false;
-      while (Date.now() - start < timeoutMs) {
-        await sleep(Math.max(2000, interval));
-        const s = await pickerApi("sessions/" + session.id, token);
-        if (s.mediaItemsSet) { ready = true; break; }
-      }
-      if (!ready) { toast("No photos picked — try again"); return; }
-
-      btn.innerHTML = "⬇️ Importing…";
-      const items = [];
-      let pageToken = "";
-      do {
-        const q = "mediaItems?sessionId=" + encodeURIComponent(session.id) + "&pageSize=100" +
-          (pageToken ? "&pageToken=" + encodeURIComponent(pageToken) : "");
-        const page = await pickerApi(q, token);
-        (page.mediaItems || []).forEach((m) => items.push(m));
-        pageToken = page.nextPageToken || "";
-      } while (pageToken);
-
-      let ok = 0;
-      for (const m of items) {
-        const mf = m.mediaFile || {};
-        if (!mf.baseUrl || (mf.mimeType && !mf.mimeType.startsWith("image/"))) continue;
-        try {
-          const resp = await fetch(mf.baseUrl + "=d", { headers: { Authorization: "Bearer " + token } });
-          if (!resp.ok) throw new Error("download " + resp.status);
-          if (await Photos.add(await resp.blob())) ok++;
-        } catch (e) { console.error("import item failed (likely CORS — needs a proxy)", e); }
-      }
-      try { await pickerApi("sessions/" + session.id, token, { method: "DELETE" }); } catch (_) {}
-      toast(ok ? `Imported ${ok} photo${ok > 1 ? "s" : ""} 📥` : "Couldn't download picks — see console (may need a proxy)");
-    } catch (e) {
-      console.error("Google Photos import failed", e);
-      toast("Import failed — check setup / console");
-    } finally {
-      btn.disabled = false; btn.innerHTML = label;
-    }
-  }
-
-  // ---- PHOTOS view --------------------------------------------------------
-  // A live, shared in-app gallery (Firebase Storage). Everyone's photos stream
-  // in here. The Google Photos album link stays as a backup.
-  function renderPhotos() {
-    const url = (PHOTO_ALBUM_URL || "").trim();
-    const frag = document.createElement("div");
-    const head = document.createElement("div");
-    head.innerHTML = `<h2 class="view-title">Snapshots in Time 📸</h2>
-      <p class="view-sub">Every moment from our trip through the eras — shared live with the crew.</p>`;
-    frag.appendChild(head);
-
-    // Add-photo button (uploads into the shared gallery).
-    if (Photos.enabled()) {
-      const bar = document.createElement("div");
-      bar.className = "photo-toolbar";
-      const addBtn = document.createElement("button");
-      addBtn.className = "btn album-btn";
-      addBtn.innerHTML = "➕ Add photos";
-      const input = document.createElement("input");
-      input.type = "file";
-      input.accept = "image/*";
-      input.multiple = true;
-      input.hidden = true;
-      addBtn.addEventListener("click", () => input.click());
-      input.addEventListener("change", async (e) => {
-        const files = e.target.files;
-        if (!files || !files.length) return;
-        addBtn.disabled = true;
-        addBtn.innerHTML = "⏳ Uploading…";
-        toast(`Uploading ${files.length} photo${files.length > 1 ? "s" : ""}…`);
-        await Photos.addMany(files);
-        input.value = "";
-        addBtn.disabled = false;
-        addBtn.innerHTML = "➕ Add photos";
-        // gallery refreshes itself via the live snapshot
-      });
-      bar.append(addBtn, input);
-
-      // Optional: import existing pictures straight from Google Photos.
-      if (pickerAvailable()) {
-        const importBtn = document.createElement("button");
-        importBtn.className = "btn-ghost";
-        importBtn.type = "button";
-        importBtn.innerHTML = "📥 Import from Google Photos";
-        importBtn.addEventListener("click", () => importFromGooglePhotos(importBtn));
-        bar.append(importBtn);
-      }
-
-      frag.appendChild(bar);
-    }
-
-    // The live grid.
-    const photos = Photos.list();
-    if (photos.length) {
-      const grid = document.createElement("div");
-      grid.className = "gallery-grid";
-      photos.forEach((p) => {
-        const cell = document.createElement("div");
-        cell.className = "gallery-item";
-        cell.innerHTML = `<img src="${p.url}" alt="Camp photo" loading="lazy">`;
-        const a = cell.querySelector("img");
-        a.addEventListener("click", () => window.open(p.url, "_blank", "noopener"));
-        if (Photos.enabled()) {
-          const del = document.createElement("button");
-          del.className = "gallery-del";
-          del.type = "button";
-          del.setAttribute("aria-label", "Remove photo");
-          del.textContent = "✕";
-          del.addEventListener("click", (ev) => {
-            ev.stopPropagation();
-            if (confirm("Remove this photo for everyone?")) Photos.remove(p);
-          });
-          cell.appendChild(del);
-        }
-        grid.appendChild(cell);
-      });
-      frag.appendChild(grid);
-    } else {
-      const empty = document.createElement("div");
-      empty.className = "card album-card";
-      if (Photos.enabled()) {
-        empty.innerHTML = `<div class="album-emoji">📷</div>
-          <h3>No photos yet</h3>
-          <p>Tap <b>Add photos</b> to share the first snapshots — they'll stream in here for the whole crew.</p>`;
-      } else {
-        empty.innerHTML = `<div class="album-emoji">📷</div>
-          <h3>Shared gallery is warming up</h3>
-          <p>In-app photo sharing turns on once the camp is connected (and Firebase Storage is enabled). Until then, use the album link below.</p>`;
-      }
-      frag.appendChild(empty);
-    }
-
-    // Google Photos album backup link.
-    if (url) {
-      const albumWrap = document.createElement("div");
-      albumWrap.style.marginTop = "16px";
-      albumWrap.style.textAlign = "center";
-      const a = document.createElement("a");
-      a.className = "btn-ghost";
-      a.href = url; a.target = "_blank"; a.rel = "noopener";
-      a.innerHTML = "🖼️ Open the Google Photos album";
-      albumWrap.appendChild(a);
-      frag.appendChild(albumWrap);
-    }
-
-    view.replaceChildren(frag);
   }
 
   // ---- AWARDS view --------------------------------------------------------
@@ -840,7 +634,6 @@
   const routes = {
     today: renderToday,
     schedule: renderSchedule,
-    photos: renderPhotos,
     cheers: renderCheers,
     awards: renderAwards,
   };

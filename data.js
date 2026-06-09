@@ -187,11 +187,6 @@ const STORE = [
   { id: "r-smore",     emoji: "🍫", name: "S'more Master",          cost: 25, desc: "Unlimited s'mores at the next bonfire. Yes, unlimited." },
 ];
 
-// Shared Google Photos album link. Paste the "share" link to your camp's
-// Google Photos album here and the Photos tab will open it. Leave blank to
-// show a "coming soon" placeholder.
-const PHOTO_ALBUM_URL = "https://photos.app.goo.gl/ro6wZccAxgrEaB9A9";
-
 // ---------------------------------------------------------------------------
 // PARENT AWARDS — recognition that grown-ups hand out.
 // At Cousin Camp the grown-ups (Mimi, parents, aunts & uncles) award the extra
@@ -259,4 +254,4 @@ const PARENT_BADGES = [
 ];
 
 // Make available to app.js
-window.CAMP_DATA = { CAMPERS, GROWNUPS, SCHEDULE, STORE, PHOTO_ALBUM_URL, KUDOS, CHEERS, BONUS_QUICK, PARENT_BADGES };
+window.CAMP_DATA = { CAMPERS, GROWNUPS, SCHEDULE, STORE, KUDOS, CHEERS, BONUS_QUICK, PARENT_BADGES };
