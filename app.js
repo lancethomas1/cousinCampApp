@@ -139,13 +139,25 @@
   }
 
   // ---- SCHEDULE view ------------------------------------------------------
+  // Set while the Schedule view is on screen so the global scroll listener can
+  // keep the active day-pill in sync. Other views clear it (the bar detaches).
+  let daybar = null; // { bar, pills: Map<iso, el>, blocks: Map<iso, el> }
+
   function renderSchedule() {
     const today = todayISO();
     const frag = document.createElement("div");
     const head = document.createElement("div");
     head.innerHTML = `<h2 class="view-title">Journey Through Time 🗓️</h2>
-      <p class="view-sub">Five days of Cousin Camp — head to Today to get prepared!</p>`;
+      <p class="view-sub">Five days of Cousin Camp — tap a day to jump there.</p>`;
     frag.appendChild(head);
+
+    // Sticky day-pill navigator — one pill per camp day; tap to jump straight
+    // to it instead of scrolling past every activity in between.
+    const bar = document.createElement("div");
+    bar.className = "daybar";
+    const pills = new Map();
+    const blocks = new Map();
+    frag.appendChild(bar);
 
     SCHEDULE.forEach((day) => {
       const block = document.createElement("section");
@@ -163,8 +175,56 @@
       block.appendChild(dh);
       day.activities.forEach((a) => block.appendChild(activityRow({ ...a, date: day.date }, false)));
       frag.appendChild(block);
+      blocks.set(day.date, block);
+
+      const pill = document.createElement("button");
+      pill.type = "button";
+      pill.className = "daypill" + (day.date === today ? " is-today" : "");
+      pill.setAttribute("aria-label", fmtLong(day.date));
+      pill.innerHTML = `<span class="dp-dow">${fmtDow(day.date)}</span><span class="dp-num">${dayNum(day.date)}</span>`;
+      pill.addEventListener("click", () => jumpToDay(day.date));
+      bar.appendChild(pill);
+      pills.set(day.date, pill);
     });
+
     view.replaceChildren(frag);
+    daybar = { bar, pills, blocks };
+    // The bar is now laid out — publish its height so day headers can stick
+    // just beneath it (see --daybar-h in styles.css), then mark today active.
+    document.documentElement.style.setProperty("--daybar-h", bar.offsetHeight + "px");
+    syncActivePill();
+  }
+
+  // How far down the viewport the sticky app header + day-pill bar reach.
+  function stickyTop() {
+    const cs = getComputedStyle(document.documentElement);
+    const headerH = parseInt(cs.getPropertyValue("--header-h"), 10) || 64;
+    return headerH + (daybar ? daybar.bar.offsetHeight : 0);
+  }
+
+  // Tap a pill → scroll so that day's header lands just under the pill bar.
+  function jumpToDay(iso) {
+    const block = daybar && daybar.blocks.get(iso);
+    if (!block) return;
+    const top = block.getBoundingClientRect().top + window.scrollY - stickyTop() + 1;
+    window.scrollTo({ top, behavior: "smooth" });
+  }
+
+  // Highlight the pill for whichever day is currently under the sticky bar.
+  function syncActivePill() {
+    if (!daybar || !document.body.contains(daybar.bar)) { daybar = null; return; }
+    const line = stickyTop() + 8;
+    // Default to the first day so there's always an active pill, even at the
+    // very top where day one's block still sits below the sticky bar.
+    let current = daybar.blocks.keys().next().value;
+    daybar.blocks.forEach((block, iso) => {
+      if (block.getBoundingClientRect().top <= line) current = iso;
+    });
+    daybar.pills.forEach((pill, iso) => {
+      const on = iso === current;
+      pill.classList.toggle("active", on);
+      if (on) pill.scrollIntoView({ block: "nearest", inline: "nearest" });
+    });
   }
 
   // ---- Import from Google Photos (Picker API) -----------------------------
@@ -804,6 +864,7 @@
     view.scrollTop = 0;
     window.scrollTo(0, 0);
     syncStickyHero();
+    syncActivePill();
   }
 
   // ---- Sticky "Today" hero ------------------------------------------------
@@ -841,8 +902,13 @@
   });
 
   // ---- Boot ---------------------------------------------------------------
-  window.addEventListener("scroll", syncStickyHero, { passive: true });
-  window.addEventListener("resize", () => { syncHeaderHeight(); syncStickyHero(); });
+  window.addEventListener("scroll", () => { syncStickyHero(); syncActivePill(); }, { passive: true });
+  window.addEventListener("resize", () => {
+    syncHeaderHeight();
+    syncStickyHero();
+    if (daybar) document.documentElement.style.setProperty("--daybar-h", daybar.bar.offsetHeight + "px");
+    syncActivePill();
+  });
   syncHeaderHeight();
 
   setRender(render);

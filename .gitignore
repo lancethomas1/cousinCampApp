@@ -1,0 +1,9 @@
+# Node tooling (screenshots) — not part of the static site
+node_modules/
+
+# Puppeteer's downloaded Chrome, if cached inside the repo
+.cache/
+
+# Generated screenshots
+screenshots/
+*.screenshot.png
