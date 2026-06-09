@@ -9,47 +9,46 @@
     --sun:#56cfe6; --sun-dark:#8fe3f3; --sky:#45b6d8;
     --page-bg:#17151d; --card:#211d2a; --ink:#f1ece1; --ink-soft:#a39c91;
     --line:rgba(255,255,255,.08); --line-2:rgba(255,255,255,.14);
-    --header-h:56px;
   }
   *{box-sizing:border-box}
-  body{margin:0;background:var(--page-bg);color:var(--ink);
-    font-family:"Nunito",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  body{margin:0;background:#0e0c13;color:var(--ink);
+    font-family:"Nunito",system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
   h1,h2,h3{font-family:"Baloo 2","Nunito",sans-serif;margin:0}
 
-  /* Demo chrome: two phone columns side by side */
-  .intro{max-width:760px;margin:0 auto;padding:22px 18px 4px}
+  .intro{max-width:780px;margin:0 auto;padding:22px 18px 4px}
+  .intro h1{font-size:24px;margin-bottom:6px}
   .intro p{color:var(--ink-soft);font-weight:600;line-height:1.5}
+  .note{background:rgba(86,207,230,.1);border:1px solid rgba(86,207,230,.3);
+    border-radius:12px;padding:10px 13px;margin:12px 0 0;font-size:13.5px;font-weight:700;color:var(--sun-dark)}
   .stage{display:flex;gap:26px;justify-content:center;flex-wrap:wrap;
     padding:14px 16px 60px;align-items:flex-start}
   .phone{width:340px;max-width:92vw;background:var(--page-bg);
     border:1px solid var(--line-2);border-radius:26px;overflow:hidden;
     box-shadow:0 18px 50px rgba(0,0,0,.5)}
-  .phone-label{text-align:center;font-weight:800;padding:12px 10px;
+  .phone-label{text-align:center;font-weight:800;padding:13px 12px;
     font-family:"Baloo 2",sans-serif;font-size:17px;border-bottom:1px solid var(--line)}
-  .phone-label small{display:block;color:var(--ink-soft);font-size:12.5px;font-weight:700;margin-top:3px}
-  .app-header{height:var(--header-h);display:flex;align-items:center;gap:9px;
-    padding:0 16px;background:var(--page-bg);border-bottom:1px solid var(--line);
-    position:sticky;top:0;z-index:30}
+  .phone-label small{display:block;color:var(--ink-soft);font-size:12.5px;font-weight:700;margin-top:4px;line-height:1.35}
+  .app-header{height:54px;display:flex;align-items:center;gap:9px;
+    padding:0 16px;background:var(--page-bg);border-bottom:1px solid var(--line)}
   .brand-mark{font-size:24px}
   .app-header h1{font-size:18px}
-  .scroll{height:560px;overflow-y:auto;scroll-behavior:smooth;position:relative}
+  .screen{height:600px;overflow:hidden;position:relative}
 
-  /* ----- shared schedule styling (mirrors styles.css) ----- */
-  .view-title{font-size:23px;margin:14px 16px 2px}
-  .view-sub{color:var(--ink-soft);font-weight:700;margin:0 16px 8px;font-size:13px}
+  /* shared schedule styling (mirrors styles.css) */
+  .view-title{font-size:22px;margin:14px 16px 2px}
+  .view-sub{color:var(--ink-soft);font-weight:700;margin:0 16px 10px;font-size:13px}
   .day-block{padding:0 16px 10px}
-  .day-head{display:flex;align-items:center;gap:10px;position:sticky;
-    top:0;z-index:12;margin:0 -16px 12px;padding:10px 16px;
-    background:var(--page-bg);border-bottom:1px solid var(--line)}
+  .day-head{display:flex;align-items:center;gap:10px;padding:10px 16px;
+    margin:0 -16px 12px;background:var(--page-bg);border-bottom:1px solid var(--line)}
   .day-badge{background:var(--sky);border-radius:14px;padding:6px 10px;
     text-align:center;min-width:50px;color:#06222d}
   .day-badge .dow{font-size:11px;font-weight:800;letter-spacing:.04em}
   .day-badge .dnum{font-size:20px;font-weight:800;line-height:1}
-  .day-head h3{font-size:17px}
+  .day-head h3{font-size:16px}
   .day-theme{color:var(--ink-soft);font-size:12.5px;font-weight:700}
   .is-today .day-badge{background:var(--sun);box-shadow:0 0 14px rgba(86,207,230,.5)}
   .today-pill{margin-left:auto;background:var(--sun);color:#06222d;font-weight:800;
-    font-size:11px;padding:3px 9px;border-radius:999px}
+    font-size:11px;padding:3px 9px;border-radius:999px;white-space:nowrap}
   .activity-card{display:flex;gap:11px;align-items:flex-start;background:var(--card);
     border:1px solid var(--line);border-radius:16px;padding:11px 13px;margin-bottom:9px}
   .a-emoji{font-size:22px;line-height:1.2}
@@ -57,190 +56,115 @@
   .a-title{font-weight:800;font-size:16px;font-family:"Baloo 2",sans-serif;margin:2px 0}
   .a-loc{font-size:12px;color:var(--ink-soft);font-weight:700}
 
-  /* ===== OPTION A: sticky day-pill bar ===== */
-  .daybar{position:sticky;top:0;z-index:20;display:flex;gap:8px;overflow-x:auto;
-    padding:10px 12px;background:var(--page-bg);border-bottom:1px solid var(--line);
-    scrollbar-width:none}
-  .daybar::-webkit-scrollbar{display:none}
-  .pill{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;
-    gap:1px;min-width:52px;padding:7px 10px;border-radius:14px;cursor:pointer;
-    background:var(--card);border:1px solid var(--line);color:var(--ink);
-    font-family:inherit;transition:background .15s,border-color .15s}
+  /* Option A: day pills */
+  .daybar{display:flex;gap:8px;overflow-x:auto;padding:10px 12px;
+    background:var(--page-bg);border-bottom:1px solid var(--line)}
+  .pill{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:2px;
+    min-width:52px;padding:7px 10px;border-radius:14px;
+    background:var(--card);border:1px solid var(--line);color:var(--ink)}
   .pill .p-dow{font-size:10.5px;font-weight:800;color:var(--ink-soft);letter-spacing:.04em}
   .pill .p-num{font-size:18px;font-weight:800;line-height:1}
+  .pill .p-dot{height:5px}
   .pill.active{background:var(--sun);border-color:transparent;color:#06222d}
   .pill.active .p-dow{color:#06351f}
-  .pill.is-today::after{content:"•";color:var(--sun);font-size:16px;line-height:0;margin-top:2px}
-  .pill.active.is-today::after{color:#06222d}
-  /* day-pill version pins its day headers just under the pill bar */
-  #optA .day-head{top:55px}
+  .pill.active .p-dot{width:5px;height:5px;border-radius:50%;background:#06222d;margin-top:1px}
 
-  /* ===== OPTION B: collapsible days ===== */
-  #optB .day-head{cursor:pointer;user-select:none}
-  #optB .day-head .chev{margin-left:auto;font-size:14px;color:var(--ink-soft);
-    transition:transform .2s}
-  #optB .day-block.collapsed .chev{transform:rotate(-90deg)}
-  #optB .day-block .acts{overflow:hidden}
-  #optB .day-block.collapsed .acts{display:none}
-  #optB .day-block.collapsed{padding-bottom:0}
-  #optB .day-count{margin-left:8px;font-size:11px;font-weight:800;color:var(--ink-soft)}
-  /* keep today-pill before the chevron in collapsible mode */
-  #optB .today-pill{margin-left:auto}
-  #optB .today-pill + .chev{margin-left:8px}
+  /* Option B: collapsible */
+  .chev{margin-left:8px;font-size:13px;color:var(--ink-soft)}
+  .collapsed .chev{display:inline-block;transform:rotate(-90deg)}
+  .collapsed .day-head{margin-bottom:0;border-bottom:none}
+  .collapsed{padding-bottom:0;border-bottom:1px solid var(--line)}
+  .day-count{margin-left:6px;font-size:11px;font-weight:800;color:var(--ink-soft)}
+  .b-head{display:flex;align-items:center}
 </style>
 </head>
 <body>
   <div class="intro">
-    <h1 style="font-size:24px;margin-bottom:6px">Two ways to navigate the schedule</h1>
-    <p>Both use your real camp days, colors, and activity cards. <b>Today = Wednesday</b> in this demo.
-       Tap the pills on the left phone, or tap a day header on the right phone.</p>
+    <h1>Two ways to navigate the schedule</h1>
+    <p>Both use your real camp days, colors, and activity cards. <b>Today = Wednesday.</b>
+       In the live app these are tappable; this is a static preview so you can see the layout.</p>
+    <div class="note">Option A: tap a day pill to jump straight to that day. &nbsp;·&nbsp; Option B: tap any day header to expand/collapse it.</div>
   </div>
 
   <div class="stage">
     <!-- ===================== OPTION A ===================== -->
-    <div>
-      <div class="phone">
-        <div class="phone-label">Option A — Sticky day pills
-          <small>Tap a pill → jumps to that day. Active pill tracks scroll.</small>
+    <div class="phone">
+      <div class="phone-label">Option A — Sticky day pills
+        <small>Pinned pill bar. Tap a day → jumps to it. Active pill = day in view (Wed has the dot for “today”).</small>
+      </div>
+      <div class="app-header"><span class="brand-mark">🚂</span><h1>Cousin Camp</h1></div>
+      <div class="screen">
+        <div class="daybar">
+          <div class="pill"><span class="p-dow">MON</span><span class="p-num">22</span><span class="p-dot"></span></div>
+          <div class="pill"><span class="p-dow">TUE</span><span class="p-num">23</span><span class="p-dot"></span></div>
+          <div class="pill active"><span class="p-dow">WED</span><span class="p-num">24</span><span class="p-dot"></span></div>
+          <div class="pill"><span class="p-dow">THU</span><span class="p-num">25</span><span class="p-dot"></span></div>
+          <div class="pill"><span class="p-dow">FRI</span><span class="p-num">26</span><span class="p-dot"></span></div>
         </div>
-        <div class="app-header"><span class="brand-mark">🚂</span><h1>Cousin Camp</h1></div>
-        <div class="scroll" id="optA">
-          <div class="daybar" id="daybarA"></div>
-          <div id="scheduleA"></div>
-        </div>
+        <section class="day-block is-today">
+          <div class="day-head">
+            <div class="day-badge"><div class="dow">Wed</div><div class="dnum">24</div></div>
+            <div><h3>Wednesday — Cabin Day!</h3><div class="day-theme">Putt Putt &amp; Pool</div></div>
+            <span class="today-pill">TODAY</span>
+          </div>
+          <div class="activity-card"><span class="a-emoji">⛳</span><div><div class="a-time">10:00 AM</div><div class="a-title">Putt Putt at Maggie's</div><div class="a-loc">📍 Maggie's</div></div></div>
+          <div class="activity-card"><span class="a-emoji">🏊</span><div><div class="a-time">1:00 PM</div><div class="a-title">Pool at Kentucky Dam Lodge</div><div class="a-loc">📍 KY Dam Lodge</div></div></div>
+          <div class="activity-card"><span class="a-emoji">🏕️</span><div><div class="a-time">4:00 PM</div><div class="a-title">Check in to Cabin</div><div class="a-loc">📍 The Cabin</div></div></div>
+          <div class="activity-card"><span class="a-emoji">🎬</span><div><div class="a-time">8:30 PM</div><div class="a-title">Movie: Back to the Future</div><div class="a-loc">📍 The Cabin</div></div></div>
+        </section>
       </div>
     </div>
 
     <!-- ===================== OPTION B ===================== -->
-    <div>
-      <div class="phone">
-        <div class="phone-label">Option B — Collapsible days
-          <small>Tap a day header → expand/collapse. Whole camp fits on one screen.</small>
-        </div>
-        <div class="app-header"><span class="brand-mark">🚂</span><h1>Cousin Camp</h1></div>
-        <div class="scroll" id="optB">
-          <h2 class="view-title">Journey Through Time 🗓️</h2>
-          <p class="view-sub">Tap a day to open it.</p>
-          <div id="scheduleB"></div>
-        </div>
+    <div class="phone">
+      <div class="phone-label">Option B — Collapsible days
+        <small>Whole week fits on one screen. Tap a header to open it (Wed shown open).</small>
+      </div>
+      <div class="app-header"><span class="brand-mark">🚂</span><h1>Cousin Camp</h1></div>
+      <div class="screen">
+        <h2 class="view-title">Journey Through Time 🗓️</h2>
+        <p class="view-sub">Tap a day to open it.</p>
+
+        <section class="day-block collapsed">
+          <div class="day-head">
+            <div class="day-badge"><div class="dow">Mon</div><div class="dnum">22</div></div>
+            <div class="b-head"><h3>Monday — Sera's Birthday! 🎂</h3><span class="day-count">5</span></div>
+            <span class="chev" style="margin-left:auto">▾</span>
+          </div>
+        </section>
+        <section class="day-block collapsed">
+          <div class="day-head">
+            <div class="day-badge"><div class="dow">Tue</div><div class="dnum">23</div></div>
+            <div class="b-head"><h3>Tuesday</h3><span class="day-count">4</span></div>
+            <span class="chev" style="margin-left:auto">▾</span>
+          </div>
+        </section>
+        <section class="day-block is-today">
+          <div class="day-head">
+            <div class="day-badge"><div class="dow">Wed</div><div class="dnum">24</div></div>
+            <div><h3>Wednesday — Cabin Day!</h3><div class="day-theme">Putt Putt &amp; Pool</div></div>
+            <span class="today-pill">TODAY</span><span class="chev">▴</span>
+          </div>
+          <div class="activity-card"><span class="a-emoji">⛳</span><div><div class="a-time">10:00 AM</div><div class="a-title">Putt Putt at Maggie's</div><div class="a-loc">📍 Maggie's</div></div></div>
+          <div class="activity-card"><span class="a-emoji">🏕️</span><div><div class="a-time">4:00 PM</div><div class="a-title">Check in to Cabin</div><div class="a-loc">📍 The Cabin</div></div></div>
+          <div class="activity-card"><span class="a-emoji">🎬</span><div><div class="a-time">8:30 PM</div><div class="a-title">Movie: Back to the Future</div><div class="a-loc">📍 The Cabin</div></div></div>
+        </section>
+        <section class="day-block collapsed">
+          <div class="day-head">
+            <div class="day-badge"><div class="dow">Thu</div><div class="dnum">25</div></div>
+            <div class="b-head"><h3>Thursday — Variety Show!</h3><span class="day-count">4</span></div>
+            <span class="chev" style="margin-left:auto">▾</span>
+          </div>
+        </section>
+        <section class="day-block collapsed">
+          <div class="day-head">
+            <div class="day-badge"><div class="dow">Fri</div><div class="dnum">26</div></div>
+            <div class="b-head"><h3>Friday — Last Day!</h3><span class="day-count">4</span></div>
+            <span class="chev" style="margin-left:auto">▾</span>
+          </div>
+        </section>
       </div>
     </div>
   </div>
-
-<script>
-/* Trimmed copy of the real SCHEDULE shape (a few activities per day is enough
-   to show the navigation behavior). */
-const SCHEDULE = [
-  {date:"2026-06-22", title:"Monday — Sera's Birthday! 🎂", era:"Time Travelers: 90 Years", activities:[
-    {time:"8:00 AM",title:"Breakfast",emoji:"🥞",location:"Mimi's Kitchen"},
-    {time:"9:00 AM",title:"T-Shirts & Pictures",emoji:"📸",location:"Back Porch"},
-    {time:"1:00 PM",title:"Pool at Rebecca's",emoji:"🏊",location:"Rebecca's"},
-    {time:"6:30 PM",title:"Fishing",emoji:"🎣",location:"The Pond"},
-    {time:"8:30 PM",title:"Sera's Birthday Cake",emoji:"🎂",location:"Back Porch"},
-  ]},
-  {date:"2026-06-23", title:"Tuesday", era:"Evolution of Music & Dance", activities:[
-    {time:"8:20 AM",title:"Capoeira with Chris",emoji:"🥋",location:"Back Yard"},
-    {time:"10:00 AM",title:"Leave for Church",emoji:"⛪",location:"Church"},
-    {time:"1:00 PM",title:"Swim at Rebecca's",emoji:"🏊",location:"Rebecca's"},
-    {time:"6:30 PM",title:"Futrell Farm",emoji:"🚜",location:"Futrell Farm"},
-  ]},
-  {date:"2026-06-24", title:"Wednesday — Cabin Day!", era:"Putt Putt & Pool", activities:[
-    {time:"10:00 AM",title:"Putt Putt at Maggie's",emoji:"⛳",location:"Maggie's"},
-    {time:"1:00 PM",title:"Pool at Kentucky Dam Lodge",emoji:"🏊",location:"KY Dam Lodge"},
-    {time:"4:00 PM",title:"Check in to Cabin",emoji:"🏕️",location:"The Cabin"},
-    {time:"8:30 PM",title:"Movie: Back to the Future",emoji:"🎬",location:"The Cabin"},
-  ]},
-  {date:"2026-06-25", title:"Thursday — Variety Show!", era:"Variety Show Day", activities:[
-    {time:"9:00 AM",title:"Practice Variety Show",emoji:"🎭",location:"The Cabin"},
-    {time:"1:30 PM",title:"Church: Dress Rehearsal",emoji:"⛪",location:"Church"},
-    {time:"6:30 PM",title:"Variety Show",emoji:"🌟",location:"Show Stage"},
-    {time:"8:00 PM",title:"Water Balloon Fight",emoji:"🎈",location:"Back Yard"},
-  ]},
-  {date:"2026-06-26", title:"Friday — Last Day!", era:"Time Capsule: 2030", activities:[
-    {time:"8:45 AM",title:"Time Capsule: 2030",emoji:"📦",location:"Back Porch"},
-    {time:"11:00 AM",title:"Lazer Tag",emoji:"🔫",location:"Lazer Tag"},
-    {time:"5:00 PM",title:"Pontoon Boat & Jet Skis",emoji:"🚤",location:"The Lake"},
-    {time:"8:30 PM",title:"Baths",emoji:"🛁",location:"Upstairs"},
-  ]},
-];
-const TODAY = "2026-06-24"; // Wednesday, for the demo
-
-const fmtDow = iso => {const[y,m,d]=iso.split("-").map(Number);
-  return new Date(y,m-1,d).toLocaleDateString(undefined,{weekday:"short"});};
-const dayNum = iso => Number(iso.split("-")[2]);
-const esc = s => s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
-
-function activityCard(a){
-  return `<div class="activity-card">
-    <span class="a-emoji">${a.emoji}</span>
-    <div><div class="a-time">${a.time}</div>
-      <div class="a-title">${esc(a.title)}</div>
-      <div class="a-loc">📍 ${esc(a.location)}</div></div>
-  </div>`;
-}
-
-/* ===================== OPTION A: sticky day pills ===================== */
-(function(){
-  const bar = document.getElementById("daybarA");
-  const list = document.getElementById("scheduleA");
-  const scroller = document.getElementById("optA");
-
-  SCHEDULE.forEach(day=>{
-    const block = document.createElement("section");
-    block.className = "day-block" + (day.date===TODAY?" is-today":"");
-    block.id = "A-"+day.date;
-    block.innerHTML = `<div class="day-head">
-        <div class="day-badge"><div class="dow">${fmtDow(day.date)}</div><div class="dnum">${dayNum(day.date)}</div></div>
-        <div><h3>${esc(day.title)}</h3><div class="day-theme">${esc(day.era)}</div></div>
-        ${day.date===TODAY?'<span class="today-pill">TODAY</span>':''}
-      </div>` + day.activities.map(activityCard).join("");
-    list.appendChild(block);
-
-    const pill = document.createElement("button");
-    pill.className = "pill" + (day.date===TODAY?" is-today":"");
-    pill.dataset.date = day.date;
-    pill.innerHTML = `<span class="p-dow">${fmtDow(day.date)}</span><span class="p-num">${dayNum(day.date)}</span>`;
-    pill.onclick = ()=>{
-      const top = block.offsetTop - 54; // sit below the pill bar
-      scroller.scrollTo({top, behavior:"smooth"});
-    };
-    bar.appendChild(pill);
-  });
-
-  // Highlight the pill for the day currently in view.
-  const pills = [...bar.querySelectorAll(".pill")];
-  function syncActive(){
-    const y = scroller.scrollTop + 70;
-    let current = SCHEDULE[0].date;
-    SCHEDULE.forEach(d=>{
-      const el = document.getElementById("A-"+d.date);
-      if(el.offsetTop <= y) current = d.date;
-    });
-    pills.forEach(p=>p.classList.toggle("active", p.dataset.date===current));
-  }
-  scroller.addEventListener("scroll", syncActive, {passive:true});
-  syncActive();
-})();
-
-/* ===================== OPTION B: collapsible days ===================== */
-(function(){
-  const list = document.getElementById("scheduleB");
-  SCHEDULE.forEach(day=>{
-    const isToday = day.date===TODAY;
-    const block = document.createElement("section");
-    // Everything collapsed except today, so the overview is compact.
-    block.className = "day-block" + (isToday?" is-today":" collapsed");
-    block.innerHTML = `<div class="day-head">
-        <div class="day-badge"><div class="dow">${fmtDow(day.date)}</div><div class="dnum">${dayNum(day.date)}</div></div>
-        <div><h3>${esc(day.title)}</h3><div class="day-theme">${esc(day.era)}<span class="day-count">${day.activities.length} activities</span></div></div>
-        ${isToday?'<span class="today-pill">TODAY</span>':''}
-        <span class="chev">▾</span>
-      </div>
-      <div class="acts">${day.activities.map(activityCard).join("")}</div>`;
-    block.querySelector(".day-head").onclick = ()=>block.classList.toggle("collapsed");
-    list.appendChild(block);
-  });
-})();
-</script>
 </body>
 </html>
