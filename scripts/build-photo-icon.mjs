@@ -12,7 +12,7 @@ const src = resolve(root, "icons/delorean-icon.jpg");
 const sx = Number(process.argv[2] ?? 170);
 const sy = Number(process.argv[3] ?? 90);
 const S  = Number(process.argv[4] ?? 780);
-const blur = Number(process.argv[5] ?? 2.4); // background blur strength (tile units)
+const blur = Number(process.argv[5] ?? 1.4); // background blur strength (tile units)
 const IMG_W = 1320, IMG_H = 887;
 
 const scale = 128 / S;
