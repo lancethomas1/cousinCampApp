@@ -175,16 +175,15 @@
       <circle cx="30" cy="30" r=".6"/><circle cx="116" cy="30" r=".6"/>
     </g>
 
-    <!-- floor glow + reflection -->
-    <ellipse cx="64" cy="100" rx="54" ry="15" fill="url(#floorglow)"/>
-    <g mask="url(#reflmask)" filter="url(#reflblur)" opacity=".5"
-       transform="matrix(1,0,0,-1,0,193)">
+    <!-- energy glow behind the launching car -->
+    <ellipse cx="64" cy="60" rx="50" ry="42" fill="url(#floorglow)"/>
+
+    <!-- faint ground shadow far below the airborne car -->
+    <ellipse cx="66" cy="114" rx="34" ry="5" fill="#0c0818" opacity=".4" filter="url(#softshadow)"/>
+
+    <!-- car tilted to a 45-degree launch angle -->
+    <g transform="rotate(45 64 62)">
       <use href="#car"/>
     </g>
-
-    <!-- contact shadow -->
-    <ellipse cx="63" cy="93" rx="43" ry="6" fill="#0c0818" opacity=".55" filter="url(#softshadow)"/>
-
-    <use href="#car"/>
   </g>
 </svg>
