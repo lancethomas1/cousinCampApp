@@ -133,6 +133,30 @@
       </g>
       <circle cx="42" cy="85" r="1.9" fill="#cfd5de"/>
       <path d="M37 81 a6.2 6.2 0 0 1 6 -2.6" stroke="#fbfdff" stroke-width="1" fill="none" opacity=".6"/>
+
+      <!-- ===== open gullwing door (near side) ===== -->
+      <!-- interior revealed where the door lifted -->
+      <path d="M51 63 Q55 52 59 50.5 L67.5 48.5 L62.5 61 Z" fill="#0b0e15"/>
+      <path d="M53.5 60 Q56 53 59 51.5 L62 56 Q60 59 58 61 Z" fill="#2a2f3a"/>
+      <path d="M55.5 57.5 q3 -1.5 5 -1 l0 4 q-3 .4 -5 1 z" fill="#41475440"/>
+      <!-- shadow cast by the raised door onto the roof -->
+      <path d="M60 50.5 L75 47.6 Q70 50.5 64 53 Z" fill="#0c0818" opacity=".3"/>
+
+      <!-- raised door: stainless outer skin -->
+      <path d="M58.5 50.5 L68 48 Q66.5 36 61 27 Q53.5 28.5 47 31.5 Q52 40.5 58.5 50.5 Z"
+            fill="url(#bodyTop)" stroke="#9aa3b1" stroke-width=".5"/>
+      <!-- leading-edge highlight -->
+      <path d="M49 31.5 Q54.5 29.5 60 28.5 Q56 30.5 52.5 33 Q50.5 32 49 31.5 Z" fill="#ffffff" opacity=".4"/>
+      <!-- door window -->
+      <path d="M52.5 33.5 Q57 31.6 62.5 30.7 Q65 37 63.8 43 Q57.5 44 53 45.2 Q51.6 39.5 52.5 33.5 Z"
+            fill="url(#glass)"/>
+      <path d="M54 34.5 Q57.5 33.2 61 32.6 L58.5 42.5 Q55 43.2 53.6 44 Q53 39 54 34.5 Z"
+            fill="#cfe2f2" opacity=".16"/>
+      <!-- chrome window surround -->
+      <path d="M52.5 33.5 Q57 31.6 62.5 30.7 Q65 37 63.8 43"
+            fill="none" stroke="#c2cad6" stroke-width=".8" opacity=".8"/>
+      <!-- door underside / thickness at hinge -->
+      <path d="M58.5 50.5 L68 48 L67 49.6 L58 52 Z" fill="#5d6675"/>
     </g>
   </defs>
 
