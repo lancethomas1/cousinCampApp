@@ -476,22 +476,26 @@
     const marty = flybyNext === 1;
     flybyNext = (flybyNext + 1) % 2;
     const el = document.createElement("div");
-    el.className = "kudos-flyby" + (marty ? " is-marty" : "");
+    // The DeLorean glyph faces left (fire trails stream off to the right), so
+    // it rides right→left; Marty faces right and rides left→right.
+    el.className = "kudos-flyby " + (marty ? "is-marty" : "is-delorean");
     // Ride across at the tap's height (fresh taps only — falls back to the
     // CSS default mid-screen), clamped so the rider stays fully visible.
     if (lastTap && Date.now() - lastTap.t < 1500) {
       const h = window.innerHeight;
       el.style.top = Math.max(110, Math.min(h - 130, lastTap.y)) + "px";
     }
+    // Marty's img rides in a wrapper so the mid-flight backflip can spin the
+    // whole figure while the bob keeps wiggling the img inside it.
     el.innerHTML = marty
-      ? `<img src="icons/marty.svg?v=20260612" alt="" width="150" height="150" />`
+      ? `<div class="marty-flip"><img src="icons/marty.svg?v=20260612" alt="" width="150" height="150" /></div>`
       : `<img src="icons/delorean.svg?v=20260612" alt="" width="200" height="200" />`;
     document.body.appendChild(el);
 
     // Exhaust smoke is the DeLorean's thing — Marty just kicks along. Puffs
-    // come from the back (the left side, since both ride left→right). Each
-    // puff is dropped at the car's current spot and lingers/fades in place
-    // while the car races on, leaving a real trail behind it.
+    // come from the back (the right side, since the car drives right→left).
+    // Each puff is dropped at the car's current spot and lingers/fades in
+    // place while the car races on, leaving a real trail behind it.
     let puff = 0;
     if (!marty) {
       puff = setInterval(() => {
@@ -499,7 +503,7 @@
         if (r.right < 0 || r.left > window.innerWidth) return;
         const s = document.createElement("div");
         s.className = "delorean-smoke";
-        s.style.left = (r.left + r.width * 0.18) + "px";
+        s.style.left = (r.left + r.width * 0.82) + "px";
         s.style.top = (r.top + r.height * 0.6 + (Math.random() * 16 - 8)) + "px";
         document.body.appendChild(s);
         s.addEventListener("animationend", () => s.remove(), { once: true });
