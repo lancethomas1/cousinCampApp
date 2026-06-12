@@ -485,8 +485,8 @@
       const h = window.innerHeight;
       el.style.top = Math.max(110, Math.min(h - 130, lastTap.y)) + "px";
     }
-    // Marty's img rides in a wrapper so the mid-flight backflip can spin the
-    // whole figure while the bob keeps wiggling the img inside it.
+    // Marty's img rides in a wrapper, keeping the bob wiggle isolated to the
+    // img while the wrapper just glides along (no flip).
     el.innerHTML = marty
       ? `<div class="marty-flip"><img src="icons/marty.svg?v=20260612" alt="" width="150" height="150" /></div>`
       : `<img src="icons/delorean.svg?v=20260612" alt="" width="200" height="200" />`;
@@ -512,7 +512,7 @@
 
     const done = () => { clearInterval(puff); el.remove(); };
     el.addEventListener("animationend", done, { once: true });
-    setTimeout(done, 2200); // safety net if animationend never fires
+    setTimeout(done, 3600); // safety net if animationend never fires (> Marty's 2.9s)
   }
 
   // ---- Chrono-Burst -------------------------------------------------------

@@ -889,13 +889,13 @@ select.day-filter {
   88%  { opacity: 1; }
   100% { transform: translateX(-80vw) scale(1.18); opacity: 0; }
 }
-/* Marty's turn: a touch smaller and slower (a kid on a board isn't doing
-   88 mph), rolling with a little kick-push bob as he crosses. */
+/* Marty's turn: a touch smaller and a lot slower (a kid on a board isn't
+   doing 88 mph), rolling with a little kick-push bob as he crosses. */
 .kudos-flyby.is-marty {
   width: 150px;
   height: 150px;
   margin-top: -75px;
-  animation-duration: 1.45s;
+  animation-duration: 2.9s;
 }
 .kudos-flyby.is-marty::before {
   height: 8px;
@@ -908,19 +908,11 @@ select.day-filter {
   0%, 100% { transform: translateY(0) rotate(0deg); }
   50%      { transform: translateY(-7px) rotate(-4deg); }
 }
-/* Halfway across, Marty pops the board and throws a full backflip — the
-   wrapper hops up and spins while the container keeps gliding. Duration
-   matches .is-marty's crossing so the apex lands at mid-screen. */
+/* Marty just cruises straight across now — no backflip. The wrapper stays
+   so the bob can wiggle the img inside it without any extra spin. */
 .marty-flip {
   width: 100%;
   height: 100%;
-  will-change: transform;
-  animation: marty-flip 1.45s ease-in-out forwards;
-}
-@keyframes marty-flip {
-  0%, 30%   { transform: translateY(0) rotate(0deg); }
-  50%       { transform: translateY(-38px) rotate(-180deg); }
-  70%, 100% { transform: translateY(0) rotate(-360deg); }
 }
 /* Smoke puffs trailing from the car's tailpipe (spawned in core.js). Each one
    is dropped in place, then balloons out and fades so the trail hangs in the
