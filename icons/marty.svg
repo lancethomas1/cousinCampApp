@@ -157,40 +157,67 @@
   <!-- front hand -->
   <path d="M90.8 39.2 Q93.4 37.6 95.2 38.6 Q96.6 39.4 96 40.8 Q97 42 95.8 43 Q94 44.6 91.8 43.8 Q90.2 43.2 90 41.4 Z" fill="url(#mm-skin)"/>
 
-  <!-- ===== neck and head, facing the way he's going ===== -->
-  <path d="M69 34 L74.4 34 L74.8 39 Q71.5 40.2 68.6 38.6 Z" fill="#e8ab74"/>
-  <!-- head: profile with brow, nose, lips, chin -->
-  <path d="M68.8 24
-           Q70 20.8 73.6 20.6
-           Q77.2 20.6 78.6 23.6
-           Q79.3 25.2 79.4 27.2
-           L81.1 29.9
-           Q81.5 30.6 80.5 30.7
-           L79.6 30.8
-           Q80 31.9 79.2 32.3
-           Q79.9 33 79.2 33.8
-           Q78.2 35.2 76 35.4
-           Q72.4 35.9 70.4 33.8
-           Q68.4 30.4 68.8 24 Z" fill="url(#mm-skin)"/>
-  <!-- ear -->
-  <path d="M71.2 29.2 Q70.2 28 71 27 Q72 26.2 72.9 27.2 Q73.6 28.2 72.8 29.4 Q72 30.2 71.2 29.2 Z" fill="#d99c66"/>
-  <!-- eye + brow -->
-  <path d="M76.6 26.4 Q77.8 26 78.9 26.5" stroke="#5c3a1a" stroke-width=".9" stroke-linecap="round" fill="none"/>
-  <ellipse cx="77.8" cy="27.7" rx=".9" ry=".6" fill="#2b1c10"/>
-  <!-- mouth -->
-  <path d="M77.4 32.4 Q78.3 32.8 79.1 32.4" stroke="#a8593b" stroke-width=".8" stroke-linecap="round" fill="none"/>
-  <!-- feathered 80s hair: swept back off the forehead, full at the back -->
-  <path d="M68.3 31.5
-           Q66.6 24.5 69 21.4
-           Q71.4 18.2 75.4 18.8
-           Q79.2 19.4 80.2 23
-           Q80.7 24.8 79.4 24.4
-           Q77.8 23.9 76.6 24.6
-           Q74.6 23.4 72.6 24.6
-           Q70.8 25.8 70.6 28.6
-           Q70.5 30.6 71 32.6
-           Q69.8 33.6 69 32.8
-           Q68.5 32.3 68.3 31.5 Z" fill="url(#mm-hair)"/>
-  <!-- sideburn -->
-  <path d="M70.6 28.6 Q70.4 30.6 71 32.6 L72.2 31.8 Q71.6 30 71.8 28.4 Z" fill="#5c3a1a"/>
+  <!-- ===== neck and head: 3/4 view turned a touch toward the viewer, so
+       the famous face reads — big feathered hair, strong brows, boyish
+       grin ===== -->
+  <path d="M70.5 34.2 L75.8 33.8 L76.2 39 Q72.6 40.2 69.8 38.7 Z" fill="#e8ab74"/>
+  <!-- face -->
+  <path d="M68.6 26.5
+           Q68.2 20.6 72.2 18.8
+           Q76.8 17.2 80 20.2
+           Q82 22.2 82 25.5
+           Q82 29 81 31.2
+           Q79.8 33.8 77 35
+           Q74.2 36 72 34.8
+           Q69.6 33.4 69 30.4
+           Q68.7 28.4 68.6 26.5 Z" fill="url(#mm-skin)"/>
+  <!-- brows: straight-ish and strong -->
+  <g stroke="#6b4423" stroke-width="1.1" stroke-linecap="round" fill="none">
+    <path d="M71.3 24.9 Q72.7 24.2 74.1 24.7"/>
+    <path d="M76.7 24.6 Q78.2 23.9 79.7 24.6"/>
+  </g>
+  <!-- eyes -->
+  <g>
+    <ellipse cx="72.8" cy="26.7" rx="1.3" ry=".95" fill="#fdf8f2"/>
+    <ellipse cx="78.2" cy="26.5" rx="1.4" ry="1" fill="#fdf8f2"/>
+    <circle cx="73.1" cy="26.8" r=".62" fill="#3a2614"/>
+    <circle cx="78.5" cy="26.6" r=".66" fill="#3a2614"/>
+  </g>
+  <!-- nose: straight with a slight upturn, turned with the head -->
+  <path d="M76.3 26.6 Q77.2 28.2 77.1 29.4 Q77 30 76.2 29.9"
+        stroke="#cf8f5c" stroke-width=".9" stroke-linecap="round" fill="none"/>
+  <path d="M75.5 29.8 Q75.9 30.2 76.4 30" stroke="#c2814e" stroke-width=".6" stroke-linecap="round" fill="none" opacity=".8"/>
+  <!-- the grin: wide open smile with a flash of teeth -->
+  <path d="M73.2 31.3 Q75.9 34.1 78.7 31.1 Q76 32 73.2 31.3 Z" fill="#8c4a32"/>
+  <path d="M73.8 31.4 Q76 32.5 78.1 31.3 Q76 31.9 73.8 31.4 Z" fill="#fffdf6"/>
+  <!-- cheek shadow giving the jaw some shape -->
+  <path d="M71.2 30.2 Q71.8 32.6 73.5 33.8" stroke="#d99c66" stroke-width=".8" stroke-linecap="round" fill="none" opacity=".7"/>
+  <!-- chin crease under the grin -->
+  <path d="M75.2 33.6 Q76 34.1 76.9 33.6" stroke="#d99c66" stroke-width=".7" stroke-linecap="round" fill="none" opacity=".8"/>
+  <!-- ear, exposed below the hairline (spans eye-to-nose height) -->
+  <path d="M68.4 28.6 Q67.6 27 68.6 26.1 Q69.7 25.4 70.4 26.6 Q71 27.8 70.3 29.3 Q69.2 30.3 68.4 28.6 Z" fill="#e8ab74"/>
+  <path d="M68.9 26.9 Q69.6 26.9 69.8 27.7" stroke="#c2814e" stroke-width=".5" stroke-linecap="round" fill="none"/>
+  <!-- the hair: feathered 80s cut — volume swept up off the forehead and
+       back at the crown, short over the ears -->
+  <path d="M68.6 26
+           Q67.6 19.6 70.6 17.2
+           Q73.6 15.2 77.4 15.9
+           Q81.4 16.7 82.9 20
+           Q84.1 22.8 83.5 26
+           Q83.2 27.5 82.3 26.3
+           Q81.7 25.2 80.7 24.7
+           Q81.4 22 79.4 20.8
+           Q77.6 22.5 74.8 22
+           Q71.8 21.5 70.4 23.4
+           Q69.7 24.5 69.6 26.2
+           Q69.1 27.2 68.6 26 Z" fill="url(#mm-hair)"/>
+  <!-- feathering strands -->
+  <g stroke="#54341a" stroke-width=".6" stroke-linecap="round" fill="none" opacity=".75">
+    <path d="M72 17.2 Q70.6 19 70 21.6"/>
+    <path d="M76 15.9 Q75 17.9 74.8 20.2"/>
+    <path d="M80 17.3 Q80.8 19.2 81 21.6"/>
+    <path d="M82.7 21.4 Q83.2 23.4 83 25.2"/>
+  </g>
+  <!-- short sideburn in front of the ear -->
+  <path d="M70.3 25.8 L71.2 25.8 L71 28.2 L70.4 27.4 Z" fill="#5c3a1a"/>
 </svg>
