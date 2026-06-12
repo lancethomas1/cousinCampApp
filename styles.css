@@ -872,6 +872,23 @@ select.day-filter {
   88%  { opacity: 1; }
   100% { transform: translateX(130vw) scale(1.18); opacity: 0; }
 }
+/* The DeLorean's turn: the glyph faces left, so it rides right→left, with
+   the speed streak and smoke trailing off to its right. */
+.kudos-flyby.is-delorean {
+  animation-name: kudos-fly-rtl;
+}
+.kudos-flyby.is-delorean::before {
+  right: auto;
+  left: 64%;
+  background: linear-gradient(270deg, transparent, rgba(167, 139, 250, .55) 40%, rgba(251, 191, 36, .85));
+}
+@keyframes kudos-fly-rtl {
+  0%   { transform: translateX(110vw) scale(.65); opacity: 0; }
+  12%  { opacity: 1; }
+  50%  { transform: translateX(10vw) scale(1.08); }
+  88%  { opacity: 1; }
+  100% { transform: translateX(-80vw) scale(1.18); opacity: 0; }
+}
 /* Marty's turn: a touch smaller and slower (a kid on a board isn't doing
    88 mph), rolling with a little kick-push bob as he crosses. */
 .kudos-flyby.is-marty {
@@ -891,6 +908,20 @@ select.day-filter {
   0%, 100% { transform: translateY(0) rotate(0deg); }
   50%      { transform: translateY(-7px) rotate(-4deg); }
 }
+/* Halfway across, Marty pops the board and throws a full backflip — the
+   wrapper hops up and spins while the container keeps gliding. Duration
+   matches .is-marty's crossing so the apex lands at mid-screen. */
+.marty-flip {
+  width: 100%;
+  height: 100%;
+  will-change: transform;
+  animation: marty-flip 1.45s ease-in-out forwards;
+}
+@keyframes marty-flip {
+  0%, 30%   { transform: translateY(0) rotate(0deg); }
+  50%       { transform: translateY(-38px) rotate(-180deg); }
+  70%, 100% { transform: translateY(0) rotate(-360deg); }
+}
 /* Smoke puffs trailing from the car's tailpipe (spawned in core.js). Each one
    is dropped in place, then balloons out and fades so the trail hangs in the
    air as the DeLorean roars off. */
@@ -908,7 +939,7 @@ select.day-filter {
 }
 @keyframes delorean-smoke {
   0%   { transform: scale(.4) translateX(0); opacity: .85; }
-  100% { transform: scale(2.4) translateX(-26px); opacity: 0; }
+  100% { transform: scale(2.4) translateX(26px); opacity: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .kudos-flyby,
