@@ -468,6 +468,7 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
   top: var(--header-h, 64px);
   z-index: 14;
   display: flex;
+  justify-content: center;
   gap: 8px;
   overflow-x: auto;
   scrollbar-width: none;
