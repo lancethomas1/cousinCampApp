@@ -1,34 +1,40 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
   <!-- Marty skating across the screen — companion glyph to delorean.svg for
-       the kudos fly-by. Side view facing right: crouched on the board, puffer
-       vest over a denim jacket, jeans and white high-tops, hair in the wind,
-       speed lines streaking out behind. -->
+       the kudos fly-by. Side view facing right in a riding stance: knees
+       bent, arms out for balance. Quilted orange puffer vest over a denim
+       jacket, jeans, white sneakers, feathered 80s hair. -->
   <defs>
-    <linearGradient id="mm-vest" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#ff9a4d"/>
-      <stop offset=".55" stop-color="#f06a24"/>
-      <stop offset="1" stop-color="#d94f15"/>
+    <linearGradient id="mm-vest" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#d94f15"/>
+      <stop offset=".5" stop-color="#f06a24"/>
+      <stop offset="1" stop-color="#ff9a4d"/>
     </linearGradient>
     <linearGradient id="mm-denim" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#8fb4e0"/>
       <stop offset="1" stop-color="#4f7cb6"/>
     </linearGradient>
-    <linearGradient id="mm-jeans" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#6b8fc2"/>
-      <stop offset="1" stop-color="#3d6298"/>
+    <linearGradient id="mm-jeans" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#46699c"/>
+      <stop offset="1" stop-color="#6b8fc2"/>
     </linearGradient>
     <linearGradient id="mm-hair" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#9a6a3a"/>
-      <stop offset="1" stop-color="#64401e"/>
+      <stop offset="1" stop-color="#5c3a1a"/>
     </linearGradient>
-    <linearGradient id="mm-deck" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#c9536b"/>
-      <stop offset="1" stop-color="#a33550"/>
+    <linearGradient id="mm-deck" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1c1d22"/>
+      <stop offset=".45" stop-color="#1c1d22"/>
+      <stop offset=".5" stop-color="#c98d4e"/>
+      <stop offset="1" stop-color="#8e5a26"/>
     </linearGradient>
     <radialGradient id="mm-wheel" cx="0.4" cy="0.38" r="0.7">
       <stop offset="0" stop-color="#fdf6e3"/>
       <stop offset=".7" stop-color="#efe2c2"/>
-      <stop offset="1" stop-color="#c9b98f"/>
+      <stop offset="1" stop-color="#bba672"/>
+    </radialGradient>
+    <radialGradient id="mm-skin" cx="0.6" cy="0.4" r="0.8">
+      <stop offset="0" stop-color="#f8cfa4"/>
+      <stop offset="1" stop-color="#e8ab74"/>
     </radialGradient>
     <filter id="mm-soft" x="-40%" y="-40%" width="180%" height="180%">
       <feGaussianBlur stdDeviation="2.4"/>
@@ -36,73 +42,155 @@
   </defs>
 
   <!-- contact shadow -->
-  <ellipse cx="66" cy="106" rx="40" ry="4.4" fill="#0c0818" opacity=".45" filter="url(#mm-soft)"/>
+  <ellipse cx="66" cy="106" rx="40" ry="4.2" fill="#0c0818" opacity=".45" filter="url(#mm-soft)"/>
 
   <!-- speed lines streaking out behind the board -->
   <g stroke-linecap="round" fill="none">
-    <path d="M7 60 H30" stroke="#a78bfa" stroke-width="2.4" opacity=".75"/>
-    <path d="M12 71 H36" stroke="#a78bfa" stroke-width="2.2" opacity=".55"/>
-    <path d="M5 82 H26" stroke="#7dd3fc" stroke-width="2.2" opacity=".6"/>
-    <path d="M14 93 H38" stroke="#7dd3fc" stroke-width="2" opacity=".45"/>
+    <path d="M8 56 H28" stroke="#a78bfa" stroke-width="2.2" opacity=".7"/>
+    <path d="M13 70 H34" stroke="#a78bfa" stroke-width="2" opacity=".5"/>
+    <path d="M6 84 H25" stroke="#7dd3fc" stroke-width="2" opacity=".55"/>
+    <path d="M15 96 H36" stroke="#7dd3fc" stroke-width="1.8" opacity=".4"/>
   </g>
 
-  <!-- ===== skateboard: kicked tail at the back, riding right ===== -->
+  <!-- ===== back arm (behind the torso), swung back for balance ===== -->
+  <path d="M66 38.6
+           Q58.5 39.4 54 43.4
+           Q51 46 48.6 41.8
+           Q47.2 39 49.8 38.6
+           Q52.8 38 55.4 36.6
+           Q60.5 34.4 66 36 Z" fill="#3f6aa3"/>
+  <!-- denim cuff -->
+  <path d="M51.4 37.9 L49.2 42.9 Q48 41.5 48.6 39.6 Q49 38.2 49.8 38.6 Z" fill="#33588c"/>
+  <!-- back hand -->
+  <path d="M49.6 38.2 Q47 38.6 45.6 37.4 Q44.6 36.5 45.3 35.5 Q44.8 34.2 46.2 33.9 Q48.2 33.5 49.5 34.7 Q50.8 36 50.4 37.6 Z" fill="#e8ab74"/>
+
+  <!-- ===== legs in jeans, knees bent into the ride ===== -->
+  <!-- back leg -->
+  <path d="M56.5 59.5 L65.5 63
+           Q60.5 69.5 58 75
+           Q56 80.5 55.6 88.5
+           L49.8 88.5
+           Q50 79.5 52 73.5
+           Q53.8 65.5 56.5 59.5 Z" fill="#3d5e92"/>
+  <!-- front leg -->
+  <path d="M61.5 60.5 L69.5 64.5
+           Q75 69 77.6 74.5
+           Q79.8 80 80 88.5
+           L74.2 88.5
+           Q74 81 72.2 76.5
+           Q68.5 70 60 65.5 Z" fill="url(#mm-jeans)"/>
+  <!-- knee + cuff creases -->
+  <g stroke="#2e4a77" stroke-width=".7" opacity=".7" fill="none">
+    <path d="M53 74 Q55.5 75.5 58 75"/>
+    <path d="M50.5 86 L55.4 86"/>
+    <path d="M72.8 74.5 Q75.2 75.8 77.6 74.5"/>
+    <path d="M74.6 86 L79.6 86"/>
+  </g>
+
+  <!-- ===== skateboard ===== -->
+  <!-- trucks -->
+  <g fill="#9aa3ae">
+    <path d="M48.4 94.4 L53.6 94.4 L52.4 98 Q51 99 49.6 98 Z"/>
+    <path d="M79.4 94.4 L84.6 94.4 L83.4 98 Q82 99 80.6 98 Z"/>
+  </g>
+  <!-- deck: kicked tail behind, gentle nose ahead; grip tape on top edge -->
+  <path d="M40 85.5
+           Q44.5 91 50.5 91.9
+           L83 91.9
+           Q89.5 91.4 93.2 87.4
+           L94.6 89
+           Q90.5 93.8 83.4 94.4
+           L50 94.4
+           Q42.8 93.3 38.4 87
+           Z" fill="url(#mm-deck)"/>
+  <!-- wheels -->
+  <circle cx="51" cy="100" r="4.3" fill="url(#mm-wheel)" stroke="#8d7e57" stroke-width=".6"/>
+  <circle cx="82" cy="100" r="4.3" fill="url(#mm-wheel)" stroke="#8d7e57" stroke-width=".6"/>
+  <circle cx="51" cy="100" r="1.5" fill="#857349"/>
+  <circle cx="82" cy="100" r="1.5" fill="#857349"/>
+
+  <!-- ===== sneakers planted on the deck ===== -->
   <g>
-    <!-- trucks -->
-    <path d="M50 96 L50 99 M82 96 L82 99" stroke="#9aa3ae" stroke-width="2.6" stroke-linecap="round"/>
-    <!-- deck -->
-    <path d="M38 89.5 Q42 95.5 50 95.8 L82 95.8 Q90 95.6 93.5 91"
-          stroke="url(#mm-deck)" stroke-width="4.2" stroke-linecap="round" fill="none"/>
-    <path d="M40 89.8 Q43.5 94 50 94.3 L82 94.3" stroke="#e98aa0" stroke-width="1" stroke-linecap="round" opacity=".7" fill="none"/>
-    <!-- wheels -->
-    <circle cx="50" cy="101.5" r="4.6" fill="url(#mm-wheel)" stroke="#8d7e57" stroke-width=".7"/>
-    <circle cx="82" cy="101.5" r="4.6" fill="url(#mm-wheel)" stroke="#8d7e57" stroke-width=".7"/>
-    <circle cx="50" cy="101.5" r="1.4" fill="#6e6248"/>
-    <circle cx="82" cy="101.5" r="1.4" fill="#6e6248"/>
+    <!-- back shoe -->
+    <path d="M47.6 92 L47.6 89.4 Q47.6 87.4 50 87.2 L54.6 87 Q58 87.2 59.6 89.6 L60.4 92 Z" fill="#f4f7fa"/>
+    <path d="M47.6 91 L60.1 91 L60.4 92 L47.6 92 Z" fill="#c9ced6"/>
+    <path d="M49.4 89.8 Q52.6 90.6 55.4 89.2" stroke="#c2483d" stroke-width=".9" stroke-linecap="round" fill="none"/>
+    <!-- front shoe -->
+    <path d="M72 92 L72 89.4 Q72 87.4 74.4 87.2 L79 87 Q82.4 87.2 84 89.6 L84.8 92 Z" fill="#f4f7fa"/>
+    <path d="M72 91 L84.5 91 L84.8 92 L72 92 Z" fill="#c9ced6"/>
+    <path d="M73.8 89.8 Q77 90.6 79.8 89.2" stroke="#c2483d" stroke-width=".9" stroke-linecap="round" fill="none"/>
   </g>
 
-  <!-- ===== Marty, crouched into the push ===== -->
-  <!-- back arm, swung up behind for balance (drawn before torso so it sits behind) -->
-  <path d="M74 53 Q61 60 53 52" stroke="url(#mm-denim)" stroke-width="6" stroke-linecap="round" fill="none"/>
-  <circle cx="52.5" cy="51" r="2.8" fill="#f3bd90"/>
+  <!-- ===== denim jacket hem peeking below the vest ===== -->
+  <path d="M56.5 58 L72 60 L71 64.5 Q63.5 65.5 56 62.5 Z" fill="url(#mm-denim)"/>
 
-  <!-- legs in jeans -->
-  <path d="M61 69 Q47 78 53 90.5" stroke="url(#mm-jeans)" stroke-width="7.5" stroke-linecap="round" fill="none"/>
-  <path d="M64 68 Q79 76 77.5 90.5" stroke="url(#mm-jeans)" stroke-width="7.5" stroke-linecap="round" fill="none"/>
-  <!-- white high-tops planted on the deck -->
-  <g fill="#f4f7fa" stroke="#aab3be" stroke-width=".7">
-    <path d="M47.5 89.5 L56.5 89.5 Q59.5 89.7 59.8 92 L60 94 L47 94 Q46 91 47.5 89.5 Z"/>
-    <path d="M72.5 89.5 L81.5 89.5 Q84.5 89.7 84.8 92 L85 94 L72 94 Q71 91 72.5 89.5 Z"/>
+  <!-- ===== quilted puffer vest, leaning into the ride ===== -->
+  <path d="M57.2 61
+           Q55.8 54 58.4 47.5
+           Q60.6 41.5 65.4 38.8
+           L72.6 40.2
+           Q74.8 46 74.4 52
+           Q74 57.5 71.4 62
+           Q64 63.8 57.2 61 Z" fill="url(#mm-vest)"/>
+  <!-- quilt seams: horizontal puffer segments -->
+  <g stroke="#b53f0e" stroke-width=".9" stroke-linecap="round" fill="none" opacity=".85">
+    <path d="M56.6 56.5 Q65 59.5 73 56.8"/>
+    <path d="M56.9 51 Q65.5 54 74.3 51.2"/>
+    <path d="M58.2 45.6 Q66 48.4 74.4 46"/>
   </g>
-  <g stroke="#c2483d" stroke-width="1" stroke-linecap="round">
-    <path d="M48.5 91.8 H59"/>
-    <path d="M73.5 91.8 H84"/>
+  <!-- puffer highlights on each segment -->
+  <g stroke="#ffb877" stroke-width="1.1" stroke-linecap="round" fill="none" opacity=".7">
+    <path d="M58.5 54.2 Q65.5 56.8 72.5 54.6"/>
+    <path d="M59.6 48.8 Q66.5 51.4 73.4 49"/>
+    <path d="M61.5 43 Q67 45.4 73 43.6"/>
   </g>
+  <!-- vest zipper line -->
+  <path d="M70.8 40 Q73 46.5 72.6 52.5 Q72.3 57.5 70.4 61.6" stroke="#8c2f08" stroke-width=".7" fill="none" opacity=".8"/>
+  <!-- vest collar -->
+  <path d="M65.4 38.8 Q68.5 36.8 72 37.6 L73.4 40.4 Q69.5 41.6 66.6 40.6 Z" fill="#c2481a"/>
 
-  <!-- torso: orange puffer vest over the jacket, leaning into the ride -->
-  <path d="M62 68 L77 50" stroke="url(#mm-vest)" stroke-width="14" stroke-linecap="round" fill="none"/>
-  <!-- quilted vest seams -->
-  <g stroke="#c2481a" stroke-width="1" stroke-linecap="round" opacity=".8">
-    <path d="M61 62 L74 66"/>
-    <path d="M64 57.5 L77.5 61"/>
-    <path d="M68 53 L81 55.5"/>
-  </g>
-  <!-- denim collar peeking out at the neck -->
-  <path d="M72.5 47 L81 49.5 L79.5 53 L71.5 50.5 Z" fill="url(#mm-denim)"/>
+  <!-- ===== front arm reaching forward for balance ===== -->
+  <path d="M68.5 41 Q77.5 41.5 82.5 45.5 Q85 43 87.5 41.5 Q81.5 35.5 71 37.5 Z" fill="url(#mm-denim)"/>
+  <path d="M82.5 45.5 Q85.5 43 87.5 41.5 L90.6 39.6 Q92 38.7 92.8 40 Q93.6 41.4 92.3 42.3 L89 44.5 Q86.5 46.5 84.6 47.8 Z" fill="url(#mm-denim)"/>
+  <!-- denim cuff -->
+  <path d="M88.2 39.2 L90.8 43.2 L88.8 44.6 L86.2 40.6 Z" fill="#3a6097"/>
+  <!-- front hand -->
+  <path d="M90.8 39.2 Q93.4 37.6 95.2 38.6 Q96.6 39.4 96 40.8 Q97 42 95.8 43 Q94 44.6 91.8 43.8 Q90.2 43.2 90 41.4 Z" fill="url(#mm-skin)"/>
 
-  <!-- front arm reaching forward for balance -->
-  <path d="M78 52 Q90 49 97.5 55.5" stroke="url(#mm-denim)" stroke-width="6" stroke-linecap="round" fill="none"/>
-  <circle cx="98.5" cy="56.5" r="2.8" fill="#f3bd90"/>
-
-  <!-- head, facing the way he's going -->
-  <circle cx="86" cy="36.5" r="7.6" fill="#f6c69a"/>
-  <!-- hair swept back in the wind -->
-  <path d="M78.5 39.5 Q76 30 84 28.5 Q92 27 94.5 33 Q95.5 35.5 93.5 35.2
-           Q90 34.6 88 36 Q84.5 34.8 82.5 37.5 Q80.5 38.5 80.5 41.5 Q79 41 78.5 39.5 Z"
-        fill="url(#mm-hair)"/>
-    <!-- face: eye + grin -->
-  <circle cx="90.5" cy="36.8" r="1.1" fill="#2b1c10"/>
-  <path d="M89.5 41.2 Q91.5 42.4 93 40.8" stroke="#b56a4a" stroke-width="1.1" stroke-linecap="round" fill="none"/>
+  <!-- ===== neck and head, facing the way he's going ===== -->
+  <path d="M69 34 L74.4 34 L74.8 39 Q71.5 40.2 68.6 38.6 Z" fill="#e8ab74"/>
+  <!-- head: profile with brow, nose, lips, chin -->
+  <path d="M68.8 24
+           Q70 20.8 73.6 20.6
+           Q77.2 20.6 78.6 23.6
+           Q79.3 25.2 79.4 27.2
+           L81.1 29.9
+           Q81.5 30.6 80.5 30.7
+           L79.6 30.8
+           Q80 31.9 79.2 32.3
+           Q79.9 33 79.2 33.8
+           Q78.2 35.2 76 35.4
+           Q72.4 35.9 70.4 33.8
+           Q68.4 30.4 68.8 24 Z" fill="url(#mm-skin)"/>
   <!-- ear -->
-  <circle cx="83.5" cy="38" r="1.5" fill="#eab184"/>
+  <path d="M71.2 29.2 Q70.2 28 71 27 Q72 26.2 72.9 27.2 Q73.6 28.2 72.8 29.4 Q72 30.2 71.2 29.2 Z" fill="#d99c66"/>
+  <!-- eye + brow -->
+  <path d="M76.6 26.4 Q77.8 26 78.9 26.5" stroke="#5c3a1a" stroke-width=".9" stroke-linecap="round" fill="none"/>
+  <ellipse cx="77.8" cy="27.7" rx=".9" ry=".6" fill="#2b1c10"/>
+  <!-- mouth -->
+  <path d="M77.4 32.4 Q78.3 32.8 79.1 32.4" stroke="#a8593b" stroke-width=".8" stroke-linecap="round" fill="none"/>
+  <!-- feathered 80s hair: swept back off the forehead, full at the back -->
+  <path d="M68.3 31.5
+           Q66.6 24.5 69 21.4
+           Q71.4 18.2 75.4 18.8
+           Q79.2 19.4 80.2 23
+           Q80.7 24.8 79.4 24.4
+           Q77.8 23.9 76.6 24.6
+           Q74.6 23.4 72.6 24.6
+           Q70.8 25.8 70.6 28.6
+           Q70.5 30.6 71 32.6
+           Q69.8 33.6 69 32.8
+           Q68.5 32.3 68.3 31.5 Z" fill="url(#mm-hair)"/>
+  <!-- sideburn -->
+  <path d="M70.6 28.6 Q70.4 30.6 71 32.6 L72.2 31.8 Q71.6 30 71.8 28.4 Z" fill="#5c3a1a"/>
 </svg>
