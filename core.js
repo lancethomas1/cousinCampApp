@@ -505,17 +505,26 @@
     burst.style.left = x + "px";
     burst.style.top = y + "px";
 
-    // Twin portal rings (the gold one trails the lavender) opening from center.
+    // Every burst gets its own random two-tone color, picked here and handed to
+    // the CSS as hue custom properties the rings/sparks/streaks inherit. The
+    // second hue sits a little way around the wheel from the first so the pair
+    // always harmonizes instead of clashing.
+    const h1 = Math.floor(Math.random() * 360);
+    const h2 = (h1 + 30 + Math.floor(Math.random() * 90)) % 360;
+    burst.style.setProperty("--h1", h1);
+    burst.style.setProperty("--h2", h2);
+
+    // Twin portal rings (the second hue trails the first) opening from center.
     burst.innerHTML = `<span class="chrono-ring"></span><span class="chrono-ring chrono-ring--2"></span>`;
 
-    // A ring of sparks, alternating the camp's lavender and brass, each flung to
-    // a slightly random angle/distance so no two bursts ever look the same.
+    // A ring of sparks alternating the two hues, each flung to a slightly random
+    // angle/distance so no two bursts ever look the same.
     const SPARKS = 28;
     for (let i = 0; i < SPARKS; i++) {
       const ang = (i / SPARKS) * Math.PI * 2 + (Math.random() * 0.4 - 0.2);
       const dist = 95 + Math.random() * 75;
       const s = document.createElement("span");
-      s.className = "chrono-spark" + (i % 2 ? " chrono-spark--gold" : "");
+      s.className = "chrono-spark" + (i % 2 ? " chrono-spark--alt" : "");
       s.style.setProperty("--tx", (Math.cos(ang) * dist).toFixed(1) + "px");
       s.style.setProperty("--ty", (Math.sin(ang) * dist).toFixed(1) + "px");
       s.style.setProperty("--d", (Math.random() * 90).toFixed(0) + "ms");
