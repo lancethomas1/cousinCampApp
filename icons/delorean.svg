@@ -1,142 +1,169 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
   <!-- Standalone DeLorean glyph for in-app branding (header mark, hero
-       watermark). Same vector car as the pre-photo app icon, on a
-       transparent background, trailing fire like it just hit 88 mph. -->
+       watermark). Side profile drawn to real DMC-12 proportions — long low
+       wedge, flat roof, louvered deck — with the near gullwing door up and
+       fire trails burning on the road behind it. -->
   <defs>
-    <linearGradient id="bodyTop" x1="0.1" y1="0" x2="0.7" y2="1">
-      <stop offset="0" stop-color="#f3f7fc"/><stop offset=".45" stop-color="#dde3ec"/>
-      <stop offset="1" stop-color="#b3bcca"/>
+    <linearGradient id="dl-steel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f4f7fa"/>
+      <stop offset=".38" stop-color="#d3dae2"/>
+      <stop offset=".62" stop-color="#aab4c0"/>
+      <stop offset=".82" stop-color="#929da9"/>
+      <stop offset="1" stop-color="#79828f"/>
     </linearGradient>
-    <linearGradient id="bodySide" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#e7ebf1"/><stop offset=".45" stop-color="#bcc4d0"/>
-      <stop offset="1" stop-color="#828c9c"/>
+    <linearGradient id="dl-door" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#b8c1cc"/>
+      <stop offset=".5" stop-color="#dde3ea"/>
+      <stop offset="1" stop-color="#f4f7fa"/>
     </linearGradient>
-    <linearGradient id="doorSkin" x1="0" y1="1" x2="0.3" y2="0">
-      <stop offset="0" stop-color="#aab2c0"/><stop offset=".6" stop-color="#dde3ec"/>
-      <stop offset="1" stop-color="#f3f7fc"/>
+    <linearGradient id="dl-glass" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0c121c"/>
+      <stop offset=".55" stop-color="#1d2c40"/>
+      <stop offset="1" stop-color="#3d556f"/>
     </linearGradient>
-    <linearGradient id="fascia" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#d7dde6"/><stop offset="1" stop-color="#9aa3b1"/>
+    <linearGradient id="dl-deck" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#c4ccd5"/>
+      <stop offset="1" stop-color="#9aa4b0"/>
     </linearGradient>
-    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#0f1826"/><stop offset=".5" stop-color="#243650"/>
-      <stop offset="1" stop-color="#56789a"/>
-    </linearGradient>
-    <radialGradient id="alloy" cx="0.42" cy="0.4" r="0.62">
-      <stop offset="0" stop-color="#eef1f5"/><stop offset=".55" stop-color="#aab2c0"/>
-      <stop offset="1" stop-color="#6c7484"/>
+    <radialGradient id="dl-alloy" cx="0.4" cy="0.38" r="0.66">
+      <stop offset="0" stop-color="#e8ecf1"/>
+      <stop offset=".55" stop-color="#a8b1bc"/>
+      <stop offset="1" stop-color="#636b77"/>
     </radialGradient>
-    <radialGradient id="tire" cx="0.42" cy="0.4" r="0.7">
-      <stop offset="0" stop-color="#2a2730"/><stop offset="1" stop-color="#0d0b11"/>
+    <radialGradient id="dl-tire" cx="0.42" cy="0.4" r="0.7">
+      <stop offset="0" stop-color="#23252b"/>
+      <stop offset="1" stop-color="#0a0b0e"/>
     </radialGradient>
-    <filter id="softshadow" x="-40%" y="-40%" width="180%" height="180%">
-      <feGaussianBlur stdDeviation="3.2"/>
+    <linearGradient id="dl-fire" x1="1" y1="0" x2="0" y2="0">
+      <stop offset="0" stop-color="#ff8c1a" stop-opacity="0"/>
+      <stop offset=".45" stop-color="#ffa53d" stop-opacity=".85"/>
+      <stop offset="1" stop-color="#ffd98a"/>
+    </linearGradient>
+    <filter id="dl-soft" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="2.6"/>
     </filter>
-    <g id="wheel">
-      <circle r="10" fill="url(#tire)"/>
-      <circle r="8.4" fill="none" stroke="#332f39" stroke-width="1.6"/>
-      <circle r="7.6" fill="url(#alloy)"/>
-      <circle r="6" fill="none" stroke="#5b6470" stroke-width="3" stroke-dasharray="0.7 1.15"/>
-      <circle r="4" fill="none" stroke="#8b94a3" stroke-width="0.7"/>
-      <circle r="2" fill="#cfd5de"/>
-      <path d="M-5 -4 A6.4 6.4 0 0 1 4 -5" fill="none" stroke="#fbfdff" stroke-width="0.8" opacity=".55"/>
-    </g>
-    <!-- ===== the car (front-left 3/4, both gullwing doors up) ===== -->
-    <g id="car">
-      <!-- wheel-well ambient occlusion -->
-      <ellipse cx="42" cy="84" rx="13" ry="11" fill="#14101f" opacity=".55"/>
-      <ellipse cx="96" cy="79" rx="11" ry="9" fill="#14101f" opacity=".5"/>
 
-      <!-- far rear wheel -->
-      <use href="#wheel" transform="translate(96 80) scale(0.92)"/>
-
-      <!-- FAR gullwing door (behind roof, rising up-right) -->
-      <path d="M70 48 L84 45.5 Q92 38 98 30 Q92 31 86 33 Q77 41 70 48 Z"
-            fill="url(#doorSkin)" stroke="#9aa3b1" stroke-width=".5"/>
-      <path d="M76 39.5 Q82 35.5 88 33.5 Q90 37.5 89 42 Q83.5 43.5 78 45 Q76 41.5 76 39.5 Z" fill="url(#glass)"/>
-      <path d="M70 48 L84 45.5 L83 47 L70.5 49.5 Z" fill="#5d6675"/>
-
-      <!-- side flank -->
-      <path d="M26 84 Q26 70 31 67.5 Q40 65 52 63.5 Q76 60 98 57.5 Q104 57 106 65
-               L104.5 79 Q104 84 99 84 L31 88 Q26 88 26 84 Z" fill="url(#bodySide)"/>
-      <path d="M32 70 Q42 66.5 52 65.5 Q76 62.5 99 60 Q101 61 100 62.5 Q76 65 52 68 Q42 69 33 72.5 Q31 71.5 32 70 Z"
-            fill="#fbfdff" opacity=".5"/>
-      <path d="M28 80 Q66 76 104 73 L104.5 79 Q104 84 99 84 L31 88 Q26 88 26 84 L26.5 81 Z"
-            fill="#5d6675" opacity=".4"/>
-
-      <!-- greenhouse glass (rear quarter) -->
-      <path d="M50.5 64 Q53 52 60 50 Q75 45.5 86 45.5 Q92 46.5 94 57 Z" fill="url(#glass)"/>
-      <!-- revealed interior under the open near door -->
-      <path d="M50.5 64 Q53 52 60 50 L70 48.5 L66 55 Q60 58 56 62 Z" fill="#0b0e15"/>
-      <!-- seat + headrest -->
-      <path d="M55 62 Q55 54 60 52.5 L64.5 53.5 Q63 57 63 62 Z" fill="#2c313c"/>
-      <path d="M58.5 54 Q58.5 51 61 50.6 Q63 51 62.7 53.6 Q60.5 53.8 58.5 54 Z" fill="#3a404c"/>
-      <!-- rear glass reflection + B-pillar -->
-      <path d="M74 50 Q80 48.5 86 48 L88 55 Q81 56 75 57.5 Z" fill="#cfe2f2" opacity=".16"/>
-      <line x1="71" y1="47.5" x2="68" y2="55" stroke="#111a28" stroke-width="1.4"/>
-
-      <!-- roof top plane (overlaps door hinges) -->
-      <path d="M59.5 50 Q74 45.5 86 45.5 Q90 45.7 93 50 Q78 52 62.5 55 Q60 52.5 59.5 50 Z" fill="url(#bodyTop)"/>
-      <path d="M62 51.5 Q74 47.6 85 47.4 L87 48.6 Q74 50.5 63 53 Z" fill="#ffffff" opacity=".32"/>
-
-      <!-- hood top plane -->
-      <path d="M30.5 68 Q40 65 50 63.8 Q56 66 60 68.2 Q51 70.5 42 73 Q35 70 30.5 68 Z" fill="url(#bodyTop)"/>
-      <path d="M33 68 Q41 65.8 49 65 Q44 68.5 40 71 Z" fill="#ffffff" opacity=".28"/>
-      <path d="M36 68.6 Q44 66.6 52 65.4" stroke="#9aa3b1" stroke-width=".6" fill="none" opacity=".7"/>
-
-      <!-- front fascia -->
-      <path d="M30.5 68 Q37 70.5 42 73 L41 80 L28.5 79.5 Q26 79 26 75 Q26.5 71 30.5 68 Z" fill="url(#fascia)"/>
-      <!-- twin headlights -->
-      <g transform="rotate(8 33 73)">
-        <rect x="27.5" y="70.4" width="4.6" height="3.4" rx="1" fill="#ffe48a"/>
-        <rect x="32.6" y="70.8" width="4.6" height="3.4" rx="1" fill="#ffe48a"/>
-        <ellipse cx="29.8" cy="71.6" rx="1.4" ry="1" fill="#fffdf0"/>
-      </g>
-      <!-- DMC grille -->
-      <rect x="27.5" y="75" width="11.5" height="2.3" rx="1" fill="#15131a" transform="rotate(8 33 76)"/>
-      <rect x="31.6" y="75.3" width="3.4" height="1.6" rx=".4" fill="#aeb6c2" transform="rotate(8 33 76)"/>
-      <!-- black slatted bumper -->
-      <path d="M27.5 79 Q34 79.6 41 80.5 L40 86.5 Q34 86 28.5 86 Q26 86 26 83.5 Z" fill="#1f1c25"/>
-      <g stroke="#3c3947" stroke-width=".7">
-        <path d="M28 81.6 Q34 82.1 40.2 83" fill="none"/>
-        <path d="M28 83.6 Q34 84.1 39.6 85" fill="none"/>
-      </g>
-
-      <!-- character line + door seams -->
-      <path d="M31 76 L103 70" stroke="#6e7686" stroke-width="1.1" opacity=".8"/>
-      <path d="M31 75 L103 69" stroke="#fbfdff" stroke-width=".6" opacity=".5"/>
-      <path d="M80 60.5 L82 83" stroke="#7c8595" stroke-width=".7" opacity=".6"/>
-
-      <!-- rear side louvers -->
-      <g stroke="#5b6371" stroke-width=".9">
-        <line x1="89" y1="59" x2="99" y2="58"/><line x1="89" y1="61" x2="99" y2="60"/>
-        <line x1="89" y1="63" x2="99" y2="62"/><line x1="89" y1="65" x2="99" y2="64"/>
-      </g>
-
-      <!-- near front wheel (turbine) -->
-      <use href="#wheel" transform="translate(42 85) scale(1.12)"/>
-
-      <!-- NEAR gullwing door (on top, rising up-left) -->
-      <path d="M60 50.5 L72 48 Q68 36 64 26 Q56 27.5 48 30 Q53 40 60 50.5 Z"
-            fill="url(#doorSkin)" stroke="#9aa3b1" stroke-width=".5"/>
-      <path d="M50 30 Q56 28 61 27.2 Q57 29 53.5 31.5 Q51.5 30.5 50 30 Z" fill="#ffffff" opacity=".4"/>
-      <path d="M52 32 Q58 30 64 28.5 Q66.5 35 65 41 Q58 42.5 53 44 Q51.5 38 52 32 Z" fill="url(#glass)"/>
-      <path d="M54 33.5 Q58 32.2 62 31.4 L59 41.5 Q55.5 42.2 54 43 Q53.4 38 54 33.5 Z" fill="#cfe2f2" opacity=".16"/>
-      <path d="M52 32 Q58 30 64 28.5 Q66.5 35 65 41" fill="none" stroke="#c2cad6" stroke-width=".8" opacity=".8"/>
-      <path d="M60 50.5 L72 48 L71 49.6 L60 52 Z" fill="#5d6675"/>
+    <!-- turbine alloy wheel, centred at 0,0 (flat-faced, fine fins) -->
+    <g id="dl-wheel">
+      <circle r="9.4" fill="url(#dl-tire)"/>
+      <circle r="7.9" fill="none" stroke="#2e3138" stroke-width="1"/>
+      <circle r="7.2" fill="url(#dl-alloy)"/>
+      <circle r="5.4" fill="none" stroke="#566070" stroke-width="2.6" stroke-dasharray="0.55 0.95"/>
+      <circle r="3.4" fill="none" stroke="#7e8794" stroke-width="0.6"/>
+      <circle r="1.6" fill="#c8ced6"/>
+      <path d="M-4.6 -3.4 A5.8 5.8 0 0 1 3.4 -4.6" fill="none" stroke="#f8fbff" stroke-width="0.7" opacity=".5"/>
     </g>
   </defs>
 
-  <!-- fire trails streaking out behind the car -->
-  <g stroke-linecap="round" fill="none">
-    <path d="M104 56 Q116 55 127 56"  stroke="#ffb340" stroke-width="3"   opacity=".75"/>
-    <path d="M108 66 Q118 65.5 126 66" stroke="#ffd27a" stroke-width="2.4" opacity=".6"/>
-    <path d="M103 78 Q114 77.5 124 78" stroke="#ff9d2e" stroke-width="2.4" opacity=".55"/>
+  <!-- contact shadow -->
+  <ellipse cx="64" cy="97" rx="55" ry="4.6" fill="#0c0818" opacity=".45" filter="url(#dl-soft)"/>
+
+  <!-- fire trails on the road behind the car -->
+  <g stroke="url(#dl-fire)" stroke-linecap="round" fill="none">
+    <path d="M127 93.4 Q118 92.6 112 93.6 Q108 94.2 105.5 93.4" stroke-width="2.2" opacity=".95"/>
+    <path d="M127 96.8 Q117 96 110 96.9 Q105 97.5 101 96.7" stroke-width="2.2" opacity=".8"/>
+  </g>
+  <!-- a few sparks licking up off the trails -->
+  <g fill="#ffc25e">
+    <path d="M112 91.8 q1 -2.6 2.2 -3.4 q-.2 2 .6 3.2 Z" opacity=".85"/>
+    <path d="M119 94.9 q.8 -2 1.8 -2.6 q-.2 1.6 .5 2.5 Z" opacity=".6"/>
+    <path d="M108 95.2 q.9 -2.2 2 -2.9 q-.2 1.8 .5 2.8 Z" opacity=".5"/>
   </g>
 
-  <!-- contact shadow + the car, scaled up to fill the glyph box -->
-  <g transform="translate(64 64) scale(1.22) translate(-66 -58)">
-    <ellipse cx="63" cy="93" rx="44" ry="6" fill="#0c0818" opacity=".45" filter="url(#softshadow)"/>
-    <use href="#car"/>
+  <!-- ===== the car, facing left ===== -->
+  <!-- open gullwing door (raised, leaning slightly forward like the photo) -->
+  <g>
+    <path d="M56 63.5 L50 31.5 Q49.7 29.5 51.7 29 L63.5 26.6 Q65.5 26.3 66.2 28.3 L80 63.5 Z"
+          fill="url(#dl-door)" stroke="#8f99a6" stroke-width=".5"/>
+    <!-- door glass (upper half of the raised door) -->
+    <path d="M54.5 47 L52 34 Q51.7 32.5 53.3 32.1 L62.5 30.3 Q64 30.1 64.5 31.7 L69.5 44 Z"
+          fill="url(#dl-glass)"/>
+    <path d="M53.5 34 L62 32.2 L63.8 36.5 L55 38.3 Z" fill="#cfe2f2" opacity=".14"/>
+    <!-- bright sill edge of the open door -->
+    <path d="M56 63.5 L50 31.5 Q49.7 29.5 51.7 29" fill="none" stroke="#f8fbff" stroke-width=".9" opacity=".7"/>
+    <!-- gas strut holding the door open -->
+    <line x1="58.5" y1="66.5" x2="53.5" y2="44" stroke="#5d6675" stroke-width="1.1"/>
   </g>
+
+  <!-- body silhouette: nose, hood, windshield, roof, deck, Kammback tail -->
+  <path d="M8 77.5
+           L46 72.6
+           Q47.5 72.4 48.5 71.2
+           L56.5 63.9
+           Q57.2 63.3 58.2 63.3
+           L79.5 63.3
+           Q81 63.3 82.5 63.8
+           L113.5 69.8
+           Q117.5 70.6 117.8 73
+           L118.3 84.5
+           L118.3 87.5
+           L107.5 87.5
+           A 10.6 10.6 0 0 0 86.4 87.5
+           L41.6 87.5
+           A 10.6 10.6 0 0 0 20.4 87.5
+           L9.5 87.5
+           Q7.6 84 7.5 80.5
+           Q7.5 78 8 77.5 Z"
+        fill="url(#dl-steel)"/>
+
+  <!-- windshield (raked) + A-pillar -->
+  <path d="M49 71.5 L56.8 64.3 Q57.4 63.8 58.4 63.8 L64.5 63.8 Q61.5 68 60.3 72.4 Q54 72.2 49 71.5 Z"
+        fill="url(#dl-glass)"/>
+  <path d="M51 70.4 L57 64.9 L59.8 64.7 L54.6 71 Z" fill="#cfe2f2" opacity=".16"/>
+
+  <!-- roof highlight -->
+  <path d="M57.5 63.6 L80 63.6 L81.5 64.6 L57 64.8 Q57 64 57.5 63.6 Z" fill="#fbfdff" opacity=".55"/>
+
+  <!-- hood: seam + soft top-light -->
+  <path d="M10.5 77.1 L45.5 72.6 L46 73.4 L11 78 Z" fill="#fbfdff" opacity=".4"/>
+  <path d="M14 77.3 Q30 75.2 45 73.3" stroke="#7b8493" stroke-width=".5" fill="none" opacity=".7"/>
+  <path d="M16 78.6 Q30.5 76.6 44.5 74.8" stroke="#7b8493" stroke-width=".4" fill="none" opacity=".45"/>
+
+  <!-- engine-deck louvers over the rear glass -->
+  <path d="M84 64.6 L112.5 70.1 L114.5 71.2 L86.5 65.6 Z" fill="url(#dl-deck)"/>
+  <g stroke="#525b68" stroke-width=".9" opacity=".85">
+    <line x1="86.5" y1="66.2" x2="113.2" y2="71.5"/>
+    <line x1="88.5" y1="67.6" x2="113.6" y2="72.6"/>
+    <line x1="90.5" y1="69" x2="114" y2="73.7"/>
+    <line x1="92.5" y1="70.4" x2="114.3" y2="74.8"/>
+  </g>
+
+  <!-- the character crease running nose to tail -->
+  <path d="M8 80.2 Q60 78.4 117.6 76.4" stroke="#fbfdff" stroke-width=".7" opacity=".55" fill="none"/>
+  <path d="M8 81 Q60 79.2 117.7 77.2" stroke="#67707e" stroke-width=".9" opacity=".8" fill="none"/>
+  <!-- slightly darker flank below the crease -->
+  <path d="M8 81 Q60 79.2 117.7 77.2 L118.3 84.5 L118.3 87.5 L107.5 87.5
+           A 10.6 10.6 0 0 0 86.4 87.5 L41.6 87.5 A 10.6 10.6 0 0 0 20.4 87.5
+           L9.5 87.5 Q7.6 84 7.5 80.5 Z" fill="#525a66" opacity=".22"/>
+
+  <!-- open door bay: the whole side panel is gone down to the sill,
+       revealing the cabin (roof rail stays intact above) -->
+  <path d="M57.6 65 L78.7 65 L80.3 87.4 L48.8 87.4 L49.4 71.7 Q52.5 66.8 57.6 65 Z" fill="#0a0d13"/>
+  <!-- rear bulkhead catching a little light -->
+  <path d="M73 65.6 L78.7 65 L80.3 87.4 L74.5 87.4 Z" fill="#161a22"/>
+  <!-- seat: back, headrest, cushion -->
+  <path d="M58.5 84 Q58 70 62.5 67.5 L65.5 68 Q63.5 75 64 84 Z" fill="#262b34"/>
+  <path d="M61.5 68.2 Q61.4 65.6 63.6 65.4 Q65.4 65.6 65 68 Z" fill="#343a46"/>
+  <path d="M64 84 Q64 79 66 78 L73 78.5 Q71.5 81 71.5 84 Z" fill="#21262e"/>
+  <!-- dark floor + bright sill lip at the bottom of the bay -->
+  <rect x="48.8" y="84" width="31.5" height="3.4" fill="#05070a"/>
+  <path d="M48.8 86.9 L80.3 86.9" stroke="#b9c2cc" stroke-width=".9" opacity=".75"/>
+
+  <!-- black rocker panel + fascias (the DMC's grey-black lower trim) -->
+  <path d="M9.5 87.5 L20.4 87.5 A 10.6 10.6 0 0 1 21.6 90.4 L11.5 90.4 Q10.2 89 9.5 87.5 Z" fill="#1a1d23"/>
+  <path d="M41.6 87.5 L86.4 87.5 A 10.6 10.6 0 0 0 87.6 90.4 L40.4 90.4 A 10.6 10.6 0 0 0 41.6 87.5 Z" fill="#1a1d23"/>
+  <path d="M107.5 87.5 L118.3 87.5 L118.3 90.4 L106.3 90.4 A 10.6 10.6 0 0 0 107.5 87.5 Z" fill="#1a1d23"/>
+  <!-- front bumper cap + amber side marker -->
+  <path d="M7.5 80.5 Q7.6 84 9.5 87.5 L11.5 90.4 Q9 90 8.2 87.5 Q7.2 84 7.5 80.5 Z" fill="#1a1d23"/>
+  <rect x="8.6" y="78.4" width="3.4" height="1.5" rx=".6" fill="#ffb547"/>
+  <!-- tail: black rear bumper edge + light sliver -->
+  <path d="M116.4 84.8 L118.3 84.5 L118.3 90.4 L116.4 90.4 Z" fill="#1a1d23"/>
+  <rect x="116.6" y="78.6" width="1.5" height="4.6" rx=".5" fill="#7c2730"/>
+
+  <!-- wheels -->
+  <use href="#dl-wheel" transform="translate(31 88)"/>
+  <use href="#dl-wheel" transform="translate(97 88)"/>
+  <!-- arch shadows over the tyres -->
+  <path d="M20.4 87.5 A 10.6 10.6 0 0 1 41.6 87.5 L39.5 87.5 A 8.6 8.6 0 0 0 22.5 87.5 Z" fill="#101218" opacity=".8"/>
+  <path d="M86.4 87.5 A 10.6 10.6 0 0 1 107.5 87.5 L105.4 87.5 A 8.6 8.6 0 0 0 88.5 87.5 Z" fill="#101218" opacity=".8"/>
 </svg>
