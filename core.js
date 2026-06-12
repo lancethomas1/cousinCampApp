@@ -511,6 +511,51 @@
     setTimeout(done, 2200); // safety net if animationend never fires
   }
 
+  // ---- Chrono-Burst -------------------------------------------------------
+  // A time-portal flourish fired from a camper's avatar the instant they check
+  // into a prep activity: twin rings open from the tap point while a spray of
+  // lavender/brass sparks spirals out and warp streaks rush inward — a tiny
+  // jump through time. Pointer-events are off and it self-cleans, so rapid taps
+  // on the shared iPad never pile up or block the next check-in. Honors the
+  // reduced-motion preference (the toast still confirms the check-in).
+  function chronoBurst(x, y) {
+    const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) return;
+    const burst = document.createElement("div");
+    burst.className = "chrono-burst";
+    burst.style.left = x + "px";
+    burst.style.top = y + "px";
+
+    // Twin portal rings (the gold one trails the lavender) opening from center.
+    burst.innerHTML = `<span class="chrono-ring"></span><span class="chrono-ring chrono-ring--2"></span>`;
+
+    // A ring of sparks, alternating the camp's lavender and brass, each flung to
+    // a slightly random angle/distance so no two bursts ever look the same.
+    const SPARKS = 28;
+    for (let i = 0; i < SPARKS; i++) {
+      const ang = (i / SPARKS) * Math.PI * 2 + (Math.random() * 0.4 - 0.2);
+      const dist = 95 + Math.random() * 75;
+      const s = document.createElement("span");
+      s.className = "chrono-spark" + (i % 2 ? " chrono-spark--gold" : "");
+      s.style.setProperty("--tx", (Math.cos(ang) * dist).toFixed(1) + "px");
+      s.style.setProperty("--ty", (Math.sin(ang) * dist).toFixed(1) + "px");
+      s.style.setProperty("--d", (Math.random() * 90).toFixed(0) + "ms");
+      burst.appendChild(s);
+    }
+
+    // A few warp streaks rushing inward toward the opening portal.
+    for (let i = 0; i < 9; i++) {
+      const st = document.createElement("span");
+      st.className = "chrono-streak";
+      st.style.setProperty("--a", (Math.random() * 360).toFixed(1) + "deg");
+      st.style.setProperty("--d", (Math.random() * 140).toFixed(0) + "ms");
+      burst.appendChild(st);
+    }
+
+    document.body.appendChild(burst);
+    setTimeout(() => burst.remove(), 1400); // outlives the longest spark anim
+  }
+
   // ---- Utils --------------------------------------------------------------
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
   // Short "time ago" label for the award feed.
@@ -639,7 +684,7 @@
     // parent identity & fairness rule
     allParentNames, grownupRoster, currentParent, ownKidIds, isOwnKid, setParent, clearParent,
     // formatting & utils
-    todayISO, fmtDow, dayNum, fmtLong, toast, deloreanZoom, escapeHtml, camperFace, uid, timeAgo,
+    todayISO, fmtDow, dayNum, fmtLong, toast, deloreanZoom, chronoBurst, escapeHtml, camperFace, uid, timeAgo,
     initPullToRefresh,
   };
 

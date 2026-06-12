@@ -16,7 +16,7 @@
     camperById, allActivities, prepActivities, hasPrep, prepKey, prepDoneCount, isPrepared, isDone,
     pointsFor, completedCount, anyFullDay, fullDayCount,
     kudosCountFor, cheersCountFor, cheersGivenBy, recentCheers, giveCheer, parentBadgesFor,
-    todayISO, fmtDow, dayNum, fmtLong, toast, escapeHtml, camperFace, timeAgo,
+    todayISO, fmtDow, dayNum, fmtLong, toast, chronoBurst, escapeHtml, camperFace, timeAgo,
   } = C;
   const view = document.getElementById("view");
 
@@ -80,6 +80,11 @@
         btn.addEventListener("click", () => {
           const turningOn = !isDone(c.id, key);
           if (turningOn) {
+            // Fire the time-portal flourish from the tapped face's center
+            // before the re-render rebuilds the row out from under us.
+            const av = btn.querySelector(".kc-avatar") || btn;
+            const r = av.getBoundingClientRect();
+            chronoBurst(r.left + r.width / 2, r.top + r.height / 2);
             // Did this tick finish the whole checklist for this cousin?
             const allReady = a.prep.every((_, j) => j === i || isDone(c.id, prepKey(a.id, j)));
             toast(allReady ? `🎒 ${c.name} is ready! +${a.points}` : `✓ ${c.name}: ${item}`);
