@@ -872,6 +872,23 @@ select.day-filter {
   88%  { opacity: 1; }
   100% { transform: translateX(130vw) scale(1.18); opacity: 0; }
 }
+/* The DeLorean's turn: the glyph faces left, so it rides right→left, with
+   the speed streak and smoke trailing off to its right. */
+.kudos-flyby.is-delorean {
+  animation-name: kudos-fly-rtl;
+}
+.kudos-flyby.is-delorean::before {
+  right: auto;
+  left: 64%;
+  background: linear-gradient(270deg, transparent, rgba(167, 139, 250, .55) 40%, rgba(251, 191, 36, .85));
+}
+@keyframes kudos-fly-rtl {
+  0%   { transform: translateX(110vw) scale(.65); opacity: 0; }
+  12%  { opacity: 1; }
+  50%  { transform: translateX(10vw) scale(1.08); }
+  88%  { opacity: 1; }
+  100% { transform: translateX(-80vw) scale(1.18); opacity: 0; }
+}
 /* Marty's turn: a touch smaller and slower (a kid on a board isn't doing
    88 mph), rolling with a little kick-push bob as he crosses. */
 .kudos-flyby.is-marty {
@@ -908,7 +925,7 @@ select.day-filter {
 }
 @keyframes delorean-smoke {
   0%   { transform: scale(.4) translateX(0); opacity: .85; }
-  100% { transform: scale(2.4) translateX(-26px); opacity: 0; }
+  100% { transform: scale(2.4) translateX(26px); opacity: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .kudos-flyby,
