@@ -510,29 +510,29 @@
 
     // A ring of sparks, alternating the camp's lavender and brass, each flung to
     // a slightly random angle/distance so no two bursts ever look the same.
-    const SPARKS = 16;
+    const SPARKS = 28;
     for (let i = 0; i < SPARKS; i++) {
       const ang = (i / SPARKS) * Math.PI * 2 + (Math.random() * 0.4 - 0.2);
-      const dist = 46 + Math.random() * 34;
+      const dist = 95 + Math.random() * 75;
       const s = document.createElement("span");
       s.className = "chrono-spark" + (i % 2 ? " chrono-spark--gold" : "");
       s.style.setProperty("--tx", (Math.cos(ang) * dist).toFixed(1) + "px");
       s.style.setProperty("--ty", (Math.sin(ang) * dist).toFixed(1) + "px");
-      s.style.setProperty("--d", (Math.random() * 80).toFixed(0) + "ms");
+      s.style.setProperty("--d", (Math.random() * 90).toFixed(0) + "ms");
       burst.appendChild(s);
     }
 
     // A few warp streaks rushing inward toward the opening portal.
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 9; i++) {
       const st = document.createElement("span");
       st.className = "chrono-streak";
       st.style.setProperty("--a", (Math.random() * 360).toFixed(1) + "deg");
-      st.style.setProperty("--d", (Math.random() * 120).toFixed(0) + "ms");
+      st.style.setProperty("--d", (Math.random() * 140).toFixed(0) + "ms");
       burst.appendChild(st);
     }
 
     document.body.appendChild(burst);
-    setTimeout(() => burst.remove(), 1100); // outlives the longest spark anim
+    setTimeout(() => burst.remove(), 1400); // outlives the longest spark anim
   }
 
   // ---- Utils --------------------------------------------------------------
