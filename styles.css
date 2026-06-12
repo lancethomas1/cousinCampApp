@@ -895,6 +895,89 @@ select.day-filter {
   .delorean-smoke { display: none; }
 }
 
+/* ---------- Chrono-Burst ----------
+   Time-portal flourish fired from a camper's avatar on check-in (spawned in
+   chronoBurst() in core.js). Fixed at the tap point, pointer-events:none so it
+   never blocks the next tap; the whole thing self-removes after the animation.
+   Children sit at the container's origin (the avatar center) and animate out. */
+.chrono-burst {
+  position: fixed;
+  width: 0;
+  height: 0;
+  z-index: 71;
+  pointer-events: none;
+}
+.chrono-ring {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 30px;
+  height: 30px;
+  margin: -15px 0 0 -15px;
+  border-radius: 50%;
+  border: 2.5px solid rgba(167, 139, 250, .9);
+  box-shadow: 0 0 14px rgba(167, 139, 250, .6), inset 0 0 8px rgba(199, 183, 253, .5);
+  will-change: transform, opacity;
+  animation: chrono-ring .62s cubic-bezier(.2, .7, .3, 1) forwards;
+}
+.chrono-ring--2 {
+  width: 18px;
+  height: 18px;
+  margin: -9px 0 0 -9px;
+  border-color: rgba(255, 206, 77, .85);
+  box-shadow: 0 0 12px rgba(255, 206, 77, .55);
+  animation-delay: .08s;
+}
+.chrono-spark {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 9px;
+  height: 9px;
+  margin: -4.5px 0 0 -4.5px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff, var(--sun) 55%, transparent 72%);
+  box-shadow: 0 0 8px rgba(167, 139, 250, .8);
+  will-change: transform, opacity;
+  animation: chrono-spark .7s ease-out var(--d, 0ms) forwards;
+}
+.chrono-spark--gold {
+  background: radial-gradient(circle, #fff, var(--gold) 55%, transparent 72%);
+  box-shadow: 0 0 8px rgba(255, 206, 77, .8);
+}
+.chrono-streak {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 34px;
+  height: 2.5px;
+  margin: -1.25px 0 0 -17px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, rgba(199, 183, 253, 0), rgba(199, 183, 253, .9));
+  filter: blur(.4px);
+  transform-origin: center;
+  will-change: transform, opacity;
+  animation: chrono-streak .5s ease-in var(--d, 0ms) forwards;
+}
+@keyframes chrono-ring {
+  0%   { transform: scale(.1); opacity: 0; }
+  18%  { opacity: .9; }
+  100% { transform: scale(3.1); opacity: 0; }
+}
+@keyframes chrono-spark {
+  0%   { transform: translate(0, 0) scale(1); opacity: 0; }
+  15%  { opacity: 1; }
+  100% { transform: translate(var(--tx), var(--ty)) scale(.2); opacity: 0; }
+}
+@keyframes chrono-streak {
+  0%   { transform: rotate(var(--a)) translateX(76px) scaleX(1); opacity: 0; }
+  30%  { opacity: .85; }
+  100% { transform: rotate(var(--a)) translateX(8px) scaleX(.3); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chrono-burst { display: none; }
+}
+
 /* ---------- Section headings (Awards) ---------- */
 .section-title { font-size: 19px; margin: 22px 0 4px; }
 .section-note { color: var(--ink-soft); font-weight: 700; font-size: 13px; margin: 0 0 12px; }
