@@ -485,8 +485,10 @@
       const h = window.innerHeight;
       el.style.top = Math.max(110, Math.min(h - 130, lastTap.y)) + "px";
     }
+    // Marty's img rides in a wrapper so the mid-flight backflip can spin the
+    // whole figure while the bob keeps wiggling the img inside it.
     el.innerHTML = marty
-      ? `<img src="icons/marty.svg?v=20260612" alt="" width="150" height="150" />`
+      ? `<div class="marty-flip"><img src="icons/marty.svg?v=20260612" alt="" width="150" height="150" /></div>`
       : `<img src="icons/delorean.svg?v=20260612" alt="" width="200" height="200" />`;
     document.body.appendChild(el);
 

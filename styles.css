@@ -908,6 +908,20 @@ select.day-filter {
   0%, 100% { transform: translateY(0) rotate(0deg); }
   50%      { transform: translateY(-7px) rotate(-4deg); }
 }
+/* Halfway across, Marty pops the board and throws a full backflip — the
+   wrapper hops up and spins while the container keeps gliding. Duration
+   matches .is-marty's crossing so the apex lands at mid-screen. */
+.marty-flip {
+  width: 100%;
+  height: 100%;
+  will-change: transform;
+  animation: marty-flip 1.45s ease-in-out forwards;
+}
+@keyframes marty-flip {
+  0%, 30%   { transform: translateY(0) rotate(0deg); }
+  50%       { transform: translateY(-38px) rotate(-180deg); }
+  70%, 100% { transform: translateY(0) rotate(-360deg); }
+}
 /* Smoke puffs trailing from the car's tailpipe (spawned in core.js). Each one
    is dropped in place, then balloons out and fades so the trail hangs in the
    air as the DeLorean roars off. */
