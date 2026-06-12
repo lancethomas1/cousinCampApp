@@ -829,11 +829,12 @@ select.day-filter {
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-/* ---------- DeLorean fly-by (kudos confirmation) ---------- */
-/* The camp DeLorean streaks across the screen when a grown-up gives kudos.
-   Fixed + pointer-events:none so it never blocks taps; it self-removes on
+/* ---------- Kudos fly-by (DeLorean / Marty confirmation) ---------- */
+/* One of the camp riders streaks across the screen when a grown-up gives
+   kudos — the DeLorean and Marty on his skateboard take turns. Fixed +
+   pointer-events:none so it never blocks taps; it self-removes on
    animationend (see deloreanZoom() in core.js). */
-.delorean-zoom {
+.kudos-flyby {
   position: fixed;
   top: 46%;
   left: 0;
@@ -843,16 +844,16 @@ select.day-filter {
   pointer-events: none;
   z-index: 70;
   will-change: transform, opacity;
-  animation: delorean-fly 1.15s cubic-bezier(.45, .05, .35, 1) forwards;
+  animation: kudos-fly 1.15s cubic-bezier(.45, .05, .35, 1) forwards;
 }
-.delorean-zoom img {
+.kudos-flyby img {
   display: block;
   width: 100%;
   height: 100%;
   filter: drop-shadow(0 10px 16px rgba(0, 0, 0, .35));
 }
 /* Speed streak burning behind the car as it rips past. */
-.delorean-zoom::before {
+.kudos-flyby::before {
   content: "";
   position: absolute;
   top: 56%;
@@ -864,12 +865,31 @@ select.day-filter {
   background: linear-gradient(90deg, transparent, rgba(167, 139, 250, .55) 40%, rgba(251, 191, 36, .85));
   filter: blur(3px);
 }
-@keyframes delorean-fly {
+@keyframes kudos-fly {
   0%   { transform: translateX(-60vw) scale(.65); opacity: 0; }
   12%  { opacity: 1; }
   50%  { transform: translateX(40vw) scale(1.08); }
   88%  { opacity: 1; }
   100% { transform: translateX(130vw) scale(1.18); opacity: 0; }
+}
+/* Marty's turn: a touch smaller and slower (a kid on a board isn't doing
+   88 mph), rolling with a little kick-push bob as he crosses. */
+.kudos-flyby.is-marty {
+  width: 150px;
+  height: 150px;
+  margin-top: -75px;
+  animation-duration: 1.45s;
+}
+.kudos-flyby.is-marty::before {
+  height: 8px;
+  background: linear-gradient(90deg, transparent, rgba(125, 211, 252, .5) 40%, rgba(167, 139, 250, .7));
+}
+.kudos-flyby.is-marty img {
+  animation: marty-bob .42s ease-in-out infinite;
+}
+@keyframes marty-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(-7px) rotate(-4deg); }
 }
 /* Smoke puffs trailing from the car's tailpipe (spawned in core.js). Each one
    is dropped in place, then balloons out and fades so the trail hangs in the
@@ -891,7 +911,7 @@ select.day-filter {
   100% { transform: scale(2.4) translateX(-26px); opacity: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .delorean-zoom,
+  .kudos-flyby,
   .delorean-smoke { display: none; }
 }
 
