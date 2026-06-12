@@ -200,7 +200,7 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
   bottom: 2px;
   width: 116px;
   height: 116px;
-  background: url("icons/delorean.svg") right bottom / contain no-repeat;
+  background: url("icons/delorean.svg?v=20260612") right bottom / contain no-repeat;
   /* Sit behind the text as a faint watermark so it never covers wording. */
   z-index: 0;
   opacity: .3;
