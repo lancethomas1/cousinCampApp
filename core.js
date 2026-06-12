@@ -458,36 +458,47 @@
     toastTimer = setTimeout(() => el.classList.remove("show"), 2200);
   }
 
-  // ---- DeLorean fly-by ----------------------------------------------------
-  // A quick confirmation flourish when a grown-up hands out kudos: the camp
-  // DeLorean zooms across the screen, fire trail and all. Honors the user's
-  // reduced-motion preference (the toast still confirms the award). Self-cleans
-  // so repeated taps never pile up stray elements.
+  // ---- Kudos fly-by --------------------------------------------------------
+  // A quick confirmation flourish when a grown-up hands out kudos, rotating
+  // between two riders: the camp DeLorean (smoke pouring off the back) and
+  // Marty skating across on his board. Only ever one rider on screen at a
+  // time — rapid taps don't stack a traffic jam. Honors the user's
+  // reduced-motion preference (the toast still confirms the award).
+  let flybyNext = 0; // 0 = DeLorean, 1 = Marty — alternates each award
   function deloreanZoom() {
     const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) return;
+    if (document.querySelector(".kudos-flyby")) return; // one at a time
+    const marty = flybyNext === 1;
+    flybyNext = (flybyNext + 1) % 2;
     const el = document.createElement("div");
-    el.className = "delorean-zoom";
-    el.innerHTML = `<img src="icons/delorean.svg?v=20260612" alt="" width="200" height="200" />`;
+    el.className = "kudos-flyby" + (marty ? " is-marty" : "");
+    el.innerHTML = marty
+      ? `<img src="icons/marty.svg?v=20260612" alt="" width="150" height="150" />`
+      : `<img src="icons/delorean.svg?v=20260612" alt="" width="200" height="200" />`;
     document.body.appendChild(el);
 
-    // Puff smoke from the back (the left side, since the car drives left→right).
-    // Each puff is dropped at the car's current spot and lingers/fades in place
+    // Exhaust smoke is the DeLorean's thing — Marty just kicks along. Puffs
+    // come from the back (the left side, since both ride left→right). Each
+    // puff is dropped at the car's current spot and lingers/fades in place
     // while the car races on, leaving a real trail behind it.
-    const puff = setInterval(() => {
-      const r = el.getBoundingClientRect();
-      if (r.right < 0 || r.left > window.innerWidth) return;
-      const s = document.createElement("div");
-      s.className = "delorean-smoke";
-      s.style.left = (r.left + r.width * 0.18) + "px";
-      s.style.top = (r.top + r.height * 0.6 + (Math.random() * 16 - 8)) + "px";
-      document.body.appendChild(s);
-      s.addEventListener("animationend", () => s.remove(), { once: true });
-    }, 55);
+    let puff = 0;
+    if (!marty) {
+      puff = setInterval(() => {
+        const r = el.getBoundingClientRect();
+        if (r.right < 0 || r.left > window.innerWidth) return;
+        const s = document.createElement("div");
+        s.className = "delorean-smoke";
+        s.style.left = (r.left + r.width * 0.18) + "px";
+        s.style.top = (r.top + r.height * 0.6 + (Math.random() * 16 - 8)) + "px";
+        document.body.appendChild(s);
+        s.addEventListener("animationend", () => s.remove(), { once: true });
+      }, 55);
+    }
 
     const done = () => { clearInterval(puff); el.remove(); };
     el.addEventListener("animationend", done, { once: true });
-    setTimeout(done, 1600); // safety net if animationend never fires
+    setTimeout(done, 2200); // safety net if animationend never fires
   }
 
   // ---- Chrono-Burst -------------------------------------------------------
