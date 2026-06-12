@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "serve": "python3 -m http.server 8000",
-    "screenshot": "node scripts/screenshot.mjs"
+    "screenshot": "node scripts/screenshot.mjs",
+    "render-icon": "node scripts/render-icon.mjs"
   },
   "devDependencies": {
     "puppeteer": "^25.1.0"
