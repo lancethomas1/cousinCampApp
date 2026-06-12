@@ -123,7 +123,7 @@
     // re-renders (e.g. each check-in) — only on an actual scroll past the line.
     hero.className = "hero" + (heroShouldCompact() ? " compact" : "");
     hero.innerHTML = `
-      <div class="eyebrow">🚂 Today at Cousin Camp</div>
+      <div class="eyebrow">🚗 Today at Cousin Camp</div>
       <h2>${escapeHtml(day.title)}</h2>
       <p>${day.era ? escapeHtml(day.era) + " · " : ""}${fmtLong(iso)}</p>
       <div class="hero-progress"><span style="width:${pct}%"></span></div>
@@ -363,7 +363,7 @@
     const cert = document.createElement("div");
     cert.className = "certificate";
     cert.innerHTML = `
-      <div class="cert-top">🚂 Cousin Camp 2026 🚂</div>
+      <div class="cert-top">🚗 Cousin Camp 2026 🚗</div>
       <div class="cert-award">Time Machine Travelers · Official Certificate</div>
       <div class="cert-name">${escapeHtml(camper.name)}</div>
       <div class="cert-title">${superl.emoji} ${escapeHtml(superl.title)}</div>

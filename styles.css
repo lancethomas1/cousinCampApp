@@ -11,9 +11,9 @@
    ============================================================ */
 
 :root {
-  --sun: #56cfe6;        /* electric cyan — primary accent (loco rim light) */
-  --sun-dark: #8fe3f3;   /* accent text/active on the current surface */
-  --sky: #45b6d8;        /* cool blue */
+  --sun: #a78bfa;        /* dusk lavender — primary accent (icon's twilight sky) */
+  --sun-dark: #c7b7fd;   /* accent text/active on the current surface */
+  --sky: #8a6fd6;        /* deeper violet (icon wash) */
   --grass: #46c279;      /* signal green (success / done) */
   --gold: #ffce4d;       /* brass / amber (points, awards) */
   --danger: #ff8a96;     /* short / negative */
@@ -50,8 +50,8 @@ body {
   font-family: "Nunito", system-ui, -apple-system, sans-serif;
   color: var(--ink);
   background:
-    radial-gradient(120% 80% at 50% -10%, #2a2740 0%, rgba(42,39,64,0) 55%),
-    linear-gradient(180deg, #1b1a24 0%, #141219 60%);
+    radial-gradient(120% 80% at 50% -10%, #2e2649 0%, rgba(46,38,73,0) 55%),
+    linear-gradient(180deg, #1c182a 0%, #141119 60%);
   background-attachment: fixed;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
@@ -65,14 +65,15 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
   top: 0;
   z-index: 20;
   background:
-    radial-gradient(130% 130% at 86% -30%, rgba(86,207,230,.26), transparent 58%),
-    linear-gradient(180deg, #232231 0%, #1b1a24 60%, #17151d 100%);
+    radial-gradient(130% 130% at 86% -30%, rgba(167,139,250,.26), transparent 58%),
+    linear-gradient(180deg, #282243 0%, #1e1a2e 60%, #181421 100%);
   color: #fff;
   padding: calc(env(safe-area-inset-top) + 12px) 16px 16px;
   box-shadow: var(--shadow);
-  border-bottom: 1px solid rgba(86,207,230,.28);
+  border-bottom: 1px solid rgba(167,139,250,.28);
 }
-/* A row of neon rail ties riding the bottom edge of the header. */
+/* Blazing fire trails along the bottom edge of the header — the marks the
+   time machine leaves behind at 88 mph. */
 .app-header::after {
   content: "";
   position: absolute;
@@ -81,7 +82,7 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
   bottom: 0;
   height: 4px;
   background: repeating-linear-gradient(90deg,
-    rgba(86,207,230,.6) 0 9px, transparent 9px 18px);
+    rgba(255,176,64,.75) 0 9px, transparent 9px 18px);
   opacity: .7;
 }
 .header-inner {
@@ -93,17 +94,17 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
   gap: 12px;
 }
 .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
-.brand-mark { font-size: 34px; line-height: 1; filter: drop-shadow(0 2px 6px rgba(86,207,230,.45)); display: flex; }
+.brand-mark { font-size: 34px; line-height: 1; filter: drop-shadow(0 2px 6px rgba(167,139,250,.45)); display: flex; }
 .brand-mark img { display: block; width: 42px; height: 42px; }
 .brand-text h1 { font-size: 24px; font-weight: 800; letter-spacing: .3px; }
-.brand-text p { margin: 0; font-size: 13px; opacity: .82; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #8fe3f3; }
+.brand-text p { margin: 0; font-size: 13px; opacity: .82; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #c7b7fd; }
 
 .whoami {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(86,207,230,.14);
-  border: 1.5px solid rgba(86,207,230,.5);
+  background: rgba(167,139,250,.14);
+  border: 1.5px solid rgba(167,139,250,.5);
   color: #fff;
   padding: 7px 12px;
   border-radius: 999px;
@@ -175,15 +176,15 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
 /* Hero banner (Today) */
 .hero {
   background:
-    radial-gradient(120% 95% at 16% -25%, rgba(86,207,230,.32), transparent 55%),
-    linear-gradient(160deg, #283a4a 0%, #1e2531 55%, #1b2a26 115%);
+    radial-gradient(120% 95% at 16% -25%, rgba(167,139,250,.32), transparent 55%),
+    linear-gradient(160deg, #3b3157 0%, #262136 55%, #332438 115%);
   color: #fff;
   border-radius: var(--radius);
   padding: 20px;
   margin-bottom: 18px;
   box-shadow: var(--shadow-lg);
   border: 1px solid var(--line);
-  border-top-color: rgba(86,207,230,.35);
+  border-top-color: rgba(167,139,250,.35);
   /* Pin the hero just beneath the (already sticky) app header so it rides
      along on scroll. --header-h is measured in app.js. */
   position: sticky;
@@ -199,16 +200,16 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
   bottom: 2px;
   width: 116px;
   height: 116px;
-  background: url("icons/train.svg") right bottom / contain no-repeat;
+  background: url("icons/delorean.svg?v=20260612") right bottom / contain no-repeat;
   /* Sit behind the text as a faint watermark so it never covers wording. */
   z-index: 0;
-  opacity: .28;
-  filter: drop-shadow(0 0 8px rgba(86,207,230,.25));
+  opacity: .3;
+  filter: drop-shadow(0 0 8px rgba(167,139,250,.25));
   pointer-events: none;
 }
-/* Keep all hero copy layered above the decorative train. */
+/* Keep all hero copy layered above the decorative time machine. */
 .hero > * { position: relative; z-index: 1; }
-.hero .eyebrow { font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; font-size: 12px; color: #8fe3f3; max-height: 22px; }
+.hero .eyebrow { font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; font-size: 12px; color: #c7b7fd; max-height: 22px; }
 .hero h2 { font-size: 28px; margin: 4px 0 6px; }
 .hero p { margin: 0; font-weight: 700; opacity: .92; max-height: 48px; }
 .hero .eyebrow,
@@ -224,9 +225,9 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
 .hero-progress > span {
   display: block;
   height: 100%;
-  background: linear-gradient(90deg, var(--sun), #9be8f6);
+  background: linear-gradient(90deg, var(--sun), #cdbdfb);
   border-radius: 999px;
-  box-shadow: 0 0 10px rgba(86,207,230,.6);
+  box-shadow: 0 0 10px rgba(167,139,250,.6);
   transition: width .4s ease;
 }
 .hero-progress-label { font-size: 13px; font-weight: 800; margin-top: 6px; }
@@ -277,7 +278,7 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
   font-weight: 800;
   color: var(--sun-dark);
   font-size: 13px;
-  background: rgba(86,207,230,.16);
+  background: rgba(167,139,250,.16);
   padding: 2px 8px;
   border-radius: 999px;
 }
@@ -549,7 +550,7 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
 .day-badge .dnum { font-size: 20px; font-family: "Baloo 2", sans-serif; }
 .day-head h3 { font-size: 19px; }
 .day-head .day-theme { color: var(--ink-soft); font-weight: 700; font-size: 13px; }
-.day-block.is-today .day-badge { background: var(--sun); color: var(--deep); box-shadow: 0 0 14px rgba(86,207,230,.5); }
+.day-block.is-today .day-badge { background: var(--sun); color: var(--deep); box-shadow: 0 0 14px rgba(167,139,250,.5); }
 .today-pill {
   font-size: 11px;
   font-weight: 800;
@@ -571,7 +572,7 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
   padding: 11px 16px;
   border-radius: 14px;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(86,207,230,.32);
+  box-shadow: 0 4px 14px rgba(167,139,250,.32);
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -652,7 +653,7 @@ select.day-filter {
   border: 1px solid var(--line);
   border-top-color: var(--edge);
 }
-.leaderboard-row.me { outline: 2px solid var(--sun); box-shadow: 0 0 14px rgba(86,207,230,.3); }
+.leaderboard-row.me { outline: 2px solid var(--sun); box-shadow: 0 0 14px rgba(167,139,250,.3); }
 .lb-rank { font-weight: 800; font-size: 16px; color: var(--ink-soft); width: 26px; text-align: center; }
 .lb-avatar { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-size: 22px; border: 2px solid rgba(255,255,255,.7); box-shadow: var(--shadow); flex: 0 0 auto; }
 .lb-name { font-weight: 800; flex: 1; }
@@ -718,7 +719,7 @@ select.day-filter {
   transition: transform .1s ease;
 }
 .camper-pick:active { transform: scale(.94); }
-.camper-pick.active { border-color: var(--sun); background: rgba(86,207,230,.14); box-shadow: 0 0 12px rgba(86,207,230,.3); }
+.camper-pick.active { border-color: var(--sun); background: rgba(167,139,250,.14); box-shadow: 0 0 12px rgba(167,139,250,.3); }
 .camper-pick .ce { font-size: 30px; display: block; margin-bottom: 4px; }
 .camper-pick .cp-age { display: block; font-weight: 700; font-size: 11px; color: var(--ink-soft); margin-top: 2px; }
 .camper-pick .cp-pts { display: block; font-weight: 700; font-size: 11px; color: var(--ink-soft); margin-top: 2px; }
@@ -790,7 +791,7 @@ select.day-filter {
   color: var(--deep);
   background: linear-gradient(180deg, var(--sun) 0%, var(--sky) 100%);
   box-shadow:
-    0 6px 16px rgba(86,207,230,.4),
+    0 6px 16px rgba(167,139,250,.4),
     inset 0 1px 0 rgba(255,255,255,.25);
 }
 .tab.active .tab-icon {
@@ -815,7 +816,7 @@ select.day-filter {
   transform: translateX(-50%) translateY(20px);
   background: #0e0d12;
   color: #fff;
-  border: 1px solid rgba(86,207,230,.4);
+  border: 1px solid rgba(167,139,250,.4);
   padding: 11px 18px;
   border-radius: 999px;
   font-weight: 800;
@@ -928,14 +929,14 @@ select.day-filter {
   font-family: "Nunito", sans-serif;
   text-align: left;
 }
-.roster-row.me { outline: 2px solid var(--sun); box-shadow: 0 0 14px rgba(86,207,230,.3); }
+.roster-row.me { outline: 2px solid var(--sun); box-shadow: 0 0 14px rgba(167,139,250,.3); }
 /* Grown-up generosity leaderboard (parents' app) reuses the roster rows, but
    the rows aren't tappable here. */
 .awarder-board { margin-top: 22px; }
 .awarder-board .roster-row { cursor: default; }
 .ros-name { font-weight: 800; flex: 1; min-width: 0; }
 .ros-name small { display: block; font-weight: 700; color: var(--ink-soft); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ros-you { display: inline-block; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: var(--sun-dark); background: rgba(86,207,230,.16); padding: 1px 7px; border-radius: 999px; vertical-align: middle; }
+.ros-you { display: inline-block; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: var(--sun-dark); background: rgba(167,139,250,.16); padding: 1px 7px; border-radius: 999px; vertical-align: middle; }
 .ros-pts { font-weight: 800; color: var(--gold); background: rgba(255,206,77,.16); padding: 4px 10px; border-radius: 999px; font-size: 13px; flex: 0 0 auto; }
 
 /* ---------- Passcode gate ---------- */
@@ -947,7 +948,7 @@ select.day-filter {
   place-items: center;
   padding: 20px;
   background:
-    radial-gradient(130% 90% at 18% -10%, rgba(86,207,230,.28), transparent 55%),
+    radial-gradient(130% 90% at 18% -10%, rgba(167,139,250,.28), transparent 55%),
     radial-gradient(120% 80% at 92% 110%, rgba(255,206,77,.16), transparent 55%),
     linear-gradient(165deg, #232231 0%, #1a1922 55%, #15131b 120%);
 }
@@ -978,7 +979,7 @@ select.day-filter {
   text-align: center;
   margin-bottom: 12px;
 }
-.gate-card input:focus { outline: none; border-color: var(--sun); box-shadow: 0 0 0 3px rgba(86,207,230,.25); }
+.gate-card input:focus { outline: none; border-color: var(--sun); box-shadow: 0 0 0 3px rgba(167,139,250,.25); }
 .gate-card .btn { width: 100%; justify-content: center; font-size: 16px; padding: 13px; }
 .gate-note { font-size: 12.5px; margin: 12px 0 0 !important; }
 
@@ -1141,7 +1142,7 @@ select.day-filter {
   color: var(--ink);
   background: var(--field);
 }
-.bonus-note:focus, .bonus-amt:focus { outline: none; border-color: var(--sun); box-shadow: 0 0 0 3px rgba(86,207,230,.25); }
+.bonus-note:focus, .bonus-amt:focus { outline: none; border-color: var(--sun); box-shadow: 0 0 0 3px rgba(167,139,250,.25); }
 .bonus-quick { display: flex; gap: 8px; }
 .bonus-btn {
   flex: 1;
@@ -1208,12 +1209,12 @@ select.day-filter {
    Flip the content surfaces to a light palette. The colored banners
    (header, hero, gate backdrop, camp/award cards, toast) keep their
    dark/cinematic treatment in both modes, so the accent text on them
-   is pinned to a constant bright cyan rather than --sun-dark. */
+   is pinned to a constant bright lavender rather than --sun-dark. */
 @media (prefers-color-scheme: light) {
   :root {
-    --sun: #1f9fc4;        /* deeper cyan so the accent reads on white */
-    --sun-dark: #0e7d97;   /* accent text/active on light surfaces */
-    --sky: #2f93b8;
+    --sun: #7a5ad7;        /* deeper violet so the accent reads on white */
+    --sun-dark: #5b3fa6;   /* accent text/active on light surfaces */
+    --sky: #6c4fc4;
     --grass: #2f9e5e;
     --gold: #b5821a;       /* brass that reads as point text on light */
     --danger: #d8425a;
@@ -1222,7 +1223,7 @@ select.day-filter {
     --bar: #ffffff;        /* bottom tab bar */
     --field: #ffffff;      /* form inputs */
     --muted: #ece8ef;      /* locked / disabled surfaces */
-    --page-bg: #eef0f6;    /* opaque page base (sticky headers) */
+    --page-bg: #efecf7;    /* opaque page base (sticky headers) */
     --ink: #242029;        /* primary text */
     --ink-soft: #6c6573;   /* muted text */
     --line: rgba(40,30,50,.12);
@@ -1236,8 +1237,8 @@ select.day-filter {
   }
   body {
     background:
-      radial-gradient(120% 80% at 50% -10%, #e9ecf6 0%, rgba(233,236,246,0) 55%),
-      linear-gradient(180deg, #f6f7fb 0%, #eef0f6 60%);
+      radial-gradient(120% 80% at 50% -10%, #ebe7f8 0%, rgba(235,231,248,0) 55%),
+      linear-gradient(180deg, #f7f5fc 0%, #efecf7 60%);
   }
   /* The floating tab bar sits on a light page — soften its drop shadow. */
   .tabbar {
@@ -1266,6 +1267,6 @@ select.day-filter {
   .cert-top { color: #a4561f !important; }
   .cert-name, .cert-sign span { color: #1a1a1a !important; }
   .cert-award, .cert-blurb, .cert-sign { color: #555 !important; }
-  .cert-title { color: #2a7d99 !important; }
+  .cert-title { color: #5b3fa6 !important; }
   .cert-stats span { background: #f0ece2 !important; color: #1a1a1a !important; }
 }
