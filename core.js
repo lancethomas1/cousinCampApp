@@ -388,6 +388,7 @@
     const k = cardById(kudosId); if (!k) return;
     const pts = k.points || 0;
     toast(pts ? `${k.emoji} ${k.label} for ${c.name} +${pts}` : `${k.emoji} ${k.label} for ${c.name}`);
+    deloreanZoom();
     Store.award(c.id, { type: "kudos", refId: k.id, emoji: k.emoji, label: k.label, points: pts, by: state.parent || null });
   }
   // A cousin-to-cousin cheer from the campers' app. Recognition only — worth
@@ -455,6 +456,38 @@
     requestAnimationFrame(() => el.classList.add("show"));
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => el.classList.remove("show"), 2200);
+  }
+
+  // ---- DeLorean fly-by ----------------------------------------------------
+  // A quick confirmation flourish when a grown-up hands out kudos: the camp
+  // DeLorean zooms across the screen, fire trail and all. Honors the user's
+  // reduced-motion preference (the toast still confirms the award). Self-cleans
+  // so repeated taps never pile up stray elements.
+  function deloreanZoom() {
+    const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) return;
+    const el = document.createElement("div");
+    el.className = "delorean-zoom";
+    el.innerHTML = `<img src="icons/delorean.svg?v=20260612" alt="" width="200" height="200" />`;
+    document.body.appendChild(el);
+
+    // Puff smoke from the back (the left side, since the car drives left→right).
+    // Each puff is dropped at the car's current spot and lingers/fades in place
+    // while the car races on, leaving a real trail behind it.
+    const puff = setInterval(() => {
+      const r = el.getBoundingClientRect();
+      if (r.right < 0 || r.left > window.innerWidth) return;
+      const s = document.createElement("div");
+      s.className = "delorean-smoke";
+      s.style.left = (r.left + r.width * 0.18) + "px";
+      s.style.top = (r.top + r.height * 0.6 + (Math.random() * 16 - 8)) + "px";
+      document.body.appendChild(s);
+      s.addEventListener("animationend", () => s.remove(), { once: true });
+    }, 55);
+
+    const done = () => { clearInterval(puff); el.remove(); };
+    el.addEventListener("animationend", done, { once: true });
+    setTimeout(done, 1600); // safety net if animationend never fires
   }
 
   // ---- Utils --------------------------------------------------------------
@@ -585,7 +618,7 @@
     // parent identity & fairness rule
     allParentNames, grownupRoster, currentParent, ownKidIds, isOwnKid, setParent, clearParent,
     // formatting & utils
-    todayISO, fmtDow, dayNum, fmtLong, toast, escapeHtml, camperFace, uid, timeAgo,
+    todayISO, fmtDow, dayNum, fmtLong, toast, deloreanZoom, escapeHtml, camperFace, uid, timeAgo,
     initPullToRefresh,
   };
 
