@@ -465,6 +465,10 @@
   // time — rapid taps don't stack a traffic jam. Honors the user's
   // reduced-motion preference (the toast still confirms the award).
   let flybyNext = 0; // 0 = DeLorean, 1 = Marty — alternates each award
+  // Remember where the last tap landed so the fly-by crosses the screen at
+  // the height of the kudos card the parent touched, not always mid-screen.
+  let lastTap = null;
+  window.addEventListener("pointerdown", (e) => { lastTap = { y: e.clientY, t: Date.now() }; }, { passive: true, capture: true });
   function deloreanZoom() {
     const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) return;
@@ -473,6 +477,12 @@
     flybyNext = (flybyNext + 1) % 2;
     const el = document.createElement("div");
     el.className = "kudos-flyby" + (marty ? " is-marty" : "");
+    // Ride across at the tap's height (fresh taps only — falls back to the
+    // CSS default mid-screen), clamped so the rider stays fully visible.
+    if (lastTap && Date.now() - lastTap.t < 1500) {
+      const h = window.innerHeight;
+      el.style.top = Math.max(110, Math.min(h - 130, lastTap.y)) + "px";
+    }
     el.innerHTML = marty
       ? `<img src="icons/marty.svg?v=20260612" alt="" width="150" height="150" />`
       : `<img src="icons/delorean.svg?v=20260612" alt="" width="200" height="200" />`;
