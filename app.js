@@ -49,6 +49,7 @@
         <div class="activity-title">${escapeHtml(a.title)}</div>
         <p class="activity-desc">${escapeHtml(a.desc)}</p>
         <div class="activity-loc">📍 ${escapeHtml(a.location)}</div>
+        ${a.cook ? `<div class="activity-cook">👨‍🍳 Cooking: ${escapeHtml(a.cook)}</div>` : ""}
       </div>`;
     el.appendChild(head);
 
