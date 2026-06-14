@@ -173,10 +173,10 @@
   function renderStandings(frag) {
     const head = document.createElement("div");
     head.innerHTML = `<h2 class="view-title">Standings 🏆</h2>
-      <p class="view-sub">How the cousins stack up, and which grown-ups are handing out the most love.</p>`;
+      <p class="view-sub">Which grown-ups are handing out the most love, and how the cousins stack up.</p>`;
     frag.appendChild(head);
-    frag.appendChild(buildCousinStandings());
     frag.appendChild(buildAwarderLeaderboard());
+    frag.appendChild(buildCousinStandings());
   }
 
   // ---- 🎖️ Award tab (Mission Control) ------------------------------------
