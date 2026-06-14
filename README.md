@@ -42,6 +42,10 @@ The project ships as **two separate apps that share the same camp data**:
     **kudos cards** (kindness, helping, good sport…), **bonus points** with a note,
     or **special badges** (Camper of the Day, Mimi's Helper…), with a
     recent-recognition feed.
+  - **👨‍🍳 You're on cooking duty:** when a grown-up on a cooking crew signs in,
+    a bold banner up top shows the exact meals their family is responsible for
+    (day, time, and meal) — so the Thomases, Quinoneses, Hineses, and Christophers
+    each see their own kitchen schedule. Grown-ups not on a crew don't see it.
 
 Both links point at the same folder — the parents' app is just `parent.html`
 next to the campers' `index.html`. If you host somewhere other than GitHub Pages,
@@ -95,7 +99,14 @@ All the camp content lives in [`data.js`](./data.js):
   place of the emoji — square photos in the [`photos/`](./photos) folder look
   best, and any cousin without one simply falls back to their emoji.
 - **`SCHEDULE`** — each day's title and activities
-  (time, title, emoji, location, point value, description).
+  (time, title, emoji, location, point value, description). Add `cook: "Thomas"`
+  to a meal to show a **👨‍🍳 Cooking: …** badge on its card naming the family on
+  duty.
+- **`COOK_TEAMS`** — maps each cooking-crew family (e.g. `"Thomas"`) to the first
+  names those grown-ups sign in with in the parents app, so each crew sees their
+  own "You're on cooking duty" schedule. Member names are matched against the
+  schedule's `cook` text too, so a one-off like Friday's `"Sera & Betsy"` still
+  lights up for Sera and Betsy.
 - **`KUDOS`** — the kudos cards grown-ups can award (emoji, label, point value).
 - **`CHEERS`** — the playful cheer cards (emoji, label, description). They show
   up in **both** apps — cousins send them on the Crew Cheers board and grown-ups

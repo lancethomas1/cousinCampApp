@@ -15,6 +15,7 @@
 
   const { CAMPERS, SCHEDULE, KUDOS, CHEERS, BONUS_QUICK, PARENT_BADGES } = window.CAMP_DATA;
   const GROWNUPS = window.CAMP_DATA.GROWNUPS || [];
+  const COOK_TEAMS = window.CAMP_DATA.COOK_TEAMS || [];
 
   // ---- Storage helpers ----------------------------------------------------
   const LS = {
@@ -363,6 +364,47 @@
     return CAMPERS.filter((c) => camperParents(c).some((n) => sameName(n, name))).map((c) => c.id);
   }
   function isOwnKid(camperId) { return ownKidIds().includes(camperId); }
+
+  // ---- Cooking duty (parents app) -----------------------------------------
+  // The schedule's `cook` field names a family (e.g. "Thomas"). COOK_TEAMS maps
+  // each family to the first names those grown-ups sign in with, so a signed-in
+  // grown-up can see exactly which meals they're on the hook for. A meal is
+  // "yours" if its cook line names your team OR you personally — that second
+  // case catches one-offs like Friday's "Sera & Betsy".
+  function cookTeamsForName(name) {
+    if (!name) return [];
+    return COOK_TEAMS.filter((t) => (t.members || []).some((m) => sameName(m, name)));
+  }
+  function cookNeedlesFor(name) {
+    const needles = [];
+    if (name) needles.push(String(name).trim());
+    cookTeamsForName(name).forEach((t) => needles.push(t.label));
+    return needles.filter(Boolean);
+  }
+  function cookTextMatches(cook, needles) {
+    const hay = String(cook || "").toLowerCase();
+    return needles.some((n) => {
+      const esc = String(n).toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      return new RegExp("\\b" + esc + "\\b").test(hay);
+    });
+  }
+  // Every meal the given grown-up (defaults to the signed-in one) is cooking,
+  // in schedule order: [{ date, dayTitle, time, meal, cook }].
+  function cookDutiesFor(name) {
+    const who = name || state.parent;
+    const needles = cookNeedlesFor(who);
+    if (!needles.length) return [];
+    const out = [];
+    SCHEDULE.forEach((day) => {
+      day.activities.forEach((a) => {
+        if (a.cook && cookTextMatches(a.cook, needles)) {
+          out.push({ date: day.date, dayTitle: day.title, time: a.time, meal: a.title, emoji: a.emoji, cook: a.cook });
+        }
+      });
+    });
+    return out;
+  }
+
   function setParent(name) {
     state.parent = String(name || "").trim() || null;
     save(LS.parent, state.parent);
@@ -684,7 +726,7 @@
 
   // ---- Public surface -----------------------------------------------------
   window.CampCore = {
-    data: { CAMPERS, GROWNUPS, SCHEDULE, KUDOS, CHEERS, BONUS_QUICK, PARENT_BADGES },
+    data: { CAMPERS, GROWNUPS, SCHEDULE, KUDOS, CHEERS, BONUS_QUICK, PARENT_BADGES, COOK_TEAMS },
     state, LS, load, save,
     setRender, initShared, startShared, Store,
     // campers & activities
@@ -696,6 +738,7 @@
     targetCamper, setTarget, giveKudos, giveCheer, giveBonus, toggleParentBadge, undoAward,
     // parent identity & fairness rule
     allParentNames, grownupRoster, currentParent, ownKidIds, isOwnKid, setParent, clearParent,
+    cookDutiesFor, cookTeamsForName,
     // formatting & utils
     todayISO, fmtDow, dayNum, fmtLong, toast, deloreanZoom, chronoBurst, escapeHtml, camperFace, uid, timeAgo,
     initPullToRefresh,

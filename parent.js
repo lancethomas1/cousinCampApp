@@ -17,7 +17,8 @@
     camperById,
     targetCamper, setTarget, giveKudos, giveBonus, toggleParentBadge, undoAward,
     allParentNames, grownupRoster, currentParent, ownKidIds, isOwnKid, setParent, clearParent,
-    toast, escapeHtml, camperFace, timeAgo,
+    cookDutiesFor,
+    toast, escapeHtml, camperFace, timeAgo, fmtDow, dayNum, fmtLong,
   } = C;
   const view = document.getElementById("view");
 
@@ -117,6 +118,10 @@
     switchBtn.addEventListener("click", clearParent);
     idBar.appendChild(switchBtn);
     frag.appendChild(idBar);
+
+    // --- Your cooking duty (only for grown-ups on a cooking crew) ----------
+    const cookCard = buildCookDutyCard();
+    if (cookCard) frag.appendChild(cookCard);
 
     // --- Who am I awarding? (target picker) --------------------------------
     const pickerHead = document.createElement("div");
@@ -287,6 +292,52 @@
     frag.appendChild(buildAwarderLeaderboard());
 
     view.replaceChildren(frag);
+  }
+
+  // ---- Your cooking duty --------------------------------------------------
+  // A bold, can't-miss banner for whoever's signed in showing the exact meals
+  // their cooking crew is responsible for. Hidden for grown-ups not on a crew.
+  function buildCookDutyCard() {
+    const duties = cookDutiesFor(state.parent);
+    if (!duties.length) return null;
+
+    const card = document.createElement("div");
+    card.className = "cook-duty";
+    const first = duties[0].cook;
+    // If every meal shares one crew label (no personal one-offs), name the crew.
+    const sameCrew = duties.every((d) => d.cook === first) ? first : null;
+    card.innerHTML = `
+      <div class="cd-head">
+        <span class="cd-emoji">👨‍🍳</span>
+        <div class="cd-title">
+          <h3>You're on cooking duty${sameCrew ? `: ${escapeHtml(sameCrew)}` : ""}!</h3>
+          <p>${duties.length} meal${duties.length === 1 ? "" : "s"} on your crew — here's your kitchen schedule.</p>
+        </div>
+      </div>`;
+
+    const list = document.createElement("div");
+    list.className = "cd-list";
+    duties.forEach((d) => {
+      const row = document.createElement("div");
+      row.className = "cd-row";
+      // Show the cook label when it differs from the meal's own crew (e.g. a
+      // shared "Sera & Betsy" night) so it's clear who you're cooking with.
+      const partners = d.cook && (!sameCrew || d.cook !== sameCrew)
+        ? `<span class="cd-with">${escapeHtml(d.cook)}</span>` : "";
+      row.innerHTML = `
+        <div class="cd-when">
+          <span class="cd-dow">${escapeHtml(fmtDow(d.date))}</span>
+          <span class="cd-time">${escapeHtml(d.time)}</span>
+        </div>
+        <div class="cd-meal">
+          <span class="cd-meal-emoji">${d.emoji || "🍽️"}</span>
+          <span class="cd-meal-name">${escapeHtml(d.meal)}</span>
+          ${partners}
+        </div>`;
+      list.appendChild(row);
+    });
+    card.appendChild(list);
+    return card;
   }
 
   // ---- Leaderboard: most generous grown-ups -------------------------------

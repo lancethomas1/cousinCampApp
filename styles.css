@@ -1301,6 +1301,59 @@ select.day-filter {
 .ab-stats { display: flex; gap: 12px; margin-top: 4px; font-size: 12px; font-weight: 700; opacity: .95; }
 .ab-stats b { font-family: "Baloo 2", sans-serif; font-size: 14px; }
 
+/* Your cooking duty — a bold, can't-miss banner for the signed-in crew. */
+.cook-duty {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--grass) 26%, transparent) 0%, var(--card) 70%);
+  border: 2px solid color-mix(in srgb, var(--grass) 55%, transparent);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow-lg), 0 0 18px color-mix(in srgb, var(--grass) 22%, transparent);
+}
+.cd-head { display: flex; align-items: center; gap: 12px; }
+.cd-emoji {
+  font-size: 30px;
+  width: 52px; height: 52px;
+  flex: 0 0 auto;
+  display: grid; place-items: center;
+  background: color-mix(in srgb, var(--grass) 22%, transparent);
+  border-radius: 14px;
+}
+.cd-title h3 { margin: 0; font-family: "Baloo 2", sans-serif; font-size: 19px; font-weight: 800; color: var(--ink); }
+.cd-title p { margin: 2px 0 0; font-size: 13px; font-weight: 700; color: var(--ink-soft); }
+.cd-list { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+.cd-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--inset);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+}
+.cd-when {
+  flex: 0 0 auto;
+  display: grid;
+  justify-items: center;
+  min-width: 52px;
+  padding-right: 10px;
+  border-right: 1px solid var(--line);
+}
+.cd-dow { font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 15px; color: var(--grass); line-height: 1.1; }
+.cd-time { font-size: 11px; font-weight: 700; color: var(--ink-soft); white-space: nowrap; }
+.cd-meal { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 0; }
+.cd-meal-emoji { font-size: 20px; flex: 0 0 auto; }
+.cd-meal-name { font-weight: 800; font-size: 15.5px; color: var(--ink); }
+.cd-with {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--ink);
+  background: color-mix(in srgb, var(--grass) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--grass) 40%, transparent);
+  border-radius: 999px;
+  padding: 2px 9px;
+}
+
 /* Optional free-form reason on a cousin-to-cousin cheer. */
 .cheer-reason { margin-bottom: 14px; }
 
