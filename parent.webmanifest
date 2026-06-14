@@ -1,6 +1,6 @@
 {
-  "name": "Cousin Camp · Grown-Ups",
-  "short_name": "Camp Awards",
+  "name": "Cousin Camp Parent App",
+  "short_name": "Camp Parent App",
   "description": "Cousin Camp grown-ups' award app — kudos, bonus points & badges.",
   "start_url": "./parent.html",
   "scope": "./",
