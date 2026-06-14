@@ -1340,11 +1340,11 @@ select.day-filter {
   flex: 0 0 auto;
   display: grid;
   justify-items: center;
-  min-width: 52px;
+  min-width: 70px;
   padding-right: 10px;
   border-right: 1px solid var(--line);
 }
-.cd-dow { font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 15px; color: var(--grass); line-height: 1.1; }
+.cd-dow { font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 14.5px; color: var(--grass); line-height: 1.1; white-space: nowrap; }
 .cd-time { font-size: 11px; font-weight: 700; color: var(--ink-soft); white-space: nowrap; }
 .cd-meal { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 0; }
 .cd-meal-emoji { font-size: 20px; flex: 0 0 auto; }
