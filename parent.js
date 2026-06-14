@@ -90,22 +90,61 @@
     toast(`Hi, ${name}! 👋`);
   }
 
-  // ---- Award Center view --------------------------------------------------
-  function render() {
-    // Gate first: no name yet → ask for it.
-    if (!state.parent) { renderGate(); return; }
+  // ---- Router -------------------------------------------------------------
+  // The parents app now navigates like the campers' app: a bottom tab bar with
+  // three jobs kept apart instead of one long scroll —
+  //   📋 Assignments → what you're on the hook for (cook/lead schedule)
+  //   🎖️ Award       → the core loop (pick a cousin, hand out kudos/points/badges)
+  //   🏆 Standings    → who's leading, who's most generous
+  // Assignments is the leftmost (home) tab; it's hidden for grown-ups with no
+  // duties, in which case Award becomes home.
+  const ROUTES = { duties: renderDuties, award: renderAward, standings: renderStandings };
+  const tabbar = document.getElementById("parent-tabs");
+  const dutyTab = tabbar.querySelector('[data-route="duties"]');
 
-    const frag = document.createElement("div");
-    let me = targetCamper();
-    if (!me) { view.replaceChildren(frag); return; }
+  function render() {
+    // Gate first: no name yet → ask for it (and hide the nav while gated).
+    if (!state.parent) { tabbar.hidden = true; renderGate(); return; }
+
     // Never sit on one of this parent's own kids — hop to an awardable cousin.
-    if (isOwnKid(me.id)) {
+    const me = targetCamper();
+    if (me && isOwnKid(me.id)) {
       const alt = firstAwardable();
       if (alt) { setTarget(alt.id); return; }  // re-renders with an allowed target
-      me = null;
     }
 
-    // --- Signed-in bar -----------------------------------------------------
+    // The Assignments tab only exists for grown-ups who actually have duties.
+    const hasDuties = assignmentsFor(state.parent).length > 0;
+    tabbar.hidden = false;
+    dutyTab.hidden = !hasDuties;
+
+    // Resolve the active route, falling back sensibly. core.js seeds state.route
+    // with "today" (a campers' route), so the first render lands here.
+    let route = ROUTES[state.route] ? state.route : (hasDuties ? "duties" : "award");
+    if (route === "duties" && !hasDuties) route = "award";
+    state.route = route;
+
+    const frag = document.createElement("div");
+    frag.appendChild(buildIdBar());
+    ROUTES[route](frag);
+    view.replaceChildren(frag);
+
+    tabbar.querySelectorAll(".tab").forEach((t) =>
+      t.classList.toggle("active", t.dataset.route === route));
+  }
+
+  // Switch tabs: update the hash (so refresh/back keep your place) and scroll
+  // back to the top, matching the campers' app router.
+  function go(route) {
+    if (!ROUTES[route]) route = "award";
+    state.route = route;
+    if (location.hash !== "#" + route) location.hash = route;
+    render();
+    view.scrollTop = 0; window.scrollTo(0, 0);
+  }
+
+  // --- Signed-in bar (shown on every tab) ----------------------------------
+  function buildIdBar() {
     const idBar = document.createElement("div");
     idBar.className = "parent-id";
     const who = currentParent();
@@ -117,18 +156,44 @@
     switchBtn.textContent = "Switch";
     switchBtn.addEventListener("click", clearParent);
     idBar.appendChild(switchBtn);
-    frag.appendChild(idBar);
+    return idBar;
+  }
 
-    // --- Your camp assignments (meals to cook + activities to lead) --------
-    const dutyCard = buildAssignmentsCard();
-    if (dutyCard) frag.appendChild(dutyCard);
+  // ---- 📋 Assignments tab -------------------------------------------------
+  function renderDuties(frag) {
+    const head = document.createElement("div");
+    head.innerHTML = `<h2 class="view-title">Your Assignments 📋</h2>
+      <p class="view-sub">Everything you're on the hook for this week — meals to cook and activities to lead.</p>`;
+    frag.appendChild(head);
+    // hasDuties is guaranteed by render() before routing here, so this is set.
+    frag.appendChild(buildAssignmentsCard());
+  }
 
-    // --- Who am I awarding? (target picker) --------------------------------
+  // ---- 🏆 Standings tab ---------------------------------------------------
+  function renderStandings(frag) {
+    const head = document.createElement("div");
+    head.innerHTML = `<h2 class="view-title">Standings 🏆</h2>
+      <p class="view-sub">How the cousins stack up, and which grown-ups are handing out the most love.</p>`;
+    frag.appendChild(head);
+    frag.appendChild(buildCousinStandings());
+    frag.appendChild(buildAwarderLeaderboard());
+  }
+
+  // ---- 🎖️ Award tab (Mission Control) ------------------------------------
+  function renderAward(frag) {
+    let me = targetCamper();
+    if (me && isOwnKid(me.id)) me = null;  // render() already tried to hop off
+
+    // --- Who am I awarding? (sticky target picker) -------------------------
     const pickerHead = document.createElement("div");
     pickerHead.innerHTML = `<h2 class="view-title">Mission Control 🎖️</h2>
       <p class="view-sub">Power the time machine — pick a traveler, then hand out points, kudos &amp; badges.</p>`;
     frag.appendChild(pickerHead);
 
+    // Pin the picker beneath the header so re-targeting a cousin is one tap —
+    // no scrolling back up past the kudos/bonus/badge sections.
+    const pickerWrap = document.createElement("div");
+    pickerWrap.className = "picker-sticky";
     const picker = document.createElement("div");
     picker.className = "target-picker";
     CAMPERS.forEach((c) => {
@@ -143,7 +208,8 @@
       if (!mine) b.addEventListener("click", () => setTarget(c.id));
       picker.appendChild(b);
     });
-    frag.appendChild(picker);
+    pickerWrap.appendChild(picker);
+    frag.appendChild(pickerWrap);
 
     if (!me) {
       const none = document.createElement("div");
@@ -151,8 +217,6 @@
       none.innerHTML = `<div class="big">🙂</div><h3>No cousins to award</h3>
         <p>Everyone shown is one of your own kids. Another grown-up can award them.</p>`;
       frag.appendChild(none);
-      frag.appendChild(buildAwarderLeaderboard());
-      view.replaceChildren(frag);
       return;
     }
 
@@ -287,11 +351,6 @@
       feedWrap.appendChild(list);
     }
     frag.appendChild(feedWrap);
-
-    // --- Leaderboard: most generous grown-ups ------------------------------
-    frag.appendChild(buildAwarderLeaderboard());
-
-    view.replaceChildren(frag);
   }
 
   // ---- Your camp assignments ----------------------------------------------
@@ -381,7 +440,53 @@
     return wrap;
   }
 
+  // ---- Standings: cousins by points ---------------------------------------
+  // A quick, at-a-glance ranking of every traveler by total points, so a
+  // grown-up can see who could use a little encouragement before awarding.
+  function buildCousinStandings() {
+    const wrap = document.createElement("div");
+    wrap.className = "awarder-board";
+    wrap.innerHTML = `<h3 class="section-title">⭐ Cousins' Points</h3>
+      <p class="section-note">Where every traveler stands right now.</p>`;
+    const medals = ["🥇", "🥈", "🥉"];
+    const ranked = CAMPERS.slice().sort((a, b) => pointsFor(b.id) - pointsFor(a.id));
+    ranked.forEach((c, i) => {
+      const row = document.createElement("div");
+      row.className = "roster-row";
+      row.style.setProperty("--cc", c.color);
+      const medal = medals[i] || `#${i + 1}`;
+      row.innerHTML = `
+        <div class="lb-avatar">${camperFace(c)}</div>
+        <div class="ros-name">${escapeHtml(c.name)}
+          <small>${kudosCountFor(c.id)} kudos · ${parentBadgesFor(c.id).length} badges</small></div>
+        <div class="ros-pts">${medal} · ⭐ ${pointsFor(c.id)}</div>`;
+      wrap.appendChild(row);
+    });
+    return wrap;
+  }
+
   // ---- Boot ---------------------------------------------------------------
+  // Measure the sticky header so the pinned cousin picker lands just beneath it
+  // (mirrors the campers' app). Re-measure on resize.
+  const appHeader = document.querySelector(".app-header");
+  function syncHeaderHeight() {
+    if (appHeader) {
+      document.documentElement.style.setProperty("--header-h", appHeader.offsetHeight + "px");
+    }
+  }
+  window.addEventListener("resize", syncHeaderHeight);
+  syncHeaderHeight();
+
+  // Bottom-tab navigation + hash routing.
+  tabbar.querySelectorAll(".tab").forEach((tab) =>
+    tab.addEventListener("click", () => go(tab.dataset.route)));
+  window.addEventListener("hashchange", () => {
+    const r = location.hash.replace("#", "");
+    if (ROUTES[r] && r !== state.route) { state.route = r; render(); window.scrollTo(0, 0); }
+  });
+  const initial = location.hash.replace("#", "");
+  if (ROUTES[initial]) state.route = initial;
+
   setRender(render);
   render();
   initShared();  // join the same shared camp as the campers' app

@@ -771,6 +771,10 @@ select.day-filter {
     0 14px 34px rgba(0,0,0,.5),
     inset 0 1px 0 rgba(255,255,255,.08);
 }
+/* display:flex below would otherwise override the [hidden] attribute, so the
+   parents app can hide the whole bar (sign-in gate) and the Assignments tab
+   (grown-ups with no duties) by toggling `hidden`. */
+.tabbar[hidden], .tab[hidden] { display: none; }
 .tab {
   flex: 1;
   border: none;
@@ -1213,6 +1217,21 @@ select.day-filter {
 .parent-app .brand-text h1 { font-size: 19px; line-height: 1.12; text-wrap: balance; }
 /* No bottom tab bar on the parents app, so trim the reserved space. */
 .view--notabs { padding-bottom: calc(env(safe-area-inset-bottom) + 28px); }
+
+/* The cousin picker on the Award tab is pinned just beneath the header so
+   re-targeting a cousin is always one tap — no scrolling back up past the
+   kudos/bonus/badge sections. Full-bleed within the view's 16px padding with
+   an opaque base so the awards scroll cleanly underneath it. */
+.picker-sticky {
+  position: sticky;
+  top: var(--header-h, 64px);
+  z-index: 12;
+  margin: 0 -16px 10px;
+  padding: 10px 16px 2px;
+  background: var(--page-bg);
+  border-bottom: 1px solid var(--line);
+}
+.picker-sticky .target-picker { margin-bottom: 0; }
 
 /* Sign-in gate (enter your first name). */
 .name-gate { text-align: center; max-width: 440px; margin: 24px auto; }

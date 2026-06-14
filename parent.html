@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=20260613b" />
+  <link rel="stylesheet" href="styles.css?v=20260614" />
   <!-- App icons (favicon, iOS home screen, PWA manifest) -->
   <link rel="icon" type="image/svg+xml" href="icons/parent.svg" />
   <link rel="icon" type="image/png" sizes="32x32" href="icons/parent-32.png" />
@@ -40,7 +40,16 @@
   </header>
 
   <!-- Main view container -->
-  <main id="view" class="view view--notabs" tabindex="-1"></main>
+  <main id="view" class="view" tabindex="-1"></main>
+
+  <!-- Bottom navigation — mirrors the campers' app so grown-ups navigate the
+       same way. Hidden until a grown-up signs in; the Assignments tab is also
+       hidden for grown-ups with no cooking/leading duties (see parent.js). -->
+  <nav id="parent-tabs" class="tabbar" role="tablist" aria-label="Main navigation" hidden>
+    <button class="tab" data-route="duties"    role="tab"><img class="tab-icon" src="icons/schedule.svg" alt=""><span>Assignments</span></button>
+    <button class="tab" data-route="award"     role="tab"><img class="tab-icon" src="icons/parent.svg"   alt=""><span>Award</span></button>
+    <button class="tab" data-route="standings" role="tab"><img class="tab-icon" src="icons/trophy.svg"    alt=""><span>Standings</span></button>
+  </nav>
 
   <!-- Firebase (compat) — powers the shared camp. Falls back to local mode
        if these fail to load or aren't configured. -->
@@ -49,6 +58,6 @@
   <script src="data.js?v=20260608"></script>
   <script src="firebase-config.js?v=20260608"></script>
   <script src="core.js?v=20260613b"></script>
-  <script src="parent.js?v=20260608"></script>
+  <script src="parent.js?v=20260614"></script>
 </body>
 </html>
