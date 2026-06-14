@@ -243,5 +243,21 @@ const PARENT_BADGES = [
   { id: "pb-peace",    emoji: "🕊️", label: "Peacemaker",        desc: "Helped the cousins get along." },
 ];
 
+// ---------------------------------------------------------------------------
+// COOK TEAMS — which grown-ups are on each family's cooking crew.
+// The schedule's `cook` field names a family (e.g. "Thomas"); this table maps
+// that family to the first names those grown-ups sign in with in the parents
+// app, so each crew sees their own cooking duty highlighted when they sign in.
+// `members` are matched against the schedule's `cook` text too, so a one-off
+// like Friday's "Sera & Betsy" still lights up for Sera and Betsy.
+// Edit these to match your real cooking sign-up.
+// ---------------------------------------------------------------------------
+const COOK_TEAMS = [
+  { label: "Thomas",      members: ["Lance", "Betsy"] },
+  { label: "Quinones",    members: ["Shannon", "Vinny"] },
+  { label: "Hines",       members: ["Jason", "Sera"] },
+  { label: "Christopher", members: ["Chris", "Christopher"] },
+];
+
 // Make available to app.js
-window.CAMP_DATA = { CAMPERS, GROWNUPS, SCHEDULE, KUDOS, CHEERS, BONUS_QUICK, PARENT_BADGES };
+window.CAMP_DATA = { CAMPERS, GROWNUPS, SCHEDULE, KUDOS, CHEERS, BONUS_QUICK, PARENT_BADGES, COOK_TEAMS };
