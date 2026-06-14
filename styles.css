@@ -1206,6 +1206,11 @@ select.day-filter {
     rgba(255,206,77,.55) 0 9px, transparent 9px 18px);
 }
 .parent-app .whoami { text-decoration: none; background: rgba(255,206,77,.14); border-color: rgba(255,206,77,.5); }
+/* The longer "Cousin Camp Parent App" title needs room to land on two tidy
+   lines, so shrink the campers-app button and ease the heading size. */
+.parent-app .whoami { padding: 5px 9px; font-size: 11.5px; gap: 5px; }
+.parent-app .whoami-emoji { font-size: 14px; }
+.parent-app .brand-text h1 { font-size: 19px; line-height: 1.12; text-wrap: balance; }
 /* No bottom tab bar on the parents app, so trim the reserved space. */
 .view--notabs { padding-bottom: calc(env(safe-area-inset-bottom) + 28px); }
 
