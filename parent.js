@@ -324,9 +324,11 @@
       // shared "Sera & Betsy" night) so it's clear who you're cooking with.
       const partners = d.cook && (!sameCrew || d.cook !== sameCrew)
         ? `<span class="cd-with">${escapeHtml(d.cook)}</span>` : "";
+      // Short calendar date, e.g. "Tue 6/23".
+      const [, mo, da] = d.date.split("-").map(Number);
       row.innerHTML = `
         <div class="cd-when">
-          <span class="cd-dow">${escapeHtml(fmtDow(d.date))}</span>
+          <span class="cd-dow">${escapeHtml(fmtDow(d.date))} ${mo}/${da}</span>
           <span class="cd-time">${escapeHtml(d.time)}</span>
         </div>
         <div class="cd-meal">
