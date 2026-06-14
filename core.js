@@ -365,44 +365,73 @@
   }
   function isOwnKid(camperId) { return ownKidIds().includes(camperId); }
 
-  // ---- Cooking duty (parents app) -----------------------------------------
-  // The schedule's `cook` field names a family (e.g. "Thomas"). COOK_TEAMS maps
-  // each family to the first names those grown-ups sign in with, so a signed-in
-  // grown-up can see exactly which meals they're on the hook for. A meal is
-  // "yours" if its cook line names your team OR you personally — that second
-  // case catches one-offs like Friday's "Sera & Betsy".
+  // ---- Camp assignments (parents app) -------------------------------------
+  // Grown-ups run two kinds of things at camp:
+  //   • Meals — the schedule's `cook` field names a family (e.g. "Thomas").
+  //     COOK_TEAMS maps each family to the first names those grown-ups sign in
+  //     with, so a meal is "yours" if its cook line names your team OR you
+  //     personally (catching one-offs like Friday's "Sera & Betsy").
+  //   • Activities — the schedule's `lead` field names whoever's running that
+  //     activity (e.g. "Capoeira with Chris", "Free Willy with Lance"). It's
+  //     matched against your first name (and nickname, like Papaw) directly.
+  // assignmentsFor() gathers both so a signed-in grown-up sees everything
+  // they're on the hook for, not just cooking.
   function cookTeamsForName(name) {
     if (!name) return [];
     return COOK_TEAMS.filter((t) => (t.members || []).some((m) => sameName(m, name)));
   }
-  function cookNeedlesFor(name) {
+  // The grown-up's nickname (e.g. "Papaw" for Keith), if they're an extra
+  // grown-up — lets "Papaw with Guitar" light up when Keith signs in.
+  function nicknameForName(name) {
+    if (!name) return null;
+    const g = GROWNUPS.find((g) => sameName(g.name, name));
+    return g ? g.nickname : null;
+  }
+  // Search terms that mean "this grown-up": their first name, nickname, and any
+  // cooking-crew family labels they belong to.
+  function dutyNeedlesFor(name) {
     const needles = [];
     if (name) needles.push(String(name).trim());
+    const nick = nicknameForName(name);
+    if (nick) needles.push(nick);
     cookTeamsForName(name).forEach((t) => needles.push(t.label));
     return needles.filter(Boolean);
   }
-  function cookTextMatches(cook, needles) {
-    const hay = String(cook || "").toLowerCase();
+  function dutyTextMatches(text, needles) {
+    const hay = String(text || "").toLowerCase();
     return needles.some((n) => {
       const esc = String(n).toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       return new RegExp("\\b" + esc + "\\b").test(hay);
     });
   }
-  // Every meal the given grown-up (defaults to the signed-in one) is cooking,
-  // in schedule order: [{ date, dayTitle, time, meal, cook }].
-  function cookDutiesFor(name) {
+  // Every camp duty the given grown-up (defaults to the signed-in one) owns, in
+  // schedule order. Each entry is tagged with its `role` ("cook" or "lead"):
+  //   [{ date, dayTitle, time, title, emoji, role, who }]
+  // `who` is the original cook/lead text from the schedule.
+  function assignmentsFor(name) {
     const who = name || state.parent;
-    const needles = cookNeedlesFor(who);
+    const needles = dutyNeedlesFor(who);
     if (!needles.length) return [];
     const out = [];
     SCHEDULE.forEach((day) => {
       day.activities.forEach((a) => {
-        if (a.cook && cookTextMatches(a.cook, needles)) {
-          out.push({ date: day.date, dayTitle: day.title, time: a.time, meal: a.title, emoji: a.emoji, cook: a.cook });
+        const base = { date: day.date, dayTitle: day.title, time: a.time, title: a.title, emoji: a.emoji };
+        if (a.cook && dutyTextMatches(a.cook, needles)) {
+          out.push({ ...base, role: "cook", who: a.cook });
+        }
+        if (a.lead && dutyTextMatches(a.lead, needles)) {
+          out.push({ ...base, role: "lead", who: a.lead });
         }
       });
     });
     return out;
+  }
+  // Just the cooking duties — kept for the campers' app and any callers that
+  // only care about meals. Shape matches the old API: [{ ..., meal, cook }].
+  function cookDutiesFor(name) {
+    return assignmentsFor(name)
+      .filter((d) => d.role === "cook")
+      .map((d) => ({ date: d.date, dayTitle: d.dayTitle, time: d.time, meal: d.title, emoji: d.emoji, cook: d.who }));
   }
 
   function setParent(name) {
@@ -738,7 +767,7 @@
     targetCamper, setTarget, giveKudos, giveCheer, giveBonus, toggleParentBadge, undoAward,
     // parent identity & fairness rule
     allParentNames, grownupRoster, currentParent, ownKidIds, isOwnKid, setParent, clearParent,
-    cookDutiesFor, cookTeamsForName,
+    cookDutiesFor, cookTeamsForName, assignmentsFor,
     // formatting & utils
     todayISO, fmtDow, dayNum, fmtLong, toast, deloreanZoom, chronoBurst, escapeHtml, camperFace, uid, timeAgo,
     initPullToRefresh,

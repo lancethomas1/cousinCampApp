@@ -1306,7 +1306,8 @@ select.day-filter {
 .ab-stats { display: flex; gap: 12px; margin-top: 4px; font-size: 12px; font-weight: 700; opacity: .95; }
 .ab-stats b { font-family: "Baloo 2", sans-serif; font-size: 14px; }
 
-/* Your cooking duty — a bold, can't-miss banner for the signed-in crew. */
+/* Your camp assignments — a bold, can't-miss banner for the signed-in grown-up
+   showing every meal they cook and activity they lead. */
 .cook-duty {
   background: linear-gradient(135deg, color-mix(in srgb, var(--grass) 26%, transparent) 0%, var(--card) 70%);
   border: 2px solid color-mix(in srgb, var(--grass) 55%, transparent);
@@ -1357,6 +1358,24 @@ select.day-filter {
   border: 1px solid color-mix(in srgb, var(--grass) 40%, transparent);
   border-radius: 999px;
   padding: 2px 9px;
+}
+/* Cook vs. Lead tag on each assignment row. */
+.cd-role {
+  font-size: 11px;
+  font-weight: 800;
+  border-radius: 999px;
+  padding: 2px 9px;
+  white-space: nowrap;
+}
+.cd-role.cook {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--grass) 22%, transparent);
+  border: 1px solid color-mix(in srgb, var(--grass) 45%, transparent);
+}
+.cd-role.lead {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--grape, #8e44ad) 20%, transparent);
+  border: 1px solid color-mix(in srgb, var(--grape, #8e44ad) 45%, transparent);
 }
 
 /* Optional free-form reason on a cousin-to-cousin cheer. */
