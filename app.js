@@ -263,7 +263,7 @@
     const roster = document.createElement("div");
     roster.innerHTML = `<h3 class="section-title">🧑‍🚀 The Time Crew</h3>
       <p class="section-note">Tap a cousin to see their trophy case &amp; certificate.</p>`;
-    CAMPERS.forEach((c) => {
+    [...CAMPERS].sort((a, b) => a.name.localeCompare(b.name)).forEach((c) => {
       const row = document.createElement("button");
       row.type = "button";
       row.className = "roster-row" + (c.id === state.me ? " me" : "");
