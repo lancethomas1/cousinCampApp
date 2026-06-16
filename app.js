@@ -429,9 +429,9 @@
   document.getElementById("whoami").addEventListener("click", openCamperModal);
 
   // ---- CAMP CHEERS view (a friendly, non-competitive crew board) ----------
-  // A "leaderboard" that doesn't rank anyone: it celebrates the whole crew's
-  // progress together, then shows each traveler's stats side by side, ranked
-  // by points from highest to lowest.
+  // Not a leaderboard: it celebrates the whole crew's progress together, then
+  // lists each traveler side by side (alphabetically, so no one's ranked) as a
+  // friendly way to cheer one another on.
   function renderCheers() {
     const frag = document.createElement("div");
     const head = document.createElement("div");
@@ -459,14 +459,15 @@
       </div>`;
     frag.appendChild(totals);
 
-    // Everyone's board — ranked by points, highest to lowest (ties broken by name).
+    // Everyone's crew — not a ranking. Listed alphabetically so no one's "on top"
+    // or "at the bottom"; it's just the gang you can cheer on.
     const me = camperById(state.me);
     const board = document.createElement("div");
-    board.innerHTML = `<h3 class="section-title">🌟 Our Time Travelers</h3>
+    board.innerHTML = `<h3 class="section-title">🌟 The Crew</h3>
       <p class="section-note">${me
         ? `Tap a cousin to send them a cheer 👏 — tap your own row to switch travelers.`
         : `Tap your face up top to pick your traveler, then cheer on your cousins! 👏`}</p>`;
-    [...CAMPERS].sort((a, b) => pointsFor(b.id) - pointsFor(a.id) || a.name.localeCompare(b.name)).forEach((c) => {
+    [...CAMPERS].sort((a, b) => a.name.localeCompare(b.name)).forEach((c) => {
       const badges = badgesEarned(c.id).length + parentBadgesFor(c.id).length;
       const isMe = c.id === state.me;
       const row = document.createElement("button");
@@ -475,8 +476,7 @@
       row.innerHTML = `
         <div class="lb-avatar" style="background:${c.color}22">${camperFace(c)}</div>
         <div class="ros-name">${escapeHtml(c.name)}${isMe ? ` <span class="ros-you">you</span>` : ""}
-          <small>${badges} badges · 👏 ${cheersCountFor(c.id)} got · ${cheersGivenBy(c.id)} gave</small></div>
-        <div class="ros-pts">⭐ ${pointsFor(c.id)}</div>`;
+          <small>${badges} badges · 👏 ${cheersCountFor(c.id)} got · ${cheersGivenBy(c.id)} gave</small></div>`;
       // Tap a cousin to cheer them; tap yourself (or with no traveler set) to
       // open the traveler picker instead.
       row.addEventListener("click", () => {
