@@ -14,7 +14,7 @@
   const {
     state, LS, save, Store, setRender, initShared,
     camperById, allActivities, prepActivities, hasPrep, prepKey, prepDoneCount, isPrepared, isDone,
-    pointsFor, completedCount, anyFullDay, fullDayCount,
+    completedCount, anyFullDay, fullDayCount,
     kudosCountFor, cheersCountFor, cheersGivenBy, recentCheers, giveCheer, parentBadgesFor,
     todayISO, fmtDow, dayNum, fmtLong, toast, chronoBurst, escapeHtml, camperFace, timeAgo,
   } = C;
@@ -31,11 +31,9 @@
     const prepCard = hasPrep(a);
     el.className = "activity-card" + (prepCard ? " prep" : (a.info ? " info" : ""));
 
-    // Prep cards show the points you can earn; routine slots show a quiet FYI
-    // tag; plain reference activities show neither.
-    const tag = prepCard
-      ? `<span class="activity-points">⭐ ${a.points}</span>`
-      : (a.info ? `<span class="activity-info-tag">ℹ️ Heads up</span>` : "");
+    // Routine slots show a quiet FYI tag; prep cards and plain reference
+    // activities show none. (Points are still tracked, just not shown here.)
+    const tag = a.info ? `<span class="activity-info-tag">ℹ️ Heads up</span>` : "";
 
     const head = document.createElement("div");
     head.className = "activity-head";
@@ -88,7 +86,7 @@
             chronoBurst(r.left + r.width / 2, r.top + r.height / 2);
             // Did this tick finish the whole checklist for this cousin?
             const allReady = a.prep.every((_, j) => j === i || isDone(c.id, prepKey(a.id, j)));
-            toast(allReady ? `🎒 ${c.name} is ready! +${a.points}` : `✓ ${c.name}: ${item}`);
+            toast(allReady ? `🎒 ${c.name} is ready!` : `✓ ${c.name}: ${item}`);
           }
           Store.toggle(c.id, key, turningOn);
         });
@@ -272,8 +270,7 @@
       row.innerHTML = `
         <div class="lb-avatar" style="background:${c.color}22">${camperFace(c)}</div>
         <div class="ros-name">${escapeHtml(c.name)}
-          <small>${c.parents ? "👪 " + escapeHtml(c.parents) + " · " : ""}${badgesEarned(c.id).length + parentBadgesFor(c.id).length} badges</small></div>
-        <div class="ros-pts">⭐ ${pointsFor(c.id)}</div>`;
+          <small>${c.parents ? "👪 " + escapeHtml(c.parents) + " · " : ""}${badgesEarned(c.id).length + parentBadgesFor(c.id).length} badges</small></div>`;
       row.addEventListener("click", () => {
         state.me = c.id; save(LS.me, c.id); updateWhoami(); render();
         requestAnimationFrame(() =>
@@ -303,7 +300,6 @@
         <div class="cc-name">${escapeHtml(me.name)}</div>
         <div class="cc-sub">Cousin Camp Time Traveler</div>
         <div class="cc-stats">
-          <div class="cc-stat"><b>${pointsFor(me.id)}</b><span>points</span></div>
           <div class="cc-stat"><b>${kudosCountFor(me.id)}</b><span>kudos</span></div>
           <div class="cc-stat"><b>${myBadges.length + myParentBadges.length}</b><span>badges</span></div>
         </div>
@@ -377,7 +373,6 @@
       <div class="cert-stats">
         <span>🎯 ${completedCount(camper.id)} prepped</span>
         <span>🏅 ${badgeCount} badges</span>
-        <span>⭐ ${pointsFor(camper.id)} points</span>
       </div>
       <div class="cert-sign">With love,<br><span>Mimi 👵</span></div>`;
     return cert;
@@ -439,8 +434,8 @@
       <p class="view-sub">Cheering on every traveler across the timeline — the whole crew counts!</p>`;
     frag.appendChild(head);
 
-    // Crew totals — what we've all done together this week.
-    const crewPoints = CAMPERS.reduce((s, c) => s + pointsFor(c.id), 0);
+    // Crew totals — what we've all done together this week. (Points are still
+    // tracked behind the scenes, just not shown.)
     const crewBadges = CAMPERS.reduce((s, c) => s + badgesEarned(c.id).length + parentBadgesFor(c.id).length, 0);
     const crewCheers = CAMPERS.reduce((s, c) => s + cheersCountFor(c.id), 0);
 
@@ -452,7 +447,6 @@
         <div class="cc-name">The Whole Crew</div>
         <div class="cc-sub">${CAMPERS.length} time travelers, all in it together</div>
         <div class="cc-stats">
-          <div class="cc-stat"><b>${crewPoints}</b><span>points earned</span></div>
           <div class="cc-stat"><b>${crewBadges}</b><span>badges</span></div>
           <div class="cc-stat"><b>${crewCheers}</b><span>cheers 👏</span></div>
         </div>
