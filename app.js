@@ -137,7 +137,12 @@
     `;
     frag.appendChild(hero);
 
-    day.activities.forEach((a) => frag.appendChild(activityRow({ ...a, date: iso })));
+    // Stack the cards in a list wrapper so wide screens (iPad) can lay them
+    // out in columns; on phones it's still a single column.
+    const list = document.createElement("div");
+    list.className = "activity-list";
+    day.activities.forEach((a) => list.appendChild(activityRow({ ...a, date: iso })));
+    frag.appendChild(list);
     view.replaceChildren(frag);
   }
 
@@ -176,7 +181,12 @@
         ${day.date === today ? '<span class="today-pill">TODAY</span>' : ""}
       `;
       block.appendChild(dh);
-      day.activities.forEach((a) => block.appendChild(activityRow({ ...a, date: day.date }, false)));
+      // The cards go in their own list wrapper so iPad-width screens can show
+      // them in columns; the sticky day header stays a direct child of block.
+      const list = document.createElement("div");
+      list.className = "activity-list";
+      day.activities.forEach((a) => list.appendChild(activityRow({ ...a, date: day.date }, false)));
+      block.appendChild(list);
       frag.appendChild(block);
       blocks.set(day.date, block);
 
@@ -263,6 +273,8 @@
     const roster = document.createElement("div");
     roster.innerHTML = `<h3 class="section-title">🧑‍🚀 The Time Crew</h3>
       <p class="section-note">Tap a cousin to see their trophy case &amp; certificate.</p>`;
+    const rosterList = document.createElement("div");
+    rosterList.className = "roster-list";
     [...CAMPERS].sort((a, b) => a.name.localeCompare(b.name)).forEach((c) => {
       const row = document.createElement("button");
       row.type = "button";
@@ -277,8 +289,9 @@
           document.getElementById("cousin-detail")?.scrollIntoView({ behavior: "smooth", block: "start" })
         );
       });
-      roster.appendChild(row);
+      rosterList.appendChild(row);
     });
+    roster.appendChild(rosterList);
     frag.appendChild(roster);
 
     view.replaceChildren(frag);
@@ -461,6 +474,8 @@
       <p class="section-note">${me
         ? `Tap a cousin to send them a cheer 👏 — tap your own row to switch travelers.`
         : `Tap your face up top to pick your traveler, then cheer on your cousins! 👏`}</p>`;
+    const crewList = document.createElement("div");
+    crewList.className = "roster-list";
     [...CAMPERS].sort((a, b) => a.name.localeCompare(b.name)).forEach((c) => {
       const badges = badgesEarned(c.id).length + parentBadgesFor(c.id).length;
       const isMe = c.id === state.me;
@@ -477,8 +492,9 @@
         if (isMe || !me) { openCamperModal(); return; }
         openCheerPicker(c);
       });
-      board.appendChild(row);
+      crewList.appendChild(row);
     });
+    board.appendChild(crewList);
     frag.appendChild(board);
 
     // Recent cheers — who's been cheering whom across camp (newest first).
