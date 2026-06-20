@@ -126,6 +126,32 @@
         save(LS.done, state.done);
       }
     },
+    // Mark every prep item on an activity done (or undone) for a whole set of
+    // campers at once — powers the "everyone's prepared" shortcut so grown-ups
+    // don't have to tap each cousin's face one by one.
+    async setActivityPrep(activity, camperIds, on) {
+      if (!hasPrep(activity)) return;
+      const apply = (done) => {
+        camperIds.forEach((cid) => {
+          const m = { ...(done[cid] || {}) };
+          activity.prep.forEach((_, i) => {
+            const key = prepKey(activity.id, i);
+            if (on) m[key] = true; else delete m[key];
+          });
+          done[cid] = m;
+        });
+      };
+      const next = { ...state.done };
+      apply(next);
+      state.done = next;
+      rerender(); // optimistic
+      if (Sync.mode === "shared") {
+        try { await sharedWrite((n) => apply(n.done)); }
+        catch (e) { toast("Couldn't save — try again"); }
+      } else {
+        save(LS.done, state.done);
+      }
+    },
     // Append a parent award (kudos / bonus / badge) to a camper's log.
     async award(camperId, award) {
       const entry = { id: uid(), ts: Date.now(), ...award };
