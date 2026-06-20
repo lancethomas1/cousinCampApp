@@ -156,6 +156,7 @@ const SCHEDULE = [
       { id: "d4-a12", time: "6:30 PM",  title: "Variety Show",             emoji: "🌟", location: "Show Stage",         points: 20, prep: ["Costume on", "Hair & makeup done", "Props ready", "Lines & moves practiced"], desc: "The big show — parents come at 7:00!" },
       { id: "d4-a13", time: "8:00 PM",  title: "Water Balloon Fight",     emoji: "🎈", location: "Back Yard",          points: 10, prep: ["Play clothes on", "Filled some balloons", "Ready to get soaked!"], desc: "Soak everyone!" },
       { id: "d4-a14", time: "8:30 PM",  title: "Baths",                    emoji: "🛁", location: "Upstairs",           points: 5,  info: true, desc: "Scrub up before bed." },
+      { id: "d4-a16", time: "9:00 PM",  title: "World Cup: USA vs Türkiye", emoji: "⚽", location: "TV Room",            points: 5,  desc: "Cheer on Team USA against Türkiye!" },
       { id: "d4-a15", time: "9:00 PM",  title: "Bed",                      emoji: "😴", location: "Upstairs",           points: 5,  info: true, desc: "Lights out — what a day!" },
     ],
   },
