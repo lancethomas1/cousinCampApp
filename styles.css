@@ -1511,6 +1511,52 @@ select.day-filter {
   * { transition: none !important; }
 }
 
+/* ---------- Tablet / iPad ----------
+   The base layout is phone-first: a single ~720px column that leaves big
+   empty margins on an iPad (especially in landscape). On wider screens we
+   widen the content well and spread the stacked lists — the crew roster,
+   the Today/Schedule activity cards, and the Recent Cheers feed — into
+   columns so they fill the room. Scoped to the campers' app (the shared
+   iPad kiosk); the grown-ups' app (.parent-app) keeps its phone layout.
+   Everything collapses back to one column below 768px. */
+@media (min-width: 768px) {
+  body:not(.parent-app) .view {
+    max-width: 940px;
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  /* Crew & roster lists: two cousins across instead of one tall stack. */
+  body:not(.parent-app) .roster-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    align-items: start;
+  }
+  body:not(.parent-app) .roster-list .roster-row { margin-bottom: 0; }
+
+  /* Today / Schedule activity cards side by side. */
+  body:not(.parent-app) .activity-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    align-items: start;
+  }
+  body:not(.parent-app) .activity-list .activity-card { margin-bottom: 0; }
+
+  /* Recent Cheers feed in two columns. */
+  body:not(.parent-app) .award-feed {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  body:not(.parent-app) .view { max-width: 1080px; }
+  /* A full-size iPad fits three cousins across comfortably. */
+  body:not(.parent-app) .roster-list { grid-template-columns: repeat(3, 1fr); }
+}
+
 /* ---------- Light mode (follows the phone's setting) ----------
    Flip the content surfaces to a light palette. The colored banners
    (header, hero, gate backdrop, camp/award cards, toast) keep their
