@@ -154,7 +154,7 @@ const SCHEDULE = [
       { id: "d4-a10", time: "5:00 PM",  title: "TV Time",                  emoji: "📺", location: "TV Room",            points: 5,  info: true, desc: "Relax before the show." },
       { id: "d4-a11", time: "5:30 PM",  title: "Dinner",                   emoji: "🍽️", location: "Mimi's Kitchen",     points: 5,  info: true, cook: "Quinones", desc: "Eat up before showtime." },
       { id: "d4-a12", time: "6:30 PM",  title: "Variety Show",             emoji: "🌟", location: "Show Stage",         points: 20, info: true, desc: "The big show — parents come at 7:00!" },
-      { id: "d4-a13", time: "8:00 PM",  title: "Water Balloon Fight",     emoji: "🎈", location: "Back Yard",          points: 10, lead: "Lance", prep: ["Play clothes on", "Filled some balloons", "Be tough — balloons can hurt, but you're tougher!", "Ready to get soaked!"], desc: "Soak everyone!" },
+      { id: "d4-a13", time: "8:00 PM",  title: "Water Balloon Fight",     emoji: "🎈", location: "Back Yard",          points: 10, lead: "Lance", prep: ["Play clothes on", "Know the safe zone / no-face rule", "Be tough — balloons can hurt, but you're tougher!", "Ready to get soaked!"], desc: "Soak everyone!" },
       { id: "d4-a14", time: "8:30 PM",  title: "Baths",                    emoji: "🛁", location: "Upstairs",           points: 5,  info: true, desc: "Scrub up before bed." },
       { id: "d4-a16", time: "9:00 PM",  title: "World Cup: USA vs Türkiye", emoji: "⚽", location: "TV Room",            points: 5,  desc: "Cheer on Team USA against Türkiye!" },
       { id: "d4-a15", time: "9:00 PM",  title: "Bed",                      emoji: "😴", location: "Upstairs",           points: 5,  info: true, desc: "Lights out — what a day!" },
