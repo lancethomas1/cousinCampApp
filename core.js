@@ -427,10 +427,29 @@
       return new RegExp("\\b" + esc + "\\b").test(hay);
     });
   }
+  // True when an activity's `lead` really means "each family minds their own
+  // kids" rather than one adult running it for everyone — i.e. the lead names
+  // parents from two or more different families (pool/swim, get-dressed,
+  // fishing, the field trips). These get a "your kids" pill instead of a "Lead"
+  // pill, and their prep cards narrow to a parent's own cousins.
+  function isParentSupervised(activity) {
+    const hay = String((activity && activity.lead) || "").toLowerCase();
+    if (!hay) return false;
+    const named = (name) => {
+      const esc = name.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      return new RegExp("\\b" + esc + "\\b").test(hay);
+    };
+    const splitParents = (s) =>
+      String(s || "").split(/\s*(?:&|,|and)\s*/i).map((x) => x.trim()).filter(Boolean);
+    const families = new Set();
+    CAMPERS.forEach((c) => { if (splitParents(c.parents).some(named)) families.add(c.parents); });
+    return families.size >= 2;
+  }
   // Every camp duty the given grown-up (defaults to the signed-in one) owns, in
   // schedule order. Each entry is tagged with its `role` ("cook" or "lead"):
-  //   [{ date, dayTitle, time, title, emoji, role, who }]
-  // `who` is the original cook/lead text from the schedule.
+  //   [{ date, dayTitle, time, title, emoji, role, who, supervised }]
+  // `who` is the original cook/lead text from the schedule. `supervised` flags a
+  // "mind your own kids" lead (pool/swim, field trips) vs. a real single leader.
   function assignmentsFor(name) {
     const who = name || state.parent;
     const needles = dutyNeedlesFor(who);
@@ -443,7 +462,7 @@
           out.push({ ...base, role: "cook", who: a.cook });
         }
         if (a.lead && dutyTextMatches(a.lead, needles)) {
-          out.push({ ...base, role: "lead", who: a.lead });
+          out.push({ ...base, role: "lead", who: a.lead, supervised: isParentSupervised(a) });
         }
       });
     });
@@ -790,7 +809,7 @@
     targetCamper, setTarget, giveKudos, giveCheer, giveBonus, toggleParentBadge, undoAward,
     // parent identity & fairness rule
     allParentNames, grownupRoster, currentParent, ownKidIds, isOwnKid, setParent, clearParent,
-    cookDutiesFor, cookTeamsForName, assignmentsFor,
+    cookDutiesFor, cookTeamsForName, assignmentsFor, isParentSupervised,
     // formatting & utils
     todayISO, fmtDow, dayNum, fmtLong, toast, deloreanZoom, chronoBurst, escapeHtml, camperFace, uid, timeAgo,
     initPullToRefresh,

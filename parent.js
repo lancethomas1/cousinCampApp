@@ -17,7 +17,7 @@
     camperById,
     targetCamper, setTarget, giveKudos, giveBonus, toggleParentBadge, undoAward,
     allParentNames, grownupRoster, currentParent, ownKidIds, isOwnKid, setParent, clearParent,
-    assignmentsFor,
+    assignmentsFor, isParentSupervised,
     hasPrep, prepKey, isDone, todayISO, chronoBurst,
     toast, escapeHtml, camperFace, timeAgo, fmtDow, dayNum, fmtLong,
   } = C;
@@ -217,21 +217,10 @@
   // Normally everyone — the facilitator runs the activity for all the cousins.
   // But some tasks (pool/swim, get-dressed) are assigned to the campers' parents
   // as a group; on those, a parent is only responsible for their own kids, so we
-  // narrow the row to them. We treat a task as "parents handle their own" when
-  // its lead names parents from more than one family.
+  // narrow the row to them. isParentSupervised() treats a task as "parents handle
+  // their own" when its lead names parents from more than one family.
   function prepCampersFor(a) {
-    const hay = String(a.lead || "").toLowerCase();
-    const named = (name) => {
-      const esc = name.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      return new RegExp("\\b" + esc + "\\b").test(hay);
-    };
-    const splitParents = (s) =>
-      String(s || "").split(/\s*(?:&|,|and)\s*/i).map((x) => x.trim()).filter(Boolean);
-    // Distinct families (by their parents label) whose parent is in the lead.
-    const families = new Set();
-    CAMPERS.forEach((c) => { if (splitParents(c.parents).some(named)) families.add(c.parents); });
-
-    if (families.size >= 2 && ownKidIds().length) {
+    if (isParentSupervised(a) && ownKidIds().length) {
       const ids = new Set(ownKidIds());
       return CAMPERS.filter((c) => ids.has(c.id));
     }
@@ -509,11 +498,13 @@
     const card = document.createElement("div");
     card.className = "cook-duty";
     const cooks = duties.filter((d) => d.role === "cook").length;
-    const leads = duties.length - cooks;
-    // Summary line, e.g. "2 meals to cook · 3 activities to lead".
+    const watch = duties.filter((d) => d.role === "lead" && d.supervised).length;
+    const leads = duties.length - cooks - watch;
+    // Summary line, e.g. "2 meals to cook · 3 activities to lead · 4 with your kids".
     const parts = [];
     if (cooks) parts.push(`${cooks} meal${cooks === 1 ? "" : "s"} to cook`);
     if (leads) parts.push(`${leads} activit${leads === 1 ? "y" : "ies"} to lead`);
+    if (watch) parts.push(`${watch} with your kids`);
     card.innerHTML = `
       <div class="cd-head">
         <span class="cd-emoji">📋</span>
@@ -529,11 +520,14 @@
       const row = document.createElement("div");
       row.className = "cd-row";
       const isCook = d.role === "cook";
-      const roleBadge = `<span class="cd-role ${isCook ? "cook" : "lead"}">${
-        isCook ? "👨‍🍳 Cook" : "🎤 Lead"}</span>`;
+      const isWatch = d.role === "lead" && d.supervised;
+      const roleClass = isCook ? "cook" : isWatch ? "watch" : "lead";
+      const roleText = isCook ? "👨‍🍳 Cook" : isWatch ? "👪 Your kids" : "🎤 Lead";
+      const roleBadge = `<span class="cd-role ${roleClass}">${roleText}</span>`;
       // Surface the cook crew / co-leads when the duty names more than just you
       // (e.g. a shared "Sera & Betsy" night), so it's clear who you're with.
-      const partners = /[&,]|\band\b/i.test(d.who || "")
+      // Skip it for "your kids" duties — the whole parent roster isn't a co-lead.
+      const partners = !isWatch && /[&,]|\band\b/i.test(d.who || "")
         ? `<span class="cd-with">${escapeHtml(d.who)}</span>` : "";
       // Short calendar date, e.g. "Tue 6/23".
       const [, mo, da] = d.date.split("-").map(Number);
