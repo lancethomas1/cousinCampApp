@@ -65,6 +65,14 @@ const GROWNUPS = [
 // "Papaw"); a one-off can list more than one ("Lance & Chris").
 const SCHEDULE = [
   {
+    date: "2026-06-21",
+    title: "Sunday — Camp Eve",
+    era: "Get Ready to Time Travel",
+    activities: [
+      { id: "d0-a1", time: "5:00 PM", title: "App Orientation", emoji: "📱", location: "Mimi's", points: 10, lead: "Lance", desc: "Lance walks everyone through the Cousin Camp app." },
+    ],
+  },
+  {
     date: "2026-06-22",
     title: "Monday — Sera's Birthday! 🎂",
     era: "Time Travelers: 90 Years",
