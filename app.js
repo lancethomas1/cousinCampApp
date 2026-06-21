@@ -15,6 +15,7 @@
     state, LS, save, Store, setRender, initShared,
     camperById, allActivities, prepActivities, hasPrep, prepKey, prepDoneCount, isPrepared, isDone,
     completedCount, anyFullDay, fullDayCount,
+    dayDessert, dayHasPrep, dessertReadyCount, dessertEarned,
     kudosCountFor, cheersCountFor, cheersGivenBy, recentCheers, giveCheer, parentBadgesFor,
     todayISO, fmtDow, dayNum, fmtLong, toast, chronoBurst, escapeHtml, camperFace, timeAgo,
   } = C;
@@ -112,33 +113,73 @@
     const day = SCHEDULE.find((d) => d.date === iso);
     const frag = document.createElement("div");
 
-    // Camp-wide progress: how many cousins are fully prepared across today's
-    // prep activities (the ones that earn points). Days with no prep show 0/0.
-    const prepToday = day.activities.filter(hasPrep);
-    const totalChecks = prepToday.length * CAMPERS.length;
-    const doneChecks = prepToday.reduce(
-      (s, a) => s + CAMPERS.filter((c) => isPrepared(c.id, a)).length, 0
-    );
-    const pct = totalChecks ? Math.round((doneChecks / totalChecks) * 100) : 0;
-
     const hero = document.createElement("div");
     // Start in the correct state for the current scroll position. Setting the
     // class before the hero is inserted means no collapse animation fires on
     // re-renders (e.g. each check-in) — only on an actual scroll past the line.
-    hero.className = "hero" + (heroShouldCompact() ? " compact" : "");
+    hero.className = "hero" + (heroShouldCompact() ? " compact" : "") +
+      (dessertEarned(iso) ? " earned" : "");
     hero.innerHTML = `
       <div class="eyebrow">🚗 Today at Cousin Camp</div>
       <h2>${escapeHtml(day.title)}</h2>
       <p>${day.era ? escapeHtml(day.era) + " · " : ""}${fmtLong(iso)}</p>
-      <div class="hero-progress"><span style="width:${pct}%"></span></div>
-      <div class="hero-progress-label">${totalChecks
-        ? `🎒 Tap your face as you get ready! · ${doneChecks}/${totalChecks} prepped today`
-        : `🎉 No prep needed today — just have fun!`}</div>
+      ${dessertHeader(iso)}
     `;
     frag.appendChild(hero);
 
     day.activities.forEach((a) => frag.appendChild(activityRow({ ...a, date: iso })));
     view.replaceChildren(frag);
+  }
+
+  // ---- Crew Dessert Challenge (folded into the Today hero) -----------------
+  // The all-or-nothing team reward: the whole crew unlocks the day's dessert
+  // only when EVERY cousin finishes EVERY prep activity today. This lives inside
+  // the hero so the Today screen has a single header — its one progress bar
+  // tracks the crew dessert goal, and it carries the informative prep tally
+  // ("prepped today") and the "tap your face" nudge so the cousins can see how
+  // close the WHOLE crew is and rally whoever's not done. Returns an HTML
+  // string spliced into the hero. On days with no prep to earn there's no
+  // dessert to chase, so it falls back to a friendly "just have fun" note.
+  function dessertHeader(date) {
+    if (!dayHasPrep(date)) {
+      return `<div class="hero-progress-label">🎉 No prep needed today — just have fun!</div>`;
+    }
+    const day = SCHEDULE.find((d) => d.date === date);
+    const prepToday = day.activities.filter(hasPrep);
+    // Per-cousin prep tally: how many (cousin × activity) prep checklists are
+    // fully done out of every one on offer today — finer-grained movement than
+    // the all-or-nothing dessert bar, so progress always feels visible.
+    const totalChecks = prepToday.length * CAMPERS.length;
+    const doneChecks = prepToday.reduce(
+      (s, a) => s + CAMPERS.filter((c) => isPrepared(c.id, a)).length, 0
+    );
+
+    const total = CAMPERS.length;
+    const ready = dessertReadyCount(date);
+    const earned = dessertEarned(date);
+    // The dessert is a surprise that changes daily, so only name a specific
+    // treat when a day chose to spell one out (dayDessert returns null if not).
+    const treat = dayDessert(date);
+    const pct = total ? Math.round((ready / total) * 100) : 0;
+    const remaining = total - ready;
+
+    return `
+      <div class="hero-dessert">
+        <div class="hd-head">
+          <span class="hd-emoji">${earned ? "🎉" : "🍦"}</span>
+          <span class="hd-title">${earned ? "Dessert unlocked!" : "Crew Dessert Challenge"}</span>
+        </div>
+        <div class="hd-desc">${earned
+          ? `The whole crew got prepped — you all earned dessert${treat ? `: ${escapeHtml(treat)}` : ""}! 🥳`
+          : `Finish every prep as a crew to earn dessert today${treat ? ` — ${escapeHtml(treat)}` : ""}. It's all or nothing, so team up and help each other!`}</div>
+        <div class="hero-progress"><span style="width:${pct}%"></span></div>
+        <div class="hd-count">${earned
+          ? `🏆 ${total}/${total} cousins ready — way to go, crew!`
+          : `${ready}/${total} cousins fully ready · ${remaining} to go`}</div>
+        <div class="hd-prep">🎒 ${doneChecks}/${totalChecks} prepped today${earned
+          ? ""
+          : " · tap your face on each activity to get ready"}</div>
+      </div>`;
   }
 
   // ---- SCHEDULE view ------------------------------------------------------

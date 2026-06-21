@@ -63,6 +63,13 @@ const GROWNUPS = [
 // it surfaces in the parents' app so each grown-up sees every camp duty they're
 // assigned — not just meals. Use first names (or a grandparent's nickname like
 // "Papaw"); a one-off can list more than one ("Lance & Chris").
+//
+// `dessert: "ice cream sundaes 🍦"` (optional, per DAY) — names a specific
+// team treat in the "Crew Dessert Challenge." The whole crew unlocks it only
+// when EVERY cousin finishes EVERY prep activity that day, so the cousins help
+// each other get prepared. Leave it off (the default) and the challenge just
+// says "dessert" — the treat stays a surprise that's different each day. Set it
+// only on a day you want to name the exact dessert ahead of time.
 const SCHEDULE = [
   {
     date: "2026-06-21",

@@ -215,9 +215,32 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
 .hero .eyebrow,
 .hero h2,
 .hero p { transition: font-size .25s ease, margin .25s ease, max-height .25s ease, opacity .2s ease; overflow: hidden; }
+/* Shown only on days with no prep to earn (no dessert tracker) — a friendly
+   note so the hero never feels empty. */
+.hero-progress-label { font-size: 13px; font-weight: 800; margin-top: 10px; }
+
+/* ---------- Crew Dessert Challenge (merged into the hero) ---------- */
+/* The day's one header: title/era/date plus the all-or-nothing team reward.
+   The whole crew earns the day's dessert only when every cousin finishes
+   every prep, tracked by the single progress bar below. */
+.hero-dessert { margin-top: 14px; }
+.hd-head { display: flex; align-items: center; gap: 8px; }
+.hd-emoji { font-size: 22px; line-height: 1; }
+/* Text on the hero inherits its pinned #fff (the hero stays dark in light mode
+   too), so don't use --ink here — it would flip dark and vanish. */
+.hd-title { font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 18px; }
+.hero.earned .hd-title { color: #8be0a8; }
+.hd-desc {
+  margin: 5px 0 10px;
+  font-size: 13px;
+  font-weight: 700;
+  opacity: .92;
+  overflow: hidden;
+  transition: max-height .25s ease, margin .25s ease, opacity .2s ease;
+  max-height: 120px;
+}
 .hero-progress {
-  margin-top: 14px;
-  background: rgba(255,255,255,.14);
+  background: rgba(255,255,255,.16);
   border-radius: 999px;
   height: 12px;
   overflow: hidden;
@@ -225,15 +248,21 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
 .hero-progress > span {
   display: block;
   height: 100%;
-  background: linear-gradient(90deg, var(--sun), #cdbdfb);
   border-radius: 999px;
-  box-shadow: 0 0 10px rgba(167,139,250,.6);
+  background: linear-gradient(90deg, var(--gold), #ffe39a);
+  box-shadow: 0 0 10px rgba(255,206,77,.55);
   transition: width .4s ease;
 }
-.hero-progress-label { font-size: 13px; font-weight: 800; margin-top: 6px; }
+.hero.earned .hero-progress > span {
+  background: linear-gradient(90deg, var(--grass), #8be0a8);
+  box-shadow: 0 0 10px rgba(70,194,121,.6);
+}
+.hd-count { margin-top: 6px; font-size: 12.5px; font-weight: 800; }
+/* The informative prep tally + nudge merged in from the old prep tracker. */
+.hd-prep { margin-top: 3px; font-size: 12px; font-weight: 700; opacity: .82; }
 
-/* Once the page scrolls, collapse the hero's heading/date and let the
-   prep-progress bar become the primary, pinned element up top. */
+/* Once the page scrolls, collapse the hero's heading/date and trim the dessert
+   blurb so the title + progress bar stay pinned and compact up top. */
 .hero.compact { padding: 12px 16px 13px; }
 .hero.compact .eyebrow,
 .hero.compact p { max-height: 0; margin: 0; opacity: 0; pointer-events: none; }
@@ -243,7 +272,8 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-.hero.compact .hero-progress { margin-top: 0; }
+.hero.compact .hero-dessert { margin-top: 8px; }
+.hero.compact .hd-desc { max-height: 0; margin: 0; opacity: 0; }
 
 /* ---------- Activity rows ---------- */
 .activity {

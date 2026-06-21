@@ -278,6 +278,32 @@
   function anyFullDay(camperId) { return SCHEDULE.some((d) => completedDay(camperId, d.date)); }
   function fullDayCount(camperId) { return SCHEDULE.filter((d) => completedDay(camperId, d.date)).length; }
 
+  // ---- Crew dessert incentive ---------------------------------------------
+  // An all-or-nothing TEAM reward: the whole crew unlocks the day's dessert
+  // only when EVERY cousin is fully prepped for EVERY prep activity that day.
+  // One cousin left unprepared means no dessert for anyone — so the crew is
+  // nudged to help each other across the finish line. The dessert is a surprise
+  // that's different each day, so the copy just says "dessert" unless a day
+  // names its exact treat with an optional `dessert` field in data.js — in
+  // which case this returns it (otherwise null).
+  function dayDessert(date) {
+    const day = SCHEDULE.find((d) => d.date === date);
+    return (day && day.dessert) || null;
+  }
+  // True if the day has at least one points-earning prep activity to work for.
+  function dayHasPrep(date) {
+    const day = SCHEDULE.find((d) => d.date === date);
+    return !!day && day.activities.some(hasPrep);
+  }
+  // How many cousins have fully finished every prep activity that day.
+  function dessertReadyCount(date) {
+    return CAMPERS.filter((c) => completedDay(c.id, date)).length;
+  }
+  // The crew has earned dessert once every cousin has finished the whole day.
+  function dessertEarned(date) {
+    return dayHasPrep(date) && CAMPERS.every((c) => completedDay(c.id, date));
+  }
+
   // ---- Parent awards (kudos, bonus points, special badges) ----------------
   const kudosById = (id) => KUDOS.find((k) => k.id === id) || null;
   const cheerById = (id) => CHEERS.find((c) => c.id === id) || null;
@@ -804,6 +830,8 @@
     camperById, allActivities, prepActivities, hasPrep, prepKey, prepDoneCount, isPrepared, doneMap, isDone,
     activityPointsFor, awardPointsFor, pointsFor,
     completedCount, completedDay, anyFullDay, fullDayCount,
+    // crew dessert incentive
+    dayDessert, dayHasPrep, dessertReadyCount, dessertEarned,
     // parent awards
     kudosById, cheerById, cardById, parentBadgeById, awardsFor, kudosCountFor, cheersCountFor, cheersGivenBy, recentCheers, parentBadgesFor, hasParentBadge, awarderTally,
     targetCamper, setTarget, giveKudos, giveCheer, giveBonus, toggleParentBadge, undoAward,
