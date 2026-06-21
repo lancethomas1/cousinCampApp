@@ -69,8 +69,18 @@
     allBtn.addEventListener("click", () => {
       const turningOn = !CAMPERS.every((c) => isPrepared(c.id, a));
       if (turningOn) {
-        const r = allBtn.getBoundingClientRect();
-        chronoBurst(r.left + r.width / 2, r.top + r.height / 2);
+        // Pop from every cousin's face at once (using the first prep row, which
+        // already has one avatar per camper) before the re-render rebuilds them.
+        const firstRow = el.querySelector(".kidrow");
+        const faces = firstRow ? firstRow.querySelectorAll(".kc-avatar") : [];
+        faces.forEach((av) => {
+          const r = av.getBoundingClientRect();
+          chronoBurst(r.left + r.width / 2, r.top + r.height / 2);
+        });
+        if (!faces.length) {
+          const r = allBtn.getBoundingClientRect();
+          chronoBurst(r.left + r.width / 2, r.top + r.height / 2);
+        }
         toast("🎒 Everyone's ready!");
       }
       Store.setActivityPrep(a, CAMPERS.map((c) => c.id), turningOn);
