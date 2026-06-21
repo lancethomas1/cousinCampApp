@@ -215,25 +215,12 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
 .hero .eyebrow,
 .hero h2,
 .hero p { transition: font-size .25s ease, margin .25s ease, max-height .25s ease, opacity .2s ease; overflow: hidden; }
-.hero-progress {
-  margin-top: 14px;
-  background: rgba(255,255,255,.14);
-  border-radius: 999px;
-  height: 12px;
-  overflow: hidden;
-}
-.hero-progress > span {
-  display: block;
-  height: 100%;
-  background: linear-gradient(90deg, var(--sun), #cdbdfb);
-  border-radius: 999px;
-  box-shadow: 0 0 10px rgba(167,139,250,.6);
-  transition: width .4s ease;
-}
-.hero-progress-label { font-size: 13px; font-weight: 800; margin-top: 6px; }
+/* Shown only on days with no prep to earn (no dessert banner) — a friendly
+   note so the hero never feels empty. */
+.hero-progress-label { font-size: 13px; font-weight: 800; margin-top: 10px; }
 
-/* Once the page scrolls, collapse the hero's heading/date and let the
-   prep-progress bar become the primary, pinned element up top. */
+/* Once the page scrolls, collapse the hero's heading/date so it reads as a
+   compact title bar (the day's progress tracker lives in the dessert banner). */
 .hero.compact { padding: 12px 16px 13px; }
 .hero.compact .eyebrow,
 .hero.compact p { max-height: 0; margin: 0; opacity: 0; pointer-events: none; }
@@ -243,7 +230,6 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-.hero.compact .hero-progress { margin-top: 0; }
 
 /* ---------- Crew Dessert Challenge ---------- */
 /* All-or-nothing team reward shown under the Today hero: the whole crew earns
@@ -296,6 +282,8 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
   box-shadow: 0 0 10px rgba(70,194,121,.6);
 }
 .dg-count { margin-top: 6px; font-size: 12.5px; font-weight: 800; color: var(--ink); }
+/* The informative prep tally + nudge merged in from the old hero tracker. */
+.dg-prep { margin-top: 4px; font-size: 12px; font-weight: 700; color: var(--ink-soft); }
 
 /* ---------- Activity rows ---------- */
 .activity {

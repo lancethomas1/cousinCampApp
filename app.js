@@ -113,14 +113,11 @@
     const day = SCHEDULE.find((d) => d.date === iso);
     const frag = document.createElement("div");
 
-    // Camp-wide progress: how many cousins are fully prepared across today's
-    // prep activities (the ones that earn points). Days with no prep show 0/0.
-    const prepToday = day.activities.filter(hasPrep);
-    const totalChecks = prepToday.length * CAMPERS.length;
-    const doneChecks = prepToday.reduce(
-      (s, a) => s + CAMPERS.filter((c) => isPrepared(c.id, a)).length, 0
-    );
-    const pct = totalChecks ? Math.round((doneChecks / totalChecks) * 100) : 0;
+    // The single progress tracker lives in the dessert banner below (one bar,
+    // for the crew dessert goal). The hero just sets the scene; on days with no
+    // prep to earn — and therefore no dessert banner — it carries a friendly
+    // "just have fun" note so the screen never feels empty.
+    const hasPrepWork = day.activities.some(hasPrep);
 
     const hero = document.createElement("div");
     // Start in the correct state for the current scroll position. Setting the
@@ -131,10 +128,7 @@
       <div class="eyebrow">🚗 Today at Cousin Camp</div>
       <h2>${escapeHtml(day.title)}</h2>
       <p>${day.era ? escapeHtml(day.era) + " · " : ""}${fmtLong(iso)}</p>
-      <div class="hero-progress"><span style="width:${pct}%"></span></div>
-      <div class="hero-progress-label">${totalChecks
-        ? `🎒 Tap your face as you get ready! · ${doneChecks}/${totalChecks} prepped today`
-        : `🎉 No prep needed today — just have fun!`}</div>
+      ${hasPrepWork ? "" : `<div class="hero-progress-label">🎉 No prep needed today — just have fun!</div>`}
     `;
     frag.appendChild(hero);
 
@@ -145,13 +139,26 @@
     view.replaceChildren(frag);
   }
 
-  // ---- Crew Dessert Challenge banner --------------------------------------
+  // ---- Crew Dessert Challenge banner (the day's one progress tracker) ------
   // The all-or-nothing team reward: the whole crew unlocks the day's dessert
-  // only when EVERY cousin finishes EVERY prep activity today. Shown right
-  // under the hero so the cousins can see how close the WHOLE crew is — and
-  // rally to help whoever's not done yet. Hidden on days with no prep to earn.
+  // only when EVERY cousin finishes EVERY prep activity today. This is the
+  // single progress tracker on the Today screen — its one bar tracks the crew
+  // dessert goal — and it also carries the informative prep tally ("prepped
+  // today") and the "tap your face" nudge that used to sit in the hero, so the
+  // cousins can see how close the WHOLE crew is and rally whoever's not done.
+  // Hidden on days with no prep to earn.
   function dessertBanner(date) {
     if (!dayHasPrep(date)) return null;
+    const day = SCHEDULE.find((d) => d.date === date);
+    const prepToday = day.activities.filter(hasPrep);
+    // Per-cousin prep tally: how many (cousin × activity) prep checklists are
+    // fully done out of every one on offer today — finer-grained movement than
+    // the all-or-nothing dessert bar, so progress always feels visible.
+    const totalChecks = prepToday.length * CAMPERS.length;
+    const doneChecks = prepToday.reduce(
+      (s, a) => s + CAMPERS.filter((c) => isPrepared(c.id, a)).length, 0
+    );
+
     const total = CAMPERS.length;
     const ready = dessertReadyCount(date);
     const earned = dessertEarned(date);
@@ -172,6 +179,9 @@
         <div class="dg-count">${earned
           ? `🏆 ${total}/${total} cousins ready — way to go, crew!`
           : `${ready}/${total} cousins fully ready · ${remaining} to go`}</div>
+        <div class="dg-prep">🎒 ${doneChecks}/${totalChecks} prepped today${earned
+          ? ""
+          : " · tap your face on each activity to get ready"}</div>
       </div>`;
     return el;
   }
