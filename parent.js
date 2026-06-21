@@ -165,12 +165,59 @@
   // minimal, inactive card; the soonest upcoming one leads as the primary
   // focus; and today's prep stays tappable right inside its own card.
   function renderDuties(frag) {
+    // Carole (a.k.a. Mimi) is the heart and soul of Cousin Camp. She doesn't get
+    // assignments — she gets a standing ovation. If she signs in, the Assignments
+    // tab becomes her personal hall of fame instead of a duty list.
+    if (isCarole(state.parent)) {
+      renderCaroleTribute(frag);
+      return;
+    }
+
     const head = document.createElement("div");
     head.innerHTML = `<h2 class="view-title">Your Assignments 📋</h2>
       <p class="view-sub">Everything you're on the hook for, in order — meals to cook, activities to lead, and getting the cousins prepped. Done duties tuck away so your next one stays front and center.</p>`;
     frag.appendChild(head);
 
     buildAssignmentsTimeline(frag);
+  }
+
+  // Is the signed-in grown-up Carole / Mimi? (case-insensitive, trimmed)
+  function isCarole(name) {
+    const n = String(name || "").trim().toLowerCase();
+    return n === "carole" || n === "mimi";
+  }
+
+  // The Carole appreciation station — shown in place of any assignment list.
+  function renderCaroleTribute(frag) {
+    const wrap = document.createElement("div");
+    wrap.innerHTML = `
+      <h2 class="view-title">Your Assignments 👑</h2>
+      <div class="empty">
+        <div class="big">🏆✨</div>
+        <h3>Carole, you have ZERO assignments</h3>
+        <p>And not by accident — it's official camp policy. 📜</p>
+      </div>
+      <p class="view-sub" style="text-align:left">
+        Listen, Carole. The schedule has cooks, leads, and prep checklists for
+        everyone else — but you? You're the reason Cousin Camp <em>exists</em>.
+        You're the Mimi. The legend. The glue. Trying to assign you a chore would
+        be like asking the sun to please remember to shine. 🌞
+      </p>
+      <p class="view-sub" style="text-align:left">
+        Cousin Camp is wonderful because <strong>you</strong> make it wonderful —
+        every snack snuck, every hug handed out, every cousin made to feel like
+        the favorite. The kids are lucky. The grown-ups are luckier. And we all
+        know who's <em>really</em> in charge here. 💛
+      </p>
+      <p class="view-sub" style="text-align:left">
+        So your only assignment today: sit back, relax, and accept that you're
+        simply the best. 🥇
+      </p>
+      <p class="view-sub" style="text-align:left">
+        P.S. — Lance says hi, and would like it on the record that he is, and
+        will always be, your favorite son-in-law. 😎 (He checked. It's true.)
+      </p>`;
+    frag.appendChild(wrap);
   }
 
   // Build the single chronological list of duty cards for the signed-in grown-up.
