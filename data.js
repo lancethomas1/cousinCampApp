@@ -131,7 +131,7 @@ const SCHEDULE = [
       { id: "d3-a5",  time: "9:00 AM",  title: "Leave for Putt Putt",      emoji: "🚗", location: "On the Road",        points: 5,  info: true, desc: "Load up and head out." },
       { id: "d3-a6",  time: "10:00 AM", title: "Putt Putt at Maggie's",    emoji: "⛳", location: "Maggie's",           points: 15, info: true, desc: "Mini golf showdown!" },
       { id: "d3-a7",  time: "12:00 PM", title: "Picnic Lunch",             emoji: "🧺", location: "Picnic Spot",        points: 5,  info: true, desc: "Eat outside together." },
-      { id: "d3-a8",  time: "1:00 PM",  title: "Pool at Kentucky Dam Lodge", emoji: "🏊", location: "Kentucky Dam Lodge", points: 10, lead: "Chris, Lance, Betsy, Jason, Sera, Shannon & Vinny", prep: ["Sunscreen on", "Swimsuit on", "Towel packed", "Water bottle filled"], desc: "Splash and swim." },
+      { id: "d3-a8",  time: "1:00 PM",  title: "Pool at Kentucky Dam Lodge", emoji: "🏊", location: "Kentucky Dam Lodge", points: 10, info: true, desc: "Splash and swim." },
       { id: "d3-a9",  time: "4:00 PM",  title: "Check in to Cabin",        emoji: "🏕️", location: "The Cabin",          points: 10, info: true, desc: "Settle in, then practice the Evolution of Music & Dance." },
       { id: "d3-a10", time: "5:00 PM",  title: "Pizza",                    emoji: "🍕", location: "The Cabin",          points: 5,  info: true, desc: "Pizza night!" },
       { id: "d3-a11", time: "8:30 PM",  title: "Movie: Back to the Future", emoji: "🎬", location: "The Cabin",          points: 10, desc: "Great Scott — movie time!" },
