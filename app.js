@@ -157,6 +157,8 @@
     const total = CAMPERS.length;
     const ready = dessertReadyCount(date);
     const earned = dessertEarned(date);
+    // The dessert is a surprise that changes daily, so only name a specific
+    // treat when a day chose to spell one out (dayDessert returns null if not).
     const treat = dayDessert(date);
     const pct = total ? Math.round((ready / total) * 100) : 0;
     const remaining = total - ready;
@@ -168,8 +170,8 @@
           <span class="hd-title">${earned ? "Dessert unlocked!" : "Crew Dessert Challenge"}</span>
         </div>
         <div class="hd-desc">${earned
-          ? `The whole crew got prepped — you all earned dessert: ${escapeHtml(treat)}! 🥳`
-          : `Finish every prep as a crew to earn dessert today — ${escapeHtml(treat)}. It's all or nothing, so team up and help each other!`}</div>
+          ? `The whole crew got prepped — you all earned dessert${treat ? `: ${escapeHtml(treat)}` : ""}! 🥳`
+          : `Finish every prep as a crew to earn dessert today${treat ? ` — ${escapeHtml(treat)}` : ""}. It's all or nothing, so team up and help each other!`}</div>
         <div class="hero-progress"><span style="width:${pct}%"></span></div>
         <div class="hd-count">${earned
           ? `🏆 ${total}/${total} cousins ready — way to go, crew!`

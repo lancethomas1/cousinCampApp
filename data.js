@@ -64,17 +64,17 @@ const GROWNUPS = [
 // assigned — not just meals. Use first names (or a grandparent's nickname like
 // "Papaw"); a one-off can list more than one ("Lance & Chris").
 //
-// `dessert: "ice cream sundaes 🍦"` (optional, per DAY) — the all-or-nothing
-// team treat. The whole crew unlocks it only when EVERY cousin finishes EVERY
-// prep activity that day, so the cousins help each other get prepared. Shown as
-// a "Crew Dessert Challenge" banner on the Today screen. Leave it off and a
-// friendly default treat is shown instead.
+// `dessert: "ice cream sundaes 🍦"` (optional, per DAY) — names a specific
+// team treat in the "Crew Dessert Challenge." The whole crew unlocks it only
+// when EVERY cousin finishes EVERY prep activity that day, so the cousins help
+// each other get prepared. Leave it off (the default) and the challenge just
+// says "dessert" — the treat stays a surprise that's different each day. Set it
+// only on a day you want to name the exact dessert ahead of time.
 const SCHEDULE = [
   {
     date: "2026-06-21",
     title: "Sunday — Camp Eve",
     era: "Get Ready to Time Travel",
-    dessert: "an ice cream sundae bar 🍨",
     activities: [
       { id: "d0-a1", time: "5:00 PM", title: "App Orientation", emoji: "📱", location: "Mimi's", points: 10, lead: "Lance", prep: ["Device charged", "Cousin Camp app open", "Signed in as you", "Found your name on the roster"], desc: "Lance walks everyone through the Cousin Camp app." },
     ],
@@ -83,7 +83,6 @@ const SCHEDULE = [
     date: "2026-06-22",
     title: "Monday — Sera's Birthday! 🎂",
     era: "Time Travelers: 90 Years",
-    dessert: "a slice of Sera's birthday cake 🎂",
     activities: [
       { id: "d1-a1",  time: "6:30 AM",  title: "TV Room Opens",            emoji: "📺", location: "TV Room",          points: 5,  info: true, desc: "Quiet time — not before 6:30!" },
       { id: "d1-a2",  time: "7:45 AM",  title: "Breakfast",                emoji: "🥞", location: "Mimi's Kitchen",   points: 5,  info: true, cook: "Thomas", desc: "Fuel up for time travel." },
@@ -114,7 +113,6 @@ const SCHEDULE = [
     date: "2026-06-23",
     title: "Tuesday",
     era: "Evolution of Music & Dance",
-    dessert: "make-your-own ice cream sundaes 🍨",
     activities: [
       { id: "d2-a1",  time: "6:30 AM",  title: "TV Room Opens",            emoji: "📺", location: "TV Room",          points: 5,  info: true, desc: "Quiet time — not before 6:30!" },
       { id: "d2-a2",  time: "7:45 AM",  title: "Breakfast",                emoji: "🥞", location: "Mimi's Kitchen",   points: 5,  info: true, cook: "Quinones", desc: "Start the day together." },
@@ -139,7 +137,6 @@ const SCHEDULE = [
     date: "2026-06-24",
     title: "Wednesday — Cabin Day!",
     era: "Putt Putt & Pool",
-    dessert: "s'mores at the cabin 🔥",
     activities: [
       { id: "d3-a1",  time: "6:30 AM",  title: "TV Room Opens",            emoji: "📺", location: "TV Room",            points: 5,  info: true, desc: "Quiet time — not before 6:30!" },
       { id: "d3-a2",  time: "7:45 AM",  title: "Breakfast",                emoji: "🥞", location: "Mimi's Kitchen",     points: 5,  info: true, cook: "Christopher", desc: "Start the day together." },
@@ -159,7 +156,6 @@ const SCHEDULE = [
     date: "2026-06-25",
     title: "Thursday — Variety Show!",
     era: "Variety Show Day",
-    dessert: "a big celebration cookie cake 🍪",
     activities: [
       { id: "d4-a1",  time: "6:30 AM",  title: "TV Room Opens",            emoji: "📺", location: "TV Room",            points: 5,  info: true, desc: "Quiet time — not before 6:30!" },
       { id: "d4-a2",  time: "8:00 AM",  title: "Breakfast",                emoji: "🥞", location: "The Cabin",          points: 5,  info: true, desc: "Start the day together." },
@@ -183,7 +179,6 @@ const SCHEDULE = [
     date: "2026-06-26",
     title: "Friday — Last Day!",
     era: "Time Capsule: 2030",
-    dessert: "a banana split on the boat 🍌",
     activities: [
       { id: "d5-a1",  time: "6:30 AM",  title: "TV Room Opens",            emoji: "📺", location: "TV Room",          points: 5,  info: true, desc: "Quiet time — not before 6:30!" },
       { id: "d5-a2",  time: "8:00 AM",  title: "Breakfast",                emoji: "🥞", location: "Mimi's Kitchen",   points: 5,  info: true, cook: "Hines", desc: "Start the day together." },

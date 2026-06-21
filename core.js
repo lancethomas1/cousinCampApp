@@ -282,13 +282,13 @@
   // An all-or-nothing TEAM reward: the whole crew unlocks the day's dessert
   // only when EVERY cousin is fully prepped for EVERY prep activity that day.
   // One cousin left unprepared means no dessert for anyone — so the crew is
-  // nudged to help each other across the finish line. A day can name its treat
-  // with an optional `dessert` field in data.js; otherwise a friendly default
-  // is shown.
-  const DEFAULT_DESSERT = "a special treat 🍨";
+  // nudged to help each other across the finish line. The dessert is a surprise
+  // that's different each day, so the copy just says "dessert" unless a day
+  // names its exact treat with an optional `dessert` field in data.js — in
+  // which case this returns it (otherwise null).
   function dayDessert(date) {
     const day = SCHEDULE.find((d) => d.date === date);
-    return (day && day.dessert) || DEFAULT_DESSERT;
+    return (day && day.dessert) || null;
   }
   // True if the day has at least one points-earning prep activity to work for.
   function dayHasPrep(date) {
