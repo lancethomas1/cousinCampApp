@@ -213,9 +213,35 @@
     mine.forEach((a) => frag.appendChild(buildPrepCard(a)));
   }
 
+  // Which cousins' faces show on a prep card for the signed-in grown-up.
+  // Normally everyone — the facilitator runs the activity for all the cousins.
+  // But some tasks (pool/swim, get-dressed) are assigned to the campers' parents
+  // as a group; on those, a parent is only responsible for their own kids, so we
+  // narrow the row to them. We treat a task as "parents handle their own" when
+  // its lead names parents from more than one family.
+  function prepCampersFor(a) {
+    const hay = String(a.lead || "").toLowerCase();
+    const named = (name) => {
+      const esc = name.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      return new RegExp("\\b" + esc + "\\b").test(hay);
+    };
+    const splitParents = (s) =>
+      String(s || "").split(/\s*(?:&|,|and)\s*/i).map((x) => x.trim()).filter(Boolean);
+    // Distinct families (by their parents label) whose parent is in the lead.
+    const families = new Set();
+    CAMPERS.forEach((c) => { if (splitParents(c.parents).some(named)) families.add(c.parents); });
+
+    if (families.size >= 2 && ownKidIds().length) {
+      const ids = new Set(ownKidIds());
+      return CAMPERS.filter((c) => ids.has(c.id));
+    }
+    return CAMPERS;
+  }
+
   // One prep activity card: a row of tappable cousin faces per task, plus an
   // "Everyone" pill. Shares the campers' app markup/classes for a consistent look.
   function buildPrepCard(a) {
+    const campers = prepCampersFor(a);
     const el = document.createElement("div");
     el.className = "activity-card prep";
     const head = document.createElement("div");
@@ -239,7 +265,7 @@
 
       const kidrow = document.createElement("div");
       kidrow.className = "kidrow";
-      CAMPERS.forEach((c) => {
+      campers.forEach((c) => {
         const done = isDone(c.id, key);
         const btn = document.createElement("button");
         btn.type = "button";
@@ -264,23 +290,23 @@
       });
       el.appendChild(kidrow);
 
-      // Per-task "everyone" shortcut: set this one item for all cousins at once.
+      // Per-task "everyone" shortcut: set this one item for all shown cousins.
       const allBtn = document.createElement("button");
       allBtn.type = "button";
       allBtn.className = "prep-all-btn";
-      const allReady = CAMPERS.every((c) => isDone(c.id, key));
+      const allReady = campers.every((c) => isDone(c.id, key));
       allBtn.classList.toggle("ready", allReady);
       allBtn.setAttribute("aria-pressed", allReady ? "true" : "false");
       allBtn.textContent = allReady ? "↩︎ Undo everyone" : "✅ Everyone";
       allBtn.addEventListener("click", () => {
-        const turningOn = !CAMPERS.every((c) => isDone(c.id, key));
+        const turningOn = !campers.every((c) => isDone(c.id, key));
         if (turningOn) {
           // Pop from the button itself, not every cousin's face.
           const r = allBtn.getBoundingClientRect();
           chronoBurst(r.left + r.width / 2, r.top + r.height / 2);
           toast(`🎒 Everyone: ${item}`);
         }
-        Store.setPrepItem(a.id, i, CAMPERS.map((c) => c.id), turningOn);
+        Store.setPrepItem(a.id, i, campers.map((c) => c.id), turningOn);
       });
       el.appendChild(allBtn);
     });
