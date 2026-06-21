@@ -93,29 +93,6 @@
         kidrow.appendChild(btn);
       });
       el.appendChild(kidrow);
-
-      // Per-task "everyone" shortcut: tick this one item for all cousins at
-      // once instead of tapping each face. Reversible so a mistap can undo.
-      const allBtn = document.createElement("button");
-      allBtn.type = "button";
-      allBtn.className = "prep-all-btn";
-      const allReady = CAMPERS.every((c) => isDone(c.id, key));
-      allBtn.classList.toggle("ready", allReady);
-      allBtn.setAttribute("aria-pressed", allReady ? "true" : "false");
-      allBtn.textContent = allReady ? "↩︎ Undo everyone" : "✅ Everyone";
-      allBtn.addEventListener("click", () => {
-        const turningOn = !CAMPERS.every((c) => isDone(c.id, key));
-        if (turningOn) {
-          // Pop from every cousin's face in this row before the re-render.
-          kidrow.querySelectorAll(".kc-avatar").forEach((av) => {
-            const r = av.getBoundingClientRect();
-            chronoBurst(r.left + r.width / 2, r.top + r.height / 2);
-          });
-          toast(`🎒 Everyone: ${item}`);
-        }
-        Store.setPrepItem(a.id, i, CAMPERS.map((c) => c.id), turningOn);
-      });
-      el.appendChild(allBtn);
     });
     return el;
   }
