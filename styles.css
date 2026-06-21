@@ -399,6 +399,105 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
   border: 1px solid var(--line);
 }
 
+/* ---- Combined assignments timeline ------------------------------------
+   The Assignments tab is one chronological list of .activity-card duties:
+   meals to cook, activities to lead, and today's prep all in order. Two
+   cross-cutting states drive the "past" treatment regardless of card kind:
+   .assign-primary spotlights the soonest upcoming duty; .assign-past tucks
+   everything already done into a minimal, inactive card. */
+
+/* Plain (non-prep) duty cards — a meal to cook or an activity with no prep. */
+.activity-card.duty { border-left: 4px solid var(--grass); }
+.activity-when {
+  font-family: "Baloo 2", sans-serif;
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--grass);
+  white-space: nowrap;
+}
+.cd-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+
+/* The soonest upcoming duty — the one that matters most right now. Given a
+   bolder accent and lift so it reads as the primary focus of the timeline. */
+.activity-card.assign-primary {
+  border-left-width: 5px;
+  box-shadow: 0 5px 16px rgba(0, 0, 0, .11);
+}
+
+/* Duties that are already done (an earlier day, or earlier today) — collapsed
+   to a minimal, inactive card so they don't compete with the soonest one. A
+   prep card can still be tapped open to fix a missed item; plain duty cards
+   just sit quietly. */
+.activity-card.assign-past {
+  opacity: .55;
+  box-shadow: none;
+  border-left-color: var(--line);
+}
+.activity-card.assign-past .activity-head {
+  cursor: pointer;
+  align-items: center;
+  padding: 9px 14px;
+}
+/* Collapsed by default: a single slim summary line. The big emoji, role tag,
+   description, location, partners and the whole prep checklist stay hidden
+   until the card is tapped open — then it restores to a full card. */
+.activity-card.assign-past:not(.expanded) .activity-emoji,
+.activity-card.assign-past:not(.expanded) .activity-desc,
+.activity-card.assign-past:not(.expanded) .activity-loc,
+.activity-card.assign-past:not(.expanded) .cd-tags,
+.activity-card.assign-past:not(.expanded) .cd-role,
+.activity-card.assign-past:not(.expanded) .prep-item-label,
+.activity-card.assign-past:not(.expanded) .kidrow,
+.activity-card.assign-past:not(.expanded) .prep-all-btn { display: none; }
+.activity-card.assign-past:not(.expanded) .activity-body {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.activity-card.assign-past:not(.expanded) .activity-top {
+  flex: 0 0 auto;
+  gap: 8px;
+}
+.activity-card.assign-past:not(.expanded) .activity-title {
+  font-size: 14px;
+  margin: 0;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.activity-card.assign-past.expanded { opacity: 1; }
+
+.prep-past-status {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.prep-status-pill {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--ink-soft);
+  background: var(--inset);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+.prep-status-pill.ready {
+  color: var(--deep);
+  background: var(--gold);
+  border-color: transparent;
+}
+.prep-past-chev {
+  color: var(--ink-soft);
+  font-size: 11px;
+  transition: transform .15s;
+}
+.activity-card.assign-past.expanded .prep-past-chev { transform: rotate(180deg); }
+
 /* Read-only prep list shown under prepared cards on the Schedule tab. */
 .prep-preview {
   background: var(--inset);
