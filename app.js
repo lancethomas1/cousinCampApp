@@ -85,7 +85,6 @@
       }
       Store.setActivityPrep(a, CAMPERS.map((c) => c.id), turningOn);
     });
-    el.appendChild(allBtn);
 
     a.prep.forEach((item, i) => {
       const key = prepKey(a.id, i);
@@ -125,6 +124,8 @@
       });
       el.appendChild(kidrow);
     });
+    // Bulk shortcut sits at the bottom of the task, under each cousin's faces.
+    el.appendChild(allBtn);
     return el;
   }
 
