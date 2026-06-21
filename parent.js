@@ -185,38 +185,25 @@
       return;
     }
 
-    const iso = todayISO();
-    // Today's prep activities this grown-up leads, keyed by time|title so the
-    // matching lead duty can host the interactive check-in inline instead of in a
-    // separate section. Reuses assignmentsFor() lead-matching for consistency.
-    const day = SCHEDULE.find((d) => d.date === iso);
-    const myLeadKeys = new Set(
-      duties.filter((d) => d.role === "lead" && d.date === iso).map((d) => `${d.time}|${d.title}`)
-    );
-    const prepByKey = new Map();
-    (day ? day.activities.filter(hasPrep) : []).forEach((a) => {
-      const k = `${a.time}|${a.title}`;
-      if (myLeadKeys.has(k)) prepByKey.set(k, a);
-    });
-
     // Chronological across the whole camp (ISO dates sort lexicographically),
-    // then figure out which duties are already done. The first one that isn't is
-    // the soonest upcoming — the primary focus; if every duty is done, spotlight
-    // the most recent so there's always one live card.
+    // then split past from upcoming against the *real* clock. The first duty
+    // that hasn't started yet is the soonest upcoming — the primary focus; if
+    // every duty is done, spotlight the most recent so there's always one live
+    // card. (We compare full date+time timestamps, not a clamped todayISO(),
+    // so before camp nothing is "past" and the whole first day stays live.)
     duties.sort((a, b) => a.date.localeCompare(b.date) || prepStartMin(a) - prepStartMin(b));
-    const now = new Date();
-    const nowMin = now.getHours() * 60 + now.getMinutes();
-    let primaryIdx = duties.findIndex((d) => !dutyIsPast(d, iso, nowMin));
+    const nowTs = Date.now();
+    let primaryIdx = duties.findIndex((d) => dutyStartTs(d) >= nowTs);
     if (primaryIdx === -1) primaryIdx = duties.length - 1;
 
     duties.forEach((d, i) => {
       const opts = { past: i < primaryIdx, primary: i === primaryIdx, duty: d };
-      // Prep check-ins are only live for today — other days share the same
-      // time|title key (e.g. daily Capoeira) but get a plain, non-interactive
-      // duty card.
-      const prep = d.role === "lead" && d.date === iso
-        ? prepByKey.get(`${d.time}|${d.title}`) : null;
-      frag.appendChild(prep ? buildPrepCard(prep, opts) : buildDutyCard(d, opts));
+      // A lead activity with a prep checklist hosts the interactive check-in
+      // inline — on any day, each keyed to its own activity id so a recurring
+      // task (e.g. daily Capoeira) keeps its day's state. Cook duties and
+      // prep-less leads render as plain cards.
+      const act = d.role === "lead" ? activityForDuty(d) : null;
+      frag.appendChild(act && hasPrep(act) ? buildPrepCard(act, opts) : buildDutyCard(d, opts));
     });
   }
 
@@ -230,11 +217,19 @@
     return h * 60 + parseInt(m[2], 10);
   }
 
-  // A duty is "past" if it's on an earlier day, or today but already started.
-  function dutyIsPast(d, iso, nowMin) {
-    if (d.date < iso) return true;
-    if (d.date > iso) return false;
-    return prepStartMin(d) < nowMin;
+  // A duty's start as a real timestamp (its calendar date + start time), so the
+  // past/upcoming split tracks the actual clock across the whole camp.
+  function dutyStartTs(d) {
+    const [y, mo, da] = d.date.split("-").map(Number);
+    const min = prepStartMin(d);
+    return new Date(y, mo - 1, da, Math.floor(min / 60), min % 60).getTime();
+  }
+
+  // The full schedule activity (with id + prep) backing a duty, matched within
+  // the duty's own day so per-day prep state stays distinct.
+  function activityForDuty(d) {
+    const day = SCHEDULE.find((x) => x.date === d.date);
+    return day ? day.activities.find((a) => a.time === d.time && a.title === d.title) || null : null;
   }
 
   // A plain (non-prep) duty card — a meal to cook or an activity with no prep
