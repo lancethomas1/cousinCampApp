@@ -299,10 +299,9 @@
       allBtn.addEventListener("click", () => {
         const turningOn = !CAMPERS.every((c) => isDone(c.id, key));
         if (turningOn) {
-          kidrow.querySelectorAll(".kc-avatar").forEach((av) => {
-            const r = av.getBoundingClientRect();
-            chronoBurst(r.left + r.width / 2, r.top + r.height / 2);
-          });
+          // Pop from the button itself, not every cousin's face.
+          const r = allBtn.getBoundingClientRect();
+          chronoBurst(r.left + r.width / 2, r.top + r.height / 2);
           toast(`🎒 Everyone: ${item}`);
         }
         Store.setPrepItem(a.id, i, CAMPERS.map((c) => c.id), turningOn);
