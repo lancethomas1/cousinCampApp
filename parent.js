@@ -176,14 +176,15 @@
   }
 
   // ---- 🎒 Prep section ----------------------------------------------------
-  // Lets grown-ups mark who's ready for each of today's prep tasks — tick an
-  // individual cousin's face, or tap "Everyone" to set the whole crew at once.
-  // Mirrors the campers' Today view and writes to the same shared state, so a
-  // tick here shows up on every device (and earns the cousin their points).
+  // SOP: the grown-up facilitating an activity is responsible for marking its
+  // prep status. So each card names its facilitator, and the activities the
+  // signed-in grown-up is leading float to the top under a "Yours to check"
+  // heading. Everyone can still see (and help mark) every task. Ticks write to
+  // the same shared state as the campers' app — they sync and earn points.
   function buildPrepSection(frag) {
     const head = document.createElement("div");
     head.innerHTML = `<h3 class="section-title">🎒 Get the cousins prepared</h3>
-      <p class="section-note">Tick who's ready for each task, or tap “Everyone” to mark the whole crew.</p>`;
+      <p class="section-note">Whoever's facilitating a task marks who's ready — tick each cousin, or tap “Everyone” for the whole crew.</p>`;
     frag.appendChild(head);
 
     const iso = todayISO();
@@ -197,23 +198,59 @@
       frag.appendChild(none);
       return;
     }
-    prepToday.forEach((a) => frag.appendChild(buildPrepCard(a)));
+
+    // Which of today's prep activities is the signed-in grown-up facilitating?
+    // Reuse assignmentsFor() so the lead-name matching (incl. "Sera & Betsy"
+    // style co-leads) stays consistent with the duties card.
+    const myLeads = new Set(
+      assignmentsFor(state.parent)
+        .filter((d) => d.role === "lead" && d.date === iso)
+        .map((d) => `${d.time}|${d.title}`)
+    );
+    const facing = (a) => myLeads.has(`${a.time}|${a.title}`);
+    const mine = prepToday.filter(facing);
+    const others = prepToday.filter((a) => !facing(a));
+
+    if (mine.length) {
+      frag.appendChild(prepSubhead("⭐ Yours to check",
+        "You're facilitating these — please mark each cousin's prep status."));
+      mine.forEach((a) => frag.appendChild(buildPrepCard(a, true)));
+      if (others.length) {
+        frag.appendChild(prepSubhead("Other tasks",
+          "Facilitated by other grown-ups — check in if you're helping out."));
+      }
+    }
+    others.forEach((a) => frag.appendChild(buildPrepCard(a, false)));
+  }
+
+  // Small divider heading inside the prep section.
+  function prepSubhead(title, note) {
+    const d = document.createElement("div");
+    d.className = "prep-subhead";
+    d.innerHTML = `<h4 class="prep-subhead-title">${escapeHtml(title)}</h4>
+      <p class="section-note">${escapeHtml(note)}</p>`;
+    return d;
   }
 
   // One prep activity card: a row of tappable cousin faces per task, plus an
-  // "Everyone" pill. Shares the campers' app markup/classes for a consistent look.
-  function buildPrepCard(a) {
+  // "Everyone" pill. Shares the campers' app markup/classes for a consistent
+  // look. `mine` flags an activity the signed-in grown-up is facilitating.
+  function buildPrepCard(a, mine) {
     const el = document.createElement("div");
-    el.className = "activity-card prep";
+    el.className = "activity-card prep" + (mine ? " mine" : "");
     const head = document.createElement("div");
     head.className = "activity-head";
+    const lead = a.lead
+      ? `<div class="prep-lead">🎤 Facilitated by ${escapeHtml(a.lead)}</div>` : "";
+    const tag = mine ? `<span class="prep-mine-tag">⭐ Yours to check</span>` : "";
     head.innerHTML = `
       <div class="activity-emoji">${a.emoji}</div>
       <div class="activity-body">
-        <div class="activity-top"><span class="activity-time">${a.time}</span></div>
+        <div class="activity-top"><span class="activity-time">${a.time}</span>${tag}</div>
         <div class="activity-title">${escapeHtml(a.title)}</div>
         <p class="activity-desc">${escapeHtml(a.desc)}</p>
         <div class="activity-loc">📍 ${escapeHtml(a.location)}</div>
+        ${lead}
       </div>`;
     el.appendChild(head);
 

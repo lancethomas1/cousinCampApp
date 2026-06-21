@@ -399,6 +399,41 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
   border: 1px solid var(--line);
 }
 
+/* Parents' prep section: facilitator label, "yours" flag, and sub-headings. */
+.prep-subhead { margin: 20px 0 2px; }
+.prep-subhead-title {
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--ink-soft);
+  margin: 0;
+}
+.prep-lead {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--ink-soft);
+}
+.prep-mine-tag {
+  margin-left: auto;
+  font-weight: 800;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  color: var(--deep);
+  background: var(--gold);
+  padding: 2px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+/* The activities this grown-up is facilitating get a brighter, gold frame. */
+.activity-card.prep.mine {
+  border-left-width: 5px;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--gold) 45%, transparent), var(--shadow);
+}
+
 /* Read-only prep list shown under prepared cards on the Schedule tab. */
 .prep-preview {
   background: var(--inset);
