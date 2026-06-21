@@ -399,6 +399,41 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
   border: 1px solid var(--line);
 }
 
+/* Parents' prep section: facilitator label, "yours" flag, and sub-headings. */
+.prep-subhead { margin: 20px 0 2px; }
+.prep-subhead-title {
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--ink-soft);
+  margin: 0;
+}
+.prep-lead {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--ink-soft);
+}
+.prep-mine-tag {
+  margin-left: auto;
+  font-weight: 800;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  color: var(--deep);
+  background: var(--gold);
+  padding: 2px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+/* The activities this grown-up is facilitating get a brighter, gold frame. */
+.activity-card.prep.mine {
+  border-left-width: 5px;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--gold) 45%, transparent), var(--shadow);
+}
+
 /* Read-only prep list shown under prepared cards on the Schedule tab. */
 .prep-preview {
   background: var(--inset);
@@ -1530,52 +1565,6 @@ select.day-filter {
 
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }
-}
-
-/* ---------- Tablet / iPad ----------
-   The base layout is phone-first: a single ~720px column that leaves big
-   empty margins on an iPad (especially in landscape). On wider screens we
-   widen the content well and spread the stacked lists — the crew roster,
-   the Today/Schedule activity cards, and the Recent Cheers feed — into
-   columns so they fill the room. Scoped to the campers' app (the shared
-   iPad kiosk); the grown-ups' app (.parent-app) keeps its phone layout.
-   Everything collapses back to one column below 768px. */
-@media (min-width: 768px) {
-  body:not(.parent-app) .view {
-    max-width: 940px;
-    padding-left: 24px;
-    padding-right: 24px;
-  }
-
-  /* Crew & roster lists: two cousins across instead of one tall stack. */
-  body:not(.parent-app) .roster-list {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-    align-items: start;
-  }
-  body:not(.parent-app) .roster-list .roster-row { margin-bottom: 0; }
-
-  /* Today / Schedule activity cards side by side. */
-  body:not(.parent-app) .activity-list {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    align-items: start;
-  }
-  body:not(.parent-app) .activity-list .activity-card { margin-bottom: 0; }
-
-  /* Recent Cheers feed in two columns. */
-  body:not(.parent-app) .award-feed {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 1024px) {
-  body:not(.parent-app) .view { max-width: 1080px; }
-  /* A full-size iPad fits three cousins across comfortably. */
-  body:not(.parent-app) .roster-list { grid-template-columns: repeat(3, 1fr); }
 }
 
 /* ---------- Light mode (follows the phone's setting) ----------

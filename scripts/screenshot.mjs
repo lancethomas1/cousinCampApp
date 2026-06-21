@@ -6,13 +6,10 @@
 // the view to render, and writes a PNG.
 //
 // Usage:
-//   node scripts/screenshot.mjs [route] [outfile] [--device=<name>]
+//   node scripts/screenshot.mjs [route] [outfile]
 //   node scripts/screenshot.mjs schedule screenshots/schedule.png
-//   node scripts/screenshot.mjs today --device=ipad
 //
-// Defaults: route "today", device "phone", outfile
-// "screenshots/<route>[.<device>].png" (the device suffix is added for
-// anything other than the phone so iPad shots don't clobber phone ones).
+// Defaults: route "today", outfile "screenshots/<route>.png".
 // Firebase/Google CDNs may be blocked by the network policy — that's fine, the
 // app falls back to local mode and still renders from its bundled schedule.
 
@@ -25,32 +22,8 @@ import puppeteer from "puppeteer";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-// Viewports we can capture. The iPad sizes are CSS-point dimensions (the app is
-// laid out in points), matching an 11" iPad's portrait/landscape.
-const DEVICES = {
-  phone:           { width: 390,  height: 844,  deviceScaleFactor: 2, isMobile: true },
-  ipad:            { width: 834,  height: 1194, deviceScaleFactor: 2, isMobile: true },
-  "ipad-landscape":{ width: 1194, height: 834,  deviceScaleFactor: 2, isMobile: true },
-};
-
-// Pull a `--device=<name>` / `-d <name>` flag out, leaving positional args.
-const args = process.argv.slice(2);
-let device = "phone";
-const positional = [];
-for (let i = 0; i < args.length; i++) {
-  const a = args[i];
-  if (a.startsWith("--device=")) device = a.slice("--device=".length);
-  else if (a === "--device" || a === "-d") device = args[++i];
-  else positional.push(a);
-}
-if (!DEVICES[device]) {
-  console.error(`Unknown device "${device}". Options: ${Object.keys(DEVICES).join(", ")}`);
-  process.exit(1);
-}
-
-const route = (positional[0] || "today").replace(/^#/, "");
-const suffix = device === "phone" ? "" : `.${device}`;
-const outfile = positional[1] || `screenshots/${route}${suffix}.png`;
+const route = (process.argv[2] || "today").replace(/^#/, "");
+const outfile = process.argv[3] || `screenshots/${route}.png`;
 
 const MIME = {
   ".html": "text/html", ".js": "text/javascript", ".mjs": "text/javascript",
@@ -94,7 +67,7 @@ const browser = await puppeteer.launch({
 });
 try {
   const page = await browser.newPage();
-  await page.setViewport(DEVICES[device]);
+  await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 2, isMobile: true });
   await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30000 });
   // Wait for the route's content; fall back to "any view children".
   await page.waitForSelector(READY[route] || "#view > *", { timeout: 15000 })
@@ -104,7 +77,7 @@ try {
   const abs = path.resolve(ROOT, outfile);
   await mkdir(path.dirname(abs), { recursive: true });
   await page.screenshot({ path: abs, fullPage: true });
-  console.log(`📸 ${route} (${device}) → ${path.relative(ROOT, abs)}`);
+  console.log(`📸 ${route} → ${path.relative(ROOT, abs)}`);
 } finally {
   await browser.close();
   server.close();
