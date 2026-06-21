@@ -232,6 +232,22 @@
     return day ? day.activities.find((a) => a.time === d.time && a.title === d.title) || null : null;
   }
 
+  // Make a past card's header a tap target that toggles the card fully open. The
+  // header carries a chevron; collapsed, the card is a single slim summary line.
+  function makeCollapsible(el, head) {
+    head.setAttribute("role", "button");
+    head.setAttribute("tabindex", "0");
+    head.setAttribute("aria-expanded", "false");
+    const toggle = () => {
+      const open = el.classList.toggle("expanded");
+      head.setAttribute("aria-expanded", open ? "true" : "false");
+    };
+    head.addEventListener("click", toggle);
+    head.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
+    });
+  }
+
   // A plain (non-prep) duty card — a meal to cook or an activity with no prep
   // checklist. Shares the .activity-card look so it sits in the same timeline as
   // the interactive prep cards, tagged Cook or Lead with its date and time.
@@ -266,6 +282,13 @@
         ${partners ? `<div class="cd-tags">${partners}</div>` : ""}
       </div>`;
     el.appendChild(head);
+
+    // Past duty cards collapse to a single slim line; a tap opens them back up.
+    if (opts.past) {
+      head.insertAdjacentHTML("beforeend",
+        `<div class="prep-past-status"><span class="prep-past-chev" aria-hidden="true">▾</span></div>`);
+      makeCollapsible(el, head);
+    }
     return el;
   }
 
@@ -336,18 +359,7 @@
         : `<span class="prep-status-pill">${total - done} left</span>`;
       status.insertAdjacentHTML("beforeend", `<span class="prep-past-chev" aria-hidden="true">▾</span>`);
       head.appendChild(status);
-
-      head.setAttribute("role", "button");
-      head.setAttribute("tabindex", "0");
-      head.setAttribute("aria-expanded", "false");
-      const toggle = () => {
-        const open = el.classList.toggle("expanded");
-        head.setAttribute("aria-expanded", open ? "true" : "false");
-      };
-      head.addEventListener("click", toggle);
-      head.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
-      });
+      makeCollapsible(el, head);
     }
 
     a.prep.forEach((item, i) => {
