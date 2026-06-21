@@ -126,18 +126,15 @@
         save(LS.done, state.done);
       }
     },
-    // Mark every prep item on an activity done (or undone) for a whole set of
-    // campers at once — powers the "everyone's prepared" shortcut so grown-ups
-    // don't have to tap each cousin's face one by one.
-    async setActivityPrep(activity, camperIds, on) {
-      if (!hasPrep(activity)) return;
+    // Tick one prep item (e.g. "comfy clothes on") done — or undone — for a
+    // whole set of campers at once, so grown-ups don't have to tap each
+    // cousin's face one by one for that task.
+    async setPrepItem(activityId, itemIndex, camperIds, on) {
+      const key = prepKey(activityId, itemIndex);
       const apply = (done) => {
         camperIds.forEach((cid) => {
           const m = { ...(done[cid] || {}) };
-          activity.prep.forEach((_, i) => {
-            const key = prepKey(activity.id, i);
-            if (on) m[key] = true; else delete m[key];
-          });
+          if (on) m[key] = true; else delete m[key];
           done[cid] = m;
         });
       };
