@@ -434,24 +434,41 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
   border-left-color: var(--line);
 }
 .activity-card.assign-past .activity-head {
+  cursor: pointer;
   align-items: center;
-  padding: 11px 14px;
+  padding: 9px 14px;
 }
-.activity-card.prep.assign-past .activity-head { cursor: pointer; }
-.activity-card.assign-past .activity-emoji { font-size: 24px; }
-.activity-card.assign-past .activity-title { font-size: 15px; }
-.activity-card.assign-past .activity-desc,
-.activity-card.assign-past .activity-loc,
-.activity-card.assign-past .cd-tags { display: none; }
-.activity-card.assign-past .prep-item-label,
-.activity-card.assign-past .kidrow,
-.activity-card.assign-past .prep-all-btn { display: none; }
+/* Collapsed by default: a single slim summary line. The big emoji, role tag,
+   description, location, partners and the whole prep checklist stay hidden
+   until the card is tapped open — then it restores to a full card. */
+.activity-card.assign-past:not(.expanded) .activity-emoji,
+.activity-card.assign-past:not(.expanded) .activity-desc,
+.activity-card.assign-past:not(.expanded) .activity-loc,
+.activity-card.assign-past:not(.expanded) .cd-tags,
+.activity-card.assign-past:not(.expanded) .cd-role,
+.activity-card.assign-past:not(.expanded) .prep-item-label,
+.activity-card.assign-past:not(.expanded) .kidrow,
+.activity-card.assign-past:not(.expanded) .prep-all-btn { display: none; }
+.activity-card.assign-past:not(.expanded) .activity-body {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.activity-card.assign-past:not(.expanded) .activity-top {
+  flex: 0 0 auto;
+  gap: 8px;
+}
+.activity-card.assign-past:not(.expanded) .activity-title {
+  font-size: 14px;
+  margin: 0;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .activity-card.assign-past.expanded { opacity: 1; }
-.activity-card.assign-past.expanded .activity-desc,
-.activity-card.assign-past.expanded .activity-loc,
-.activity-card.assign-past.expanded .prep-item-label,
-.activity-card.assign-past.expanded .prep-all-btn { display: block; }
-.activity-card.assign-past.expanded .kidrow { display: flex; }
 
 .prep-past-status {
   margin-left: auto;
