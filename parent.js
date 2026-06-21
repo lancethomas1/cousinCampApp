@@ -160,57 +160,118 @@
   }
 
   // ---- 📋 Assignments tab -------------------------------------------------
-  // Two jobs in one tab: this grown-up's cook/lead duties (when they have any),
-  // and getting today's cousins prepped for each task.
+  // One combined timeline: every cook/lead duty across the whole camp plus
+  // today's prep, in chronological order. Duties already done collapse to a
+  // minimal, inactive card; the soonest upcoming one leads as the primary
+  // focus; and today's prep stays tappable right inside its own card.
   function renderDuties(frag) {
     const head = document.createElement("div");
     head.innerHTML = `<h2 class="view-title">Your Assignments 📋</h2>
-      <p class="view-sub">Everything you're on the hook for — meals to cook, activities to lead, and getting the cousins prepped.</p>`;
+      <p class="view-sub">Everything you're on the hook for, in order — meals to cook, activities to lead, and getting the cousins prepped. Done duties tuck away so your next one stays front and center.</p>`;
     frag.appendChild(head);
 
-    // Cook/lead duties only show for grown-ups who actually have them.
-    const card = buildAssignmentsCard();
-    if (card) frag.appendChild(card);
-
-    buildPrepSection(frag);
+    buildAssignmentsTimeline(frag);
   }
 
-  // ---- 🎒 Prep section ----------------------------------------------------
-  // SOP: a grown-up sees — and marks — the prep only for the activities they're
-  // facilitating today. Everything is filtered to the signed-in adult's leads;
-  // ticks write to the same shared state as the campers' app (sync + points).
-  function buildPrepSection(frag) {
-    const head = document.createElement("div");
-    head.innerHTML = `<h3 class="section-title">🎒 Get the cousins prepared</h3>
-      <p class="section-note">The activities you're facilitating today — mark who's ready for each task, or tap “Everyone” for the whole crew.</p>`;
-    frag.appendChild(head);
-
-    const iso = todayISO();
-    const day = SCHEDULE.find((d) => d.date === iso);
-    const prepToday = day ? day.activities.filter(hasPrep) : [];
-
-    // Only the activities the signed-in grown-up is facilitating. Reuse
-    // assignmentsFor() so lead-name matching (incl. co-leads and the
-    // every-parent leads) stays consistent with the duties card.
-    const myLeads = new Set(
-      assignmentsFor(state.parent)
-        .filter((d) => d.role === "lead" && d.date === iso)
-        .map((d) => `${d.time}|${d.title}`)
-    );
-    const mine = prepToday.filter((a) => myLeads.has(`${a.time}|${a.title}`));
-
-    if (!mine.length) {
+  // Build the single chronological list of duty cards for the signed-in grown-up.
+  function buildAssignmentsTimeline(frag) {
+    const duties = assignmentsFor(state.parent).slice();
+    if (!duties.length) {
       const none = document.createElement("div");
       none.className = "empty";
-      none.innerHTML = prepToday.length
-        ? `<div class="big">🙌</div><h3>No prep tasks for you today</h3>
-           <p>You're not facilitating any of today's prep activities.</p>`
-        : `<div class="big">🎉</div><h3>No prep needed today</h3>
-           <p>Nothing to get ready for — just have fun!</p>`;
+      none.innerHTML = `<div class="big">🎉</div><h3>No assignments</h3>
+        <p>You're not on the hook for any meals or activities — just enjoy camp!</p>`;
       frag.appendChild(none);
       return;
     }
-    mine.forEach((a) => frag.appendChild(buildPrepCard(a)));
+
+    const iso = todayISO();
+    // Today's prep activities this grown-up leads, keyed by time|title so the
+    // matching lead duty can host the interactive check-in inline instead of in a
+    // separate section. Reuses assignmentsFor() lead-matching for consistency.
+    const day = SCHEDULE.find((d) => d.date === iso);
+    const myLeadKeys = new Set(
+      duties.filter((d) => d.role === "lead" && d.date === iso).map((d) => `${d.time}|${d.title}`)
+    );
+    const prepByKey = new Map();
+    (day ? day.activities.filter(hasPrep) : []).forEach((a) => {
+      const k = `${a.time}|${a.title}`;
+      if (myLeadKeys.has(k)) prepByKey.set(k, a);
+    });
+
+    // Chronological across the whole camp (ISO dates sort lexicographically),
+    // then figure out which duties are already done. The first one that isn't is
+    // the soonest upcoming — the primary focus; if every duty is done, spotlight
+    // the most recent so there's always one live card.
+    duties.sort((a, b) => a.date.localeCompare(b.date) || prepStartMin(a) - prepStartMin(b));
+    const now = new Date();
+    const nowMin = now.getHours() * 60 + now.getMinutes();
+    let primaryIdx = duties.findIndex((d) => !dutyIsPast(d, iso, nowMin));
+    if (primaryIdx === -1) primaryIdx = duties.length - 1;
+
+    duties.forEach((d, i) => {
+      const opts = { past: i < primaryIdx, primary: i === primaryIdx, duty: d };
+      // Prep check-ins are only live for today — other days share the same
+      // time|title key (e.g. daily Capoeira) but get a plain, non-interactive
+      // duty card.
+      const prep = d.role === "lead" && d.date === iso
+        ? prepByKey.get(`${d.time}|${d.title}`) : null;
+      frag.appendChild(prep ? buildPrepCard(prep, opts) : buildDutyCard(d, opts));
+    });
+  }
+
+  // Parse a schedule time label ("8:15 AM") into minutes since midnight, used to
+  // order the timeline and tell which duties have already started.
+  function prepStartMin(a) {
+    const m = String(a.time || "").match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
+    if (!m) return 0;
+    let h = parseInt(m[1], 10) % 12;
+    if (m[3] && /PM/i.test(m[3])) h += 12;
+    return h * 60 + parseInt(m[2], 10);
+  }
+
+  // A duty is "past" if it's on an earlier day, or today but already started.
+  function dutyIsPast(d, iso, nowMin) {
+    if (d.date < iso) return true;
+    if (d.date > iso) return false;
+    return prepStartMin(d) < nowMin;
+  }
+
+  // A plain (non-prep) duty card — a meal to cook or an activity with no prep
+  // checklist. Shares the .activity-card look so it sits in the same timeline as
+  // the interactive prep cards, tagged Cook or Lead with its date and time.
+  function buildDutyCard(d, opts = {}) {
+    const isCook = d.role === "cook";
+    const el = document.createElement("div");
+    el.className = "activity-card duty" +
+      (opts.past ? " assign-past" : "") +
+      (opts.primary ? " assign-primary" : "");
+    const [, mo, da] = d.date.split("-").map(Number);
+    // A "supervised" lead (pool/swim, field trips naming several families) is a
+    // mind-your-own-kids duty, not a real single leader — tag it accordingly.
+    const isWatch = d.role === "lead" && d.supervised;
+    const roleClass = isCook ? "cook" : isWatch ? "watch" : "lead";
+    const roleText = isCook ? "👨‍🍳 Cook" : isWatch ? "👪 Your kids" : "🎤 Lead";
+    const roleBadge = `<span class="cd-role ${roleClass}">${roleText}</span>`;
+    // Surface the cook crew / co-leads when the duty names more than just you.
+    // Skip it for "your kids" duties — the whole parent roster isn't a co-lead.
+    const partners = !isWatch && /[&,]|\band\b/i.test(d.who || "")
+      ? `<span class="cd-with">${escapeHtml(d.who)}</span>` : "";
+    const head = document.createElement("div");
+    head.className = "activity-head";
+    head.innerHTML = `
+      <div class="activity-emoji">${d.emoji || (isCook ? "🍽️" : "⭐")}</div>
+      <div class="activity-body">
+        <div class="activity-top">
+          <span class="activity-when">${escapeHtml(fmtDow(d.date))} ${mo}/${da}</span>
+          <span class="activity-time">${escapeHtml(d.time)}</span>
+          ${roleBadge}
+        </div>
+        <div class="activity-title">${escapeHtml(d.title)}</div>
+        ${partners ? `<div class="cd-tags">${partners}</div>` : ""}
+      </div>`;
+    el.appendChild(head);
+    return el;
   }
 
   // Which cousins' faces show on a prep card for the signed-in grown-up.
@@ -229,21 +290,70 @@
 
   // One prep activity card: a row of tappable cousin faces per task, plus an
   // "Everyone" pill. Shares the campers' app markup/classes for a consistent look.
-  function buildPrepCard(a) {
+  function buildPrepCard(a, opts = {}) {
     const campers = prepCampersFor(a);
     const el = document.createElement("div");
-    el.className = "activity-card prep";
+    el.className = "activity-card prep" +
+      (opts.past ? " assign-past" : "") +
+      (opts.primary ? " assign-primary" : "");
+    // Date + role tag so a prep card carries the same when/role metadata as the
+    // plain duty cards it sits among in the timeline. A supervised "your kids"
+    // activity (pool/swim, field trips) is tagged like its duty-card counterpart.
+    let whenHtml = "";
+    if (opts.duty) {
+      const [, mo, da] = opts.duty.date.split("-").map(Number);
+      whenHtml = `<span class="activity-when">${escapeHtml(fmtDow(opts.duty.date))} ${mo}/${da}</span>`;
+    }
+    const isWatch = opts.duty ? opts.duty.supervised : isParentSupervised(a);
+    const roleBadge = isWatch
+      ? `<span class="cd-role watch">👪 Your kids</span>`
+      : `<span class="cd-role lead">🎤 Lead</span>`;
     const head = document.createElement("div");
     head.className = "activity-head";
     head.innerHTML = `
       <div class="activity-emoji">${a.emoji}</div>
       <div class="activity-body">
-        <div class="activity-top"><span class="activity-time">${a.time}</span></div>
+        <div class="activity-top">
+          ${whenHtml}
+          <span class="activity-time">${a.time}</span>
+          ${roleBadge}
+        </div>
         <div class="activity-title">${escapeHtml(a.title)}</div>
         <p class="activity-desc">${escapeHtml(a.desc)}</p>
         <div class="activity-loc">📍 ${escapeHtml(a.location)}</div>
       </div>`;
     el.appendChild(head);
+
+    // A past task is collapsed and inactive by default. Summarize its readiness
+    // in the header and let a tap expand it, so a missed item can still be ticked
+    // off without it competing with the soonest task for attention.
+    if (opts.past) {
+      let total = 0, done = 0;
+      a.prep.forEach((item, i) => {
+        const key = prepKey(a.id, i);
+        campers.forEach((c) => { total++; if (isDone(c.id, key)) done++; });
+      });
+      const ready = total > 0 && done === total;
+      const status = document.createElement("div");
+      status.className = "prep-past-status";
+      status.innerHTML = ready
+        ? `<span class="prep-status-pill ready">✓ Ready</span>`
+        : `<span class="prep-status-pill">${total - done} left</span>`;
+      status.insertAdjacentHTML("beforeend", `<span class="prep-past-chev" aria-hidden="true">▾</span>`);
+      head.appendChild(status);
+
+      head.setAttribute("role", "button");
+      head.setAttribute("tabindex", "0");
+      head.setAttribute("aria-expanded", "false");
+      const toggle = () => {
+        const open = el.classList.toggle("expanded");
+        head.setAttribute("aria-expanded", open ? "true" : "false");
+      };
+      head.addEventListener("click", toggle);
+      head.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
+      });
+    }
 
     a.prep.forEach((item, i) => {
       const key = prepKey(a.id, i);
@@ -484,68 +594,6 @@
       feedWrap.appendChild(list);
     }
     frag.appendChild(feedWrap);
-  }
-
-  // ---- Your camp assignments ----------------------------------------------
-  // A bold, can't-miss banner for whoever's signed in showing every camp duty
-  // they're on the hook for — meals their crew cooks AND activities they lead
-  // (Capoeira, Papaw's songs, Free Willy, etc.). Hidden for grown-ups with no
-  // assignments. Rows are in schedule order, each tagged Cook or Lead.
-  function buildAssignmentsCard() {
-    const duties = assignmentsFor(state.parent);
-    if (!duties.length) return null;
-
-    const card = document.createElement("div");
-    card.className = "cook-duty";
-    const cooks = duties.filter((d) => d.role === "cook").length;
-    const watch = duties.filter((d) => d.role === "lead" && d.supervised).length;
-    const leads = duties.length - cooks - watch;
-    // Summary line, e.g. "2 meals to cook · 3 activities to lead · 4 with your kids".
-    const parts = [];
-    if (cooks) parts.push(`${cooks} meal${cooks === 1 ? "" : "s"} to cook`);
-    if (leads) parts.push(`${leads} activit${leads === 1 ? "y" : "ies"} to lead`);
-    if (watch) parts.push(`${watch} with your kids`);
-    card.innerHTML = `
-      <div class="cd-head">
-        <span class="cd-emoji">📋</span>
-        <div class="cd-title">
-          <h3>Your camp assignments</h3>
-          <p>${parts.join(" · ")} — here's your schedule.</p>
-        </div>
-      </div>`;
-
-    const list = document.createElement("div");
-    list.className = "cd-list";
-    duties.forEach((d) => {
-      const row = document.createElement("div");
-      row.className = "cd-row";
-      const isCook = d.role === "cook";
-      const isWatch = d.role === "lead" && d.supervised;
-      const roleClass = isCook ? "cook" : isWatch ? "watch" : "lead";
-      const roleText = isCook ? "👨‍🍳 Cook" : isWatch ? "👪 Your kids" : "🎤 Lead";
-      const roleBadge = `<span class="cd-role ${roleClass}">${roleText}</span>`;
-      // Surface the cook crew / co-leads when the duty names more than just you
-      // (e.g. a shared "Sera & Betsy" night), so it's clear who you're with.
-      // Skip it for "your kids" duties — the whole parent roster isn't a co-lead.
-      const partners = !isWatch && /[&,]|\band\b/i.test(d.who || "")
-        ? `<span class="cd-with">${escapeHtml(d.who)}</span>` : "";
-      // Short calendar date, e.g. "Tue 6/23".
-      const [, mo, da] = d.date.split("-").map(Number);
-      row.innerHTML = `
-        <div class="cd-when">
-          <span class="cd-dow">${escapeHtml(fmtDow(d.date))} ${mo}/${da}</span>
-          <span class="cd-time">${escapeHtml(d.time)}</span>
-        </div>
-        <div class="cd-meal">
-          <span class="cd-meal-emoji">${d.emoji || (isCook ? "🍽️" : "⭐")}</span>
-          <span class="cd-meal-name">${escapeHtml(d.title)}</span>
-          ${roleBadge}
-          ${partners}
-        </div>`;
-      list.appendChild(row);
-    });
-    card.appendChild(list);
-    return card;
   }
 
   // ---- Leaderboard: most generous grown-ups -------------------------------
