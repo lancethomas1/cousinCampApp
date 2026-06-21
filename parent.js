@@ -10,7 +10,7 @@
   "use strict";
 
   const C = window.CampCore;
-  const { CAMPERS, KUDOS, CHEERS, BONUS_QUICK, PARENT_BADGES } = C.data;
+  const { CAMPERS, KUDOS, CHEERS, BONUS_QUICK, PARENT_BADGES, SCHEDULE } = C.data;
   const {
     state, setRender, initShared, Store,
     pointsFor, kudosCountFor, parentBadgesFor, hasParentBadge, awardsFor, awarderTally,
@@ -18,6 +18,7 @@
     targetCamper, setTarget, giveKudos, giveBonus, toggleParentBadge, undoAward,
     allParentNames, grownupRoster, currentParent, ownKidIds, isOwnKid, setParent, clearParent,
     assignmentsFor,
+    hasPrep, prepKey, isDone, todayISO, chronoBurst,
     toast, escapeHtml, camperFace, timeAgo, fmtDow, dayNum, fmtLong,
   } = C;
   const view = document.getElementById("view");
@@ -98,7 +99,7 @@
   //   🏆 Standings    → who's leading, who's most generous
   // Assignments is the leftmost (home) tab; it's hidden for grown-ups with no
   // duties, in which case Award becomes home.
-  const ROUTES = { duties: renderDuties, award: renderAward, standings: renderStandings };
+  const ROUTES = { duties: renderDuties, prep: renderPrep, award: renderAward, standings: renderStandings };
   const tabbar = document.getElementById("parent-tabs");
   const dutyTab = tabbar.querySelector('[data-route="duties"]');
 
@@ -167,6 +168,106 @@
     frag.appendChild(head);
     // hasDuties is guaranteed by render() before routing here, so this is set.
     frag.appendChild(buildAssignmentsCard());
+  }
+
+  // ---- 🎒 Prep tab --------------------------------------------------------
+  // Lets grown-ups mark who's ready for each of today's prep tasks — tick an
+  // individual cousin's face, or tap "Everyone" to set the whole crew at once.
+  // Mirrors the campers' Today view and writes to the same shared state, so a
+  // tick here shows up on every device (and earns the cousin their points).
+  function renderPrep(frag) {
+    const head = document.createElement("div");
+    head.innerHTML = `<h2 class="view-title">Get Prepared 🎒</h2>
+      <p class="view-sub">Tick off who's ready for each task, or tap “Everyone” to mark the whole crew.</p>`;
+    frag.appendChild(head);
+
+    const iso = todayISO();
+    const day = SCHEDULE.find((d) => d.date === iso);
+    const prepToday = day ? day.activities.filter(hasPrep) : [];
+    if (!prepToday.length) {
+      const none = document.createElement("div");
+      none.className = "empty";
+      none.innerHTML = `<div class="big">🎉</div><h3>No prep needed today</h3>
+        <p>Nothing to get ready for — just have fun!</p>`;
+      frag.appendChild(none);
+      return;
+    }
+    prepToday.forEach((a) => frag.appendChild(buildPrepCard(a)));
+  }
+
+  // One prep activity card: a row of tappable cousin faces per task, plus an
+  // "Everyone" pill. Shares the campers' app markup/classes for a consistent look.
+  function buildPrepCard(a) {
+    const el = document.createElement("div");
+    el.className = "activity-card prep";
+    const head = document.createElement("div");
+    head.className = "activity-head";
+    head.innerHTML = `
+      <div class="activity-emoji">${a.emoji}</div>
+      <div class="activity-body">
+        <div class="activity-top"><span class="activity-time">${a.time}</span></div>
+        <div class="activity-title">${escapeHtml(a.title)}</div>
+        <p class="activity-desc">${escapeHtml(a.desc)}</p>
+        <div class="activity-loc">📍 ${escapeHtml(a.location)}</div>
+      </div>`;
+    el.appendChild(head);
+
+    a.prep.forEach((item, i) => {
+      const key = prepKey(a.id, i);
+      const label = document.createElement("div");
+      label.className = "kidrow-label prep-item-label";
+      label.textContent = item;
+      el.appendChild(label);
+
+      const kidrow = document.createElement("div");
+      kidrow.className = "kidrow";
+      CAMPERS.forEach((c) => {
+        const done = isDone(c.id, key);
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "kid-check" + (done ? " done" : "");
+        btn.style.setProperty("--kc", c.color);
+        btn.setAttribute("aria-pressed", done ? "true" : "false");
+        btn.setAttribute("aria-label", `${c.name} — ${item} — ${done ? "not done" : "done"}`);
+        btn.innerHTML = `
+          <span class="kc-avatar">${camperFace(c, "kc-emoji")}<span class="kc-check">✓</span></span>
+          <span class="kc-name">${escapeHtml(c.name)}</span>`;
+        btn.addEventListener("click", () => {
+          const turningOn = !isDone(c.id, key);
+          if (turningOn) {
+            const av = btn.querySelector(".kc-avatar") || btn;
+            const r = av.getBoundingClientRect();
+            chronoBurst(r.left + r.width / 2, r.top + r.height / 2);
+            toast(`✓ ${c.name}: ${item}`);
+          }
+          Store.toggle(c.id, key, turningOn);
+        });
+        kidrow.appendChild(btn);
+      });
+      el.appendChild(kidrow);
+
+      // Per-task "everyone" shortcut: set this one item for all cousins at once.
+      const allBtn = document.createElement("button");
+      allBtn.type = "button";
+      allBtn.className = "prep-all-btn";
+      const allReady = CAMPERS.every((c) => isDone(c.id, key));
+      allBtn.classList.toggle("ready", allReady);
+      allBtn.setAttribute("aria-pressed", allReady ? "true" : "false");
+      allBtn.textContent = allReady ? "↩︎ Undo everyone" : "✅ Everyone";
+      allBtn.addEventListener("click", () => {
+        const turningOn = !CAMPERS.every((c) => isDone(c.id, key));
+        if (turningOn) {
+          kidrow.querySelectorAll(".kc-avatar").forEach((av) => {
+            const r = av.getBoundingClientRect();
+            chronoBurst(r.left + r.width / 2, r.top + r.height / 2);
+          });
+          toast(`🎒 Everyone: ${item}`);
+        }
+        Store.setPrepItem(a.id, i, CAMPERS.map((c) => c.id), turningOn);
+      });
+      el.appendChild(allBtn);
+    });
+    return el;
   }
 
   // ---- 🏆 Standings tab ---------------------------------------------------
