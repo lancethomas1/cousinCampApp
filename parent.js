@@ -210,7 +210,29 @@
       frag.appendChild(none);
       return;
     }
-    mine.forEach((a) => frag.appendChild(buildPrepCard(a)));
+    // Order today's tasks by start time, then figure out which have already
+    // begun. Earlier (past) tasks collapse to a minimal, inactive summary so the
+    // soonest upcoming one — the task that actually matters right now — leads as
+    // the primary focus. If every task has already started, spotlight the most
+    // recent so there's always one live card.
+    mine.sort((a, b) => prepStartMin(a) - prepStartMin(b));
+    const now = new Date();
+    const nowMin = now.getHours() * 60 + now.getMinutes();
+    let primaryIdx = mine.findIndex((a) => prepStartMin(a) >= nowMin);
+    if (primaryIdx === -1) primaryIdx = mine.length - 1;
+    mine.forEach((a, i) =>
+      frag.appendChild(buildPrepCard(a, { past: i < primaryIdx, primary: i === primaryIdx }))
+    );
+  }
+
+  // Parse a schedule time label ("8:15 AM") into minutes since midnight, used to
+  // order today's prep cards and tell which ones have already started.
+  function prepStartMin(a) {
+    const m = String(a.time || "").match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
+    if (!m) return 0;
+    let h = parseInt(m[1], 10) % 12;
+    if (m[3] && /PM/i.test(m[3])) h += 12;
+    return h * 60 + parseInt(m[2], 10);
   }
 
   // Which cousins' faces show on a prep card for the signed-in grown-up.
@@ -240,10 +262,12 @@
 
   // One prep activity card: a row of tappable cousin faces per task, plus an
   // "Everyone" pill. Shares the campers' app markup/classes for a consistent look.
-  function buildPrepCard(a) {
+  function buildPrepCard(a, opts = {}) {
     const campers = prepCampersFor(a);
     const el = document.createElement("div");
-    el.className = "activity-card prep";
+    el.className = "activity-card prep" +
+      (opts.past ? " prep-past" : "") +
+      (opts.primary ? " prep-primary" : "");
     const head = document.createElement("div");
     head.className = "activity-head";
     head.innerHTML = `
@@ -255,6 +279,37 @@
         <div class="activity-loc">📍 ${escapeHtml(a.location)}</div>
       </div>`;
     el.appendChild(head);
+
+    // A past task is collapsed and inactive by default. Summarize its readiness
+    // in the header and let a tap expand it, so a missed item can still be ticked
+    // off without it competing with the soonest task for attention.
+    if (opts.past) {
+      let total = 0, done = 0;
+      a.prep.forEach((item, i) => {
+        const key = prepKey(a.id, i);
+        campers.forEach((c) => { total++; if (isDone(c.id, key)) done++; });
+      });
+      const ready = total > 0 && done === total;
+      const status = document.createElement("div");
+      status.className = "prep-past-status";
+      status.innerHTML = ready
+        ? `<span class="prep-status-pill ready">✓ Ready</span>`
+        : `<span class="prep-status-pill">${total - done} left</span>`;
+      status.insertAdjacentHTML("beforeend", `<span class="prep-past-chev" aria-hidden="true">▾</span>`);
+      head.appendChild(status);
+
+      head.setAttribute("role", "button");
+      head.setAttribute("tabindex", "0");
+      head.setAttribute("aria-expanded", "false");
+      const toggle = () => {
+        const open = el.classList.toggle("expanded");
+        head.setAttribute("aria-expanded", open ? "true" : "false");
+      };
+      head.addEventListener("click", toggle);
+      head.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
+      });
+    }
 
     a.prep.forEach((item, i) => {
       const key = prepKey(a.id, i);
