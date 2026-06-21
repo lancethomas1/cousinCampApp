@@ -15,6 +15,7 @@
     state, LS, save, Store, setRender, initShared,
     camperById, allActivities, prepActivities, hasPrep, prepKey, prepDoneCount, isPrepared, isDone,
     completedCount, anyFullDay, fullDayCount,
+    dayDessert, dayHasPrep, dessertReadyCount, dessertEarned,
     kudosCountFor, cheersCountFor, cheersGivenBy, recentCheers, giveCheer, parentBadgesFor,
     todayISO, fmtDow, dayNum, fmtLong, toast, chronoBurst, escapeHtml, camperFace, timeAgo,
   } = C;
@@ -137,8 +138,42 @@
     `;
     frag.appendChild(hero);
 
+    const dessert = dessertBanner(iso);
+    if (dessert) frag.appendChild(dessert);
+
     day.activities.forEach((a) => frag.appendChild(activityRow({ ...a, date: iso })));
     view.replaceChildren(frag);
+  }
+
+  // ---- Crew Dessert Challenge banner --------------------------------------
+  // The all-or-nothing team reward: the whole crew unlocks the day's dessert
+  // only when EVERY cousin finishes EVERY prep activity today. Shown right
+  // under the hero so the cousins can see how close the WHOLE crew is — and
+  // rally to help whoever's not done yet. Hidden on days with no prep to earn.
+  function dessertBanner(date) {
+    if (!dayHasPrep(date)) return null;
+    const total = CAMPERS.length;
+    const ready = dessertReadyCount(date);
+    const earned = dessertEarned(date);
+    const treat = dayDessert(date);
+    const pct = total ? Math.round((ready / total) * 100) : 0;
+    const remaining = total - ready;
+
+    const el = document.createElement("div");
+    el.className = "dessert-goal" + (earned ? " earned" : "");
+    el.innerHTML = `
+      <div class="dg-emoji">${earned ? "🎉" : "🍦"}</div>
+      <div class="dg-body">
+        <div class="dg-title">${earned ? "Dessert unlocked!" : "Crew Dessert Challenge"}</div>
+        <p class="dg-desc">${earned
+          ? `The whole crew got prepped — you all earned ${escapeHtml(treat)}! 🥳`
+          : `When all ${total} cousins finish every prep today, the whole crew earns ${escapeHtml(treat)}. It's all or nothing — team up and help each other!`}</p>
+        <div class="dg-progress"><span style="width:${pct}%"></span></div>
+        <div class="dg-count">${earned
+          ? `🏆 ${total}/${total} cousins ready — way to go, crew!`
+          : `${ready}/${total} cousins fully ready · ${remaining} to go`}</div>
+      </div>`;
+    return el;
   }
 
   // ---- SCHEDULE view ------------------------------------------------------
