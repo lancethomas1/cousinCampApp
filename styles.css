@@ -886,6 +886,12 @@ select.day-filter {
   background: color-mix(in srgb, var(--bar) 78%, transparent);
   -webkit-backdrop-filter: blur(20px) saturate(1.5);
   backdrop-filter: blur(20px) saturate(1.5);
+  /* iPadOS/iOS Safari (notably 26) drops a `position: fixed` bar that also
+     carries a backdrop-filter onto the scrolling layer, so it drifts up with
+     the page instead of staying pinned. Forcing the bar onto its own GPU
+     compositing layer keeps it fixed to the viewport. */
+  transform: translateZ(0);
+  will-change: transform;
   border: 1px solid var(--line-2);
   box-shadow:
     0 14px 34px rgba(0,0,0,.5),
