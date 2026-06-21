@@ -285,7 +285,7 @@
   // nudged to help each other across the finish line. A day can name its treat
   // with an optional `dessert` field in data.js; otherwise a friendly default
   // is shown.
-  const DEFAULT_DESSERT = "tonight's special dessert 🍨";
+  const DEFAULT_DESSERT = "a special treat 🍨";
   function dayDessert(date) {
     const day = SCHEDULE.find((d) => d.date === date);
     return (day && day.dessert) || DEFAULT_DESSERT;
