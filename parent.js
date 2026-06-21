@@ -99,7 +99,7 @@
   //   🏆 Standings    → who's leading, who's most generous
   // Assignments is the leftmost (home) tab; it's hidden for grown-ups with no
   // duties, in which case Award becomes home.
-  const ROUTES = { duties: renderDuties, prep: renderPrep, award: renderAward, standings: renderStandings };
+  const ROUTES = { duties: renderDuties, award: renderAward, standings: renderStandings };
   const tabbar = document.getElementById("parent-tabs");
   const dutyTab = tabbar.querySelector('[data-route="duties"]');
 
@@ -114,15 +114,14 @@
       if (alt) { setTarget(alt.id); return; }  // re-renders with an allowed target
     }
 
-    // The Assignments tab only exists for grown-ups who actually have duties.
-    const hasDuties = assignmentsFor(state.parent).length > 0;
+    // The Assignments tab is always available — it hosts today's prep tasks for
+    // everyone, plus this grown-up's cook/lead duties when they have any.
     tabbar.hidden = false;
-    dutyTab.hidden = !hasDuties;
+    dutyTab.hidden = false;
 
     // Resolve the active route, falling back sensibly. core.js seeds state.route
-    // with "today" (a campers' route), so the first render lands here.
-    let route = ROUTES[state.route] ? state.route : (hasDuties ? "duties" : "award");
-    if (route === "duties" && !hasDuties) route = "award";
+    // with "today" (a campers' route), so the first render lands on Assignments.
+    let route = ROUTES[state.route] ? state.route : "duties";
     state.route = route;
 
     const frag = document.createElement("div");
@@ -161,24 +160,30 @@
   }
 
   // ---- 📋 Assignments tab -------------------------------------------------
+  // Two jobs in one tab: this grown-up's cook/lead duties (when they have any),
+  // and getting today's cousins prepped for each task.
   function renderDuties(frag) {
     const head = document.createElement("div");
     head.innerHTML = `<h2 class="view-title">Your Assignments 📋</h2>
-      <p class="view-sub">Everything you're on the hook for this week — meals to cook and activities to lead.</p>`;
+      <p class="view-sub">Everything you're on the hook for — meals to cook, activities to lead, and getting the cousins prepped.</p>`;
     frag.appendChild(head);
-    // hasDuties is guaranteed by render() before routing here, so this is set.
-    frag.appendChild(buildAssignmentsCard());
+
+    // Cook/lead duties only show for grown-ups who actually have them.
+    const card = buildAssignmentsCard();
+    if (card) frag.appendChild(card);
+
+    buildPrepSection(frag);
   }
 
-  // ---- 🎒 Prep tab --------------------------------------------------------
+  // ---- 🎒 Prep section ----------------------------------------------------
   // Lets grown-ups mark who's ready for each of today's prep tasks — tick an
   // individual cousin's face, or tap "Everyone" to set the whole crew at once.
   // Mirrors the campers' Today view and writes to the same shared state, so a
   // tick here shows up on every device (and earns the cousin their points).
-  function renderPrep(frag) {
+  function buildPrepSection(frag) {
     const head = document.createElement("div");
-    head.innerHTML = `<h2 class="view-title">Get Prepared 🎒</h2>
-      <p class="view-sub">Tick off who's ready for each task, or tap “Everyone” to mark the whole crew.</p>`;
+    head.innerHTML = `<h3 class="section-title">🎒 Get the cousins prepared</h3>
+      <p class="section-note">Tick who's ready for each task, or tap “Everyone” to mark the whole crew.</p>`;
     frag.appendChild(head);
 
     const iso = todayISO();
