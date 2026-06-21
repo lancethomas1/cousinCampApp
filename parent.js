@@ -17,7 +17,7 @@
     camperById,
     targetCamper, setTarget, giveKudos, giveBonus, toggleParentBadge, undoAward,
     allParentNames, grownupRoster, currentParent, ownKidIds, isOwnKid, setParent, clearParent,
-    assignmentsFor,
+    assignmentsFor, isParentSupervised,
     hasPrep, prepKey, isDone, todayISO, chronoBurst,
     toast, escapeHtml, camperFace, timeAgo, fmtDow, dayNum, fmtLong,
   } = C;
@@ -247,10 +247,15 @@
       (opts.past ? " assign-past" : "") +
       (opts.primary ? " assign-primary" : "");
     const [, mo, da] = d.date.split("-").map(Number);
-    const roleBadge = `<span class="cd-role ${isCook ? "cook" : "lead"}">${
-      isCook ? "👨‍🍳 Cook" : "🎤 Lead"}</span>`;
+    // A "supervised" lead (pool/swim, field trips naming several families) is a
+    // mind-your-own-kids duty, not a real single leader — tag it accordingly.
+    const isWatch = d.role === "lead" && d.supervised;
+    const roleClass = isCook ? "cook" : isWatch ? "watch" : "lead";
+    const roleText = isCook ? "👨‍🍳 Cook" : isWatch ? "👪 Your kids" : "🎤 Lead";
+    const roleBadge = `<span class="cd-role ${roleClass}">${roleText}</span>`;
     // Surface the cook crew / co-leads when the duty names more than just you.
-    const partners = /[&,]|\band\b/i.test(d.who || "")
+    // Skip it for "your kids" duties — the whole parent roster isn't a co-lead.
+    const partners = !isWatch && /[&,]|\band\b/i.test(d.who || "")
       ? `<span class="cd-with">${escapeHtml(d.who)}</span>` : "";
     const head = document.createElement("div");
     head.className = "activity-head";
@@ -273,21 +278,10 @@
   // Normally everyone — the facilitator runs the activity for all the cousins.
   // But some tasks (pool/swim, get-dressed) are assigned to the campers' parents
   // as a group; on those, a parent is only responsible for their own kids, so we
-  // narrow the row to them. We treat a task as "parents handle their own" when
-  // its lead names parents from more than one family.
+  // narrow the row to them. isParentSupervised() treats a task as "parents handle
+  // their own" when its lead names parents from more than one family.
   function prepCampersFor(a) {
-    const hay = String(a.lead || "").toLowerCase();
-    const named = (name) => {
-      const esc = name.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      return new RegExp("\\b" + esc + "\\b").test(hay);
-    };
-    const splitParents = (s) =>
-      String(s || "").split(/\s*(?:&|,|and)\s*/i).map((x) => x.trim()).filter(Boolean);
-    // Distinct families (by their parents label) whose parent is in the lead.
-    const families = new Set();
-    CAMPERS.forEach((c) => { if (splitParents(c.parents).some(named)) families.add(c.parents); });
-
-    if (families.size >= 2 && ownKidIds().length) {
+    if (isParentSupervised(a) && ownKidIds().length) {
       const ids = new Set(ownKidIds());
       return CAMPERS.filter((c) => ids.has(c.id));
     }
@@ -302,13 +296,18 @@
     el.className = "activity-card prep" +
       (opts.past ? " assign-past" : "") +
       (opts.primary ? " assign-primary" : "");
-    // Date + "Lead" tag so a prep card carries the same when/role metadata as the
-    // plain duty cards it sits among in the timeline.
+    // Date + role tag so a prep card carries the same when/role metadata as the
+    // plain duty cards it sits among in the timeline. A supervised "your kids"
+    // activity (pool/swim, field trips) is tagged like its duty-card counterpart.
     let whenHtml = "";
     if (opts.duty) {
       const [, mo, da] = opts.duty.date.split("-").map(Number);
       whenHtml = `<span class="activity-when">${escapeHtml(fmtDow(opts.duty.date))} ${mo}/${da}</span>`;
     }
+    const isWatch = opts.duty ? opts.duty.supervised : isParentSupervised(a);
+    const roleBadge = isWatch
+      ? `<span class="cd-role watch">👪 Your kids</span>`
+      : `<span class="cd-role lead">🎤 Lead</span>`;
     const head = document.createElement("div");
     head.className = "activity-head";
     head.innerHTML = `
@@ -317,7 +316,7 @@
         <div class="activity-top">
           ${whenHtml}
           <span class="activity-time">${a.time}</span>
-          <span class="cd-role lead">🎤 Lead</span>
+          ${roleBadge}
         </div>
         <div class="activity-title">${escapeHtml(a.title)}</div>
         <p class="activity-desc">${escapeHtml(a.desc)}</p>

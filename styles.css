@@ -1481,7 +1481,7 @@ select.day-filter {
   border-radius: 999px;
   padding: 2px 9px;
 }
-/* Cook vs. Lead tag on each assignment row. */
+/* Cook vs. Lead vs. Your-kids tag on each assignment row. */
 .cd-role {
   font-size: 11px;
   font-weight: 800;
@@ -1498,6 +1498,13 @@ select.day-filter {
   color: var(--ink);
   background: color-mix(in srgb, var(--grape, #8e44ad) 20%, transparent);
   border: 1px solid color-mix(in srgb, var(--grape, #8e44ad) 45%, transparent);
+}
+/* "Your kids" — a parent minding their own cousins (pool/swim, field trips),
+   not running the activity for everyone. */
+.cd-role.watch {
+  color: var(--ink);
+  background: color-mix(in srgb, #2980b9 20%, transparent);
+  border: 1px solid color-mix(in srgb, #2980b9 45%, transparent);
 }
 
 /* Optional free-form reason on a cousin-to-cousin cheer. */
