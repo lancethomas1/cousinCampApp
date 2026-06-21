@@ -69,7 +69,7 @@ const SCHEDULE = [
     title: "Sunday — Camp Eve",
     era: "Get Ready to Time Travel",
     activities: [
-      { id: "d0-a1", time: "5:00 PM", title: "App Orientation", emoji: "📱", location: "Mimi's", points: 10, lead: "Lance", desc: "Lance walks everyone through the Cousin Camp app." },
+      { id: "d0-a1", time: "5:00 PM", title: "App Orientation", emoji: "📱", location: "Mimi's", points: 10, lead: "Lance", prep: ["Device charged", "Cousin Camp app open", "Signed in as you", "Found your name on the roster"], desc: "Lance walks everyone through the Cousin Camp app." },
     ],
   },
   {
