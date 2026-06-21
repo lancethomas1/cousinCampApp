@@ -56,36 +56,6 @@
     // so kids know what to pack ahead of time. Today gets the tappable faces.
     if (!interactive) { el.appendChild(prepPreview(a)); return el; }
 
-    // "Everyone's prepared" shortcut: tick (or untick) every cousin's whole
-    // checklist in one tap instead of going face-by-face. Reversible so a
-    // mistaken tap can be undone.
-    const allBtn = document.createElement("button");
-    allBtn.type = "button";
-    allBtn.className = "prep-all-btn";
-    const allReady = CAMPERS.every((c) => isPrepared(c.id, a));
-    allBtn.classList.toggle("ready", allReady);
-    allBtn.setAttribute("aria-pressed", allReady ? "true" : "false");
-    allBtn.textContent = allReady ? "↩︎ Undo all prepared" : "✅ Everyone's prepared";
-    allBtn.addEventListener("click", () => {
-      const turningOn = !CAMPERS.every((c) => isPrepared(c.id, a));
-      if (turningOn) {
-        // Pop from every cousin's face at once (using the first prep row, which
-        // already has one avatar per camper) before the re-render rebuilds them.
-        const firstRow = el.querySelector(".kidrow");
-        const faces = firstRow ? firstRow.querySelectorAll(".kc-avatar") : [];
-        faces.forEach((av) => {
-          const r = av.getBoundingClientRect();
-          chronoBurst(r.left + r.width / 2, r.top + r.height / 2);
-        });
-        if (!faces.length) {
-          const r = allBtn.getBoundingClientRect();
-          chronoBurst(r.left + r.width / 2, r.top + r.height / 2);
-        }
-        toast("🎒 Everyone's ready!");
-      }
-      Store.setActivityPrep(a, CAMPERS.map((c) => c.id), turningOn);
-    });
-
     a.prep.forEach((item, i) => {
       const key = prepKey(a.id, i);
       const label = document.createElement("div");
@@ -123,9 +93,30 @@
         kidrow.appendChild(btn);
       });
       el.appendChild(kidrow);
+
+      // Per-task "everyone" shortcut: tick this one item for all cousins at
+      // once instead of tapping each face. Reversible so a mistap can undo.
+      const allBtn = document.createElement("button");
+      allBtn.type = "button";
+      allBtn.className = "prep-all-btn";
+      const allReady = CAMPERS.every((c) => isDone(c.id, key));
+      allBtn.classList.toggle("ready", allReady);
+      allBtn.setAttribute("aria-pressed", allReady ? "true" : "false");
+      allBtn.textContent = allReady ? "↩︎ Undo everyone" : "✅ Everyone";
+      allBtn.addEventListener("click", () => {
+        const turningOn = !CAMPERS.every((c) => isDone(c.id, key));
+        if (turningOn) {
+          // Pop from every cousin's face in this row before the re-render.
+          kidrow.querySelectorAll(".kc-avatar").forEach((av) => {
+            const r = av.getBoundingClientRect();
+            chronoBurst(r.left + r.width / 2, r.top + r.height / 2);
+          });
+          toast(`🎒 Everyone: ${item}`);
+        }
+        Store.setPrepItem(a.id, i, CAMPERS.map((c) => c.id), turningOn);
+      });
+      el.appendChild(allBtn);
     });
-    // Bulk shortcut sits at the bottom of the task, under each cousin's faces.
-    el.appendChild(allBtn);
     return el;
   }
 
