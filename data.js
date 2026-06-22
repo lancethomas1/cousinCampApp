@@ -85,7 +85,7 @@ const SCHEDULE = [
     era: "Time Travelers: 90 Years",
     activities: [
       { id: "d1-a1",  time: "6:30 AM",  title: "TV Room Opens",            emoji: "📺", location: "TV Room",          points: 5,  info: true, desc: "Quiet time — not before 6:30!" },
-      { id: "d1-a2",  time: "7:45 AM",  title: "Breakfast",                emoji: "🥞", location: "Mimi's Kitchen",   points: 5,  info: true, cook: "Thomas", desc: "Fuel up for time travel." },
+      { id: "d1-a2",  time: "7:45 AM",  title: "Breakfast",                emoji: "🥞", location: "Mimi's Kitchen",   points: 5,  info: true, cook: "Sera & Jason", desc: "Fuel up for time travel." },
       { id: "d1-cap", time: "8:15 AM",  title: "Capoeira with Chris",      emoji: "🥋", location: "Back Yard",        points: 10, lead: "Chris", prep: ["Comfy clothes on", "Shoes tied", "Water bottle filled", "Bow to your sensei"], desc: "Move and groove, Brazilian style." },
       { id: "d1-a3",  time: "8:10 AM",  title: "Get Dressed",              emoji: "👕", location: "Upstairs",         points: 5,  info: true, desc: "Girls in Mimi's bathroom, boys in the guest room." },
       { id: "d1-a4",  time: "8:30 AM",  title: "Meeting on the Porch",     emoji: "🎤", location: "Back Porch",       points: 5,  desc: "Welcome to Cousin Camp!" },
@@ -99,7 +99,7 @@ const SCHEDULE = [
       { id: "d1-a12", time: "12:00 PM", title: "Lunch",                    emoji: "🍽️", location: "Mimi's Kitchen",   points: 5,  info: true, desc: "Refuel together." },
       { id: "d1-a13", time: "1:00 PM",  title: "Pool at Rebecca's",        emoji: "🏊", location: "Rebecca's",        points: 10, lead: "Chris, Lance, Betsy, Jason, Sera, Shannon & Vinny", prep: ["Sunscreen on", "Swimsuit on", "Towel packed", "Water bottle filled"], desc: "Splash and swim." },
       { id: "d1-a14", time: "3:30 PM",  title: "Home",                     emoji: "🏡", location: "Mimi's",           points: 5,  info: true, desc: "Back to base." },
-      { id: "d1-a15", time: "4:00 PM",  title: "Slang Hats with Christopher", emoji: "🎩", location: "Living Room",   points: 10, lead: "Christopher", desc: "Time travelers through the decades of slang." },
+      { id: "d1-a15", time: "4:00 PM",  title: "Slang Hats with Christopher", emoji: "🎩", location: "Living Room",   points: 10, lead: "Christopher", prep: ["Creativity turned on", "No-judgement zone — every idea welcome", "Ready to be silly", "Listening ears for everyone's turn"], desc: "Time travelers through the decades of slang." },
       { id: "d1-a16", time: "5:00 PM",  title: "Time Travel TV Show",      emoji: "📺", location: "TV Room",          points: 10, desc: "Watch a show from another decade." },
       { id: "d1-a17", time: "5:30 PM",  title: "Dinner on the Porch",      emoji: "🍽️", location: "Back Porch",       points: 5,  info: true, cook: "Thomas", desc: "Eat together outside." },
       { id: "d1-a18", time: "6:30 PM",  title: "Fishing",                  emoji: "🎣", location: "The Pond",         points: 10, lead: "Chris, Lance, Betsy, Jason, Sera, Shannon & Vinny", prep: ["Bug spray on", "Hat on", "Grabbed a fishing pole"], desc: "Cast a line and see what bites." },
@@ -115,7 +115,7 @@ const SCHEDULE = [
     era: "Evolution of Music & Dance",
     activities: [
       { id: "d2-a1",  time: "6:30 AM",  title: "TV Room Opens",            emoji: "📺", location: "TV Room",          points: 5,  info: true, desc: "Quiet time — not before 6:30!" },
-      { id: "d2-a2",  time: "7:45 AM",  title: "Breakfast",                emoji: "🥞", location: "Mimi's Kitchen",   points: 5,  info: true, cook: "Quinones", desc: "Start the day together." },
+      { id: "d2-a2",  time: "7:45 AM",  title: "Breakfast",                emoji: "🥞", location: "Mimi's Kitchen",   points: 5,  info: true, cook: "Vinny & Shannon", desc: "Start the day together." },
       { id: "d2-a3",  time: "8:10 AM",  title: "Get Dressed",              emoji: "👕", location: "Upstairs",         points: 5,  info: true, desc: "Ready for the day." },
       { id: "d2-a4",  time: "8:15 AM",  title: "Capoeira with Chris",      emoji: "🥋", location: "Back Yard",        points: 10, lead: "Chris", prep: ["Comfy clothes on", "Shoes tied", "Water bottle filled", "Bow to your sensei"], desc: "Move and groove, Brazilian style." },
       { id: "d2-a5",  time: "8:30 AM",  title: "Meeting on the Porch",     emoji: "🎤", location: "Back Porch",       points: 5,  lead: "Papaw", desc: "Papaw leads songs." },
@@ -181,7 +181,7 @@ const SCHEDULE = [
     era: "Time Capsule: 2030",
     activities: [
       { id: "d5-a1",  time: "6:30 AM",  title: "TV Room Opens",            emoji: "📺", location: "TV Room",          points: 5,  info: true, desc: "Quiet time — not before 6:30!" },
-      { id: "d5-a2",  time: "8:00 AM",  title: "Breakfast",                emoji: "🥞", location: "Mimi's Kitchen",   points: 5,  info: true, cook: "Hines", desc: "Start the day together." },
+      { id: "d5-a2",  time: "8:00 AM",  title: "Breakfast",                emoji: "🥞", location: "Mimi's Kitchen",   points: 5,  info: true, cook: "Lance & Betsy", desc: "Start the day together." },
       { id: "d5-cap", time: "8:15 AM",  title: "Capoeira with Chris",      emoji: "🥋", location: "Back Yard",        points: 10, lead: "Chris", prep: ["Comfy clothes on", "Shoes tied", "Water bottle filled", "Bow to your sensei"], desc: "Move and groove, Brazilian style." },
       { id: "d5-a3",  time: "8:30 AM",  title: "Meeting on the Porch",     emoji: "🎤", location: "Back Porch",       points: 5,  desc: "Plan out the last day." },
       { id: "d5-a4",  time: "8:45 AM",  title: "Time Capsule: 2030",       emoji: "📦", location: "Back Porch",       points: 15, desc: "Travel to the future — write notes and seal the time capsule to open in 2030!" },
