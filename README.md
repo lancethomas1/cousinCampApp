@@ -82,34 +82,32 @@ or any static host.
 
 ## Put it on a phone (no App Store needed)
 
-The app installs to the home screen with its own icon (via `site.webmanifest`)
-and works **offline** after the first visit (via a service worker, `sw.js`), so
-it looks and launches like a real app — no App Store, no download. Open the
-[campers' link](https://lancethomas1.github.io/cousinCampApp/) and:
+**It's just a website — nobody needs to install anything.** Open the
+[campers' link](https://lancethomas1.github.io/cousinCampApp/) in whatever
+browser the phone already has and it works fully: points, schedule, awards, all
+of it. Bookmark it and you're done. (It also works **offline** after the first
+visit, via a service worker, `sw.js`.)
+
+If you'd like a tappable home-screen icon, that's an optional extra:
 
 - **iPhone/iPad (Safari):** tap **Share (⬆️) → Add to Home Screen → Add**.
 - **Android (Chrome):** tap **⋮ → Install app** (or *Add to Home Screen*).
 
-### Trouble installing? (e.g. a restricted iPhone)
+The campers' app is built for a **shared iPad** anyway, so an individual
+cousin's phone doesn't have to run it at all.
 
-If a cousin's iPhone has **Safari turned off by Screen Time** (Settings →
-Screen Time → Content & Privacy Restrictions), Safari isn't required — the camp
-app is just a website. In order of easiest first:
+### A cousin's phone has restrictions?
 
-1. **Use another browser.** Install **Chrome** or **Microsoft Edge** from the
-   App Store (they're separate apps and aren't blocked by the Safari toggle),
-   open the link there, and it works fully. To get an icon, use that browser's
-   **Share → Add to Home Screen**.
-2. **Re-enable Safari briefly.** Settings → Screen Time → Content & Privacy
-   Restrictions → **Allowed Apps → turn Safari ON**, add to home screen, then
-   turn it back off if you like.
-   > Heads-up: on recent iOS, turning Safari back **off** can make a
-   > Safari-installed icon show *"cannot open because of restrictions."* If that
-   > happens, use the Chrome/Edge route above instead.
-3. **Check the web-content filter.** If Screen Time is set to **"Allowed
-   Websites Only,"** no browser will load the link until you add
-   `lancethomas1.github.io` to the **Always Allow** list (under *Content
-   Restrictions → Web Content*).
+No need to change any parental controls. Two things to know:
+
+- **Safari is turned off (Screen Time).** That only hides Safari — the link
+  still opens in any other browser on the phone (often Chrome), so just open it
+  there. No Screen Time change, no re-enabling Safari.
+- **Phone is locked to "Allowed Websites Only."** This is the one case that
+  needs a quick tap from whoever manages the phone: add `lancethomas1.github.io`
+  to the **Always Allow** list (Settings → Screen Time → Content & Privacy
+  Restrictions → Content Restrictions → Web Content). That allows just the camp
+  link — nothing else changes.
 
 ## How data is stored
 
