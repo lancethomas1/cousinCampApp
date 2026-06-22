@@ -85,7 +85,7 @@ const SCHEDULE = [
     era: "Time Travelers: 90 Years",
     activities: [
       { id: "d1-a1",  time: "6:30 AM",  title: "TV Room Opens",            emoji: "📺", location: "TV Room",          points: 5,  info: true, desc: "Quiet time — not before 6:30!" },
-      { id: "d1-a2",  time: "7:45 AM",  title: "Breakfast",                emoji: "🥞", location: "Mimi's Kitchen",   points: 5,  info: true, cook: "Thomas", desc: "Fuel up for time travel." },
+      { id: "d1-a2",  time: "7:45 AM",  title: "Breakfast",                emoji: "🥞", location: "Mimi's Kitchen",   points: 5,  info: true, cook: "Sera & Jason", desc: "Fuel up for time travel." },
       { id: "d1-cap", time: "8:15 AM",  title: "Capoeira with Chris",      emoji: "🥋", location: "Back Yard",        points: 10, lead: "Chris", prep: ["Comfy clothes on", "Shoes tied", "Water bottle filled", "Bow to your sensei"], desc: "Move and groove, Brazilian style." },
       { id: "d1-a3",  time: "8:10 AM",  title: "Get Dressed",              emoji: "👕", location: "Upstairs",         points: 5,  info: true, desc: "Girls in Mimi's bathroom, boys in the guest room." },
       { id: "d1-a4",  time: "8:30 AM",  title: "Meeting on the Porch",     emoji: "🎤", location: "Back Porch",       points: 5,  desc: "Welcome to Cousin Camp!" },
@@ -115,7 +115,7 @@ const SCHEDULE = [
     era: "Evolution of Music & Dance",
     activities: [
       { id: "d2-a1",  time: "6:30 AM",  title: "TV Room Opens",            emoji: "📺", location: "TV Room",          points: 5,  info: true, desc: "Quiet time — not before 6:30!" },
-      { id: "d2-a2",  time: "7:45 AM",  title: "Breakfast",                emoji: "🥞", location: "Mimi's Kitchen",   points: 5,  info: true, cook: "Quinones", desc: "Start the day together." },
+      { id: "d2-a2",  time: "7:45 AM",  title: "Breakfast",                emoji: "🥞", location: "Mimi's Kitchen",   points: 5,  info: true, cook: "Betsy & Lance", desc: "Start the day together." },
       { id: "d2-a3",  time: "8:10 AM",  title: "Get Dressed",              emoji: "👕", location: "Upstairs",         points: 5,  info: true, desc: "Ready for the day." },
       { id: "d2-a4",  time: "8:15 AM",  title: "Capoeira with Chris",      emoji: "🥋", location: "Back Yard",        points: 10, lead: "Chris", prep: ["Comfy clothes on", "Shoes tied", "Water bottle filled", "Bow to your sensei"], desc: "Move and groove, Brazilian style." },
       { id: "d2-a5",  time: "8:30 AM",  title: "Meeting on the Porch",     emoji: "🎤", location: "Back Porch",       points: 5,  lead: "Papaw", desc: "Papaw leads songs." },
