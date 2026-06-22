@@ -135,8 +135,10 @@
   // The all-or-nothing team reward: the whole crew unlocks the day's dessert
   // only when EVERY cousin finishes EVERY prep activity today. This lives inside
   // the hero so the Today screen has a single header — its one progress bar
-  // tracks the crew dessert goal, and it carries the informative prep tally
-  // ("prepped today") and the "tap your face" nudge so the cousins can see how
+  // fills with every prep check the crew completes (so each finished task moves
+  // it), reaching 100% exactly when the whole crew has earned the dessert. It
+  // also carries the informative prep tally ("prepped today") and the "tap your
+  // face" nudge so the cousins can see how
   // close the WHOLE crew is and rally whoever's not done. Returns an HTML
   // string spliced into the hero. On days with no prep to earn there's no
   // dessert to chase, so it falls back to a friendly "just have fun" note.
@@ -160,7 +162,11 @@
     // The dessert is a surprise that changes daily, so only name a specific
     // treat when a day chose to spell one out (dayDessert returns null if not).
     const treat = dayDessert(date);
-    const pct = total ? Math.round((ready / total) * 100) : 0;
+    // Fill the bar by per-check progress so every completed task moves it, not
+    // just whole-cousin completions. This hits 100% precisely when every check
+    // is done — i.e. when the crew has earned the dessert — so it still reads as
+    // the all-or-nothing goal while giving visible, task-by-task momentum.
+    const pct = totalChecks ? Math.round((doneChecks / totalChecks) * 100) : 0;
     const remaining = total - ready;
 
     return `
