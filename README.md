@@ -80,6 +80,37 @@ python3 -m http.server 8000      # then open http://localhost:8000
 To put it online for the family, host the folder on **GitHub Pages**, Netlify,
 or any static host.
 
+## Put it on a phone (no App Store needed)
+
+The app installs to the home screen with its own icon (via `site.webmanifest`)
+and works **offline** after the first visit (via a service worker, `sw.js`), so
+it looks and launches like a real app — no App Store, no download. Open the
+[campers' link](https://lancethomas1.github.io/cousinCampApp/) and:
+
+- **iPhone/iPad (Safari):** tap **Share (⬆️) → Add to Home Screen → Add**.
+- **Android (Chrome):** tap **⋮ → Install app** (or *Add to Home Screen*).
+
+### Trouble installing? (e.g. a restricted iPhone)
+
+If a cousin's iPhone has **Safari turned off by Screen Time** (Settings →
+Screen Time → Content & Privacy Restrictions), Safari isn't required — the camp
+app is just a website. In order of easiest first:
+
+1. **Use another browser.** Install **Chrome** or **Microsoft Edge** from the
+   App Store (they're separate apps and aren't blocked by the Safari toggle),
+   open the link there, and it works fully. To get an icon, use that browser's
+   **Share → Add to Home Screen**.
+2. **Re-enable Safari briefly.** Settings → Screen Time → Content & Privacy
+   Restrictions → **Allowed Apps → turn Safari ON**, add to home screen, then
+   turn it back off if you like.
+   > Heads-up: on recent iOS, turning Safari back **off** can make a
+   > Safari-installed icon show *"cannot open because of restrictions."* If that
+   > happens, use the Chrome/Edge route above instead.
+3. **Check the web-content filter.** If Screen Time is set to **"Allowed
+   Websites Only,"** no browser will load the link until you add
+   `lancethomas1.github.io` to the **Always Allow** list (under *Content
+   Restrictions → Web Content*).
+
 ## How data is stored
 
 - **Local mode:** your camper and completed activities are saved in
@@ -131,6 +162,7 @@ ISO `YYYY-MM-DD`.
 | `data.js` | Camp schedule, campers, kudos & badges (edit me!) |
 | `firebase-config.js` | Your Firebase project config (for shared mode) |
 | `firestore.rules` | Security rules for the shared database |
+| `sw.js` | Service worker — caches the app shell so both apps load & run offline |
 | `icons/` | App icons (clock for campers, medal for grown-ups) — favicons, iOS home-screen, PWA |
 | `site.webmanifest` / `parent.webmanifest` | PWA manifests so each app installs to the home screen with its own icon |
 | `SETUP.md` | How to turn on the shared camp |
