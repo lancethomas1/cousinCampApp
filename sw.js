@@ -13,7 +13,7 @@
  *
  * Bump CACHE when shipping new assets to retire the old cache on activate.
  */
-const CACHE = 'cousin-camp-v1';
+const CACHE = 'cousin-camp-v2';
 
 // Unversioned shell paths (the query-string versions get cached on first load
 // by the stale-while-revalidate handler below).

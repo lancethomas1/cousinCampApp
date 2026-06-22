@@ -1104,10 +1104,6 @@ select.day-filter {
   0%   { transform: scale(.4) translateX(0); opacity: .85; }
   100% { transform: scale(2.4) translateX(26px); opacity: 0; }
 }
-@media (prefers-reduced-motion: reduce) {
-  .kudos-flyby,
-  .delorean-smoke { display: none; }
-}
 
 /* ---------- Chrono-Burst ----------
    Time-portal flourish fired from a camper's avatar on check-in (spawned in

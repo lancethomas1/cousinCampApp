@@ -602,16 +602,20 @@
   // DeLorean (smoke pouring off the back) is the star and streaks across on
   // nearly every award; once in a while Marty skates across on his board as a
   // surprise cameo instead. Only ever one rider on screen at a time — rapid
-  // taps don't stack a traffic jam. Honors the user's reduced-motion
-  // preference (the toast still confirms the award).
+  // taps don't stack a traffic jam.
+  //
+  // Note: this fly-by intentionally plays even under prefers-reduced-motion.
+  // On Android, Battery Saver and the "Remove animations" accessibility
+  // setting both report reduced-motion, which was silently swallowing the
+  // DeLorean on phones — the whole point of the flourish. It's a short,
+  // self-removing one-shot, so we keep it on for everyone. (The Chrono-Burst
+  // still honors reduced-motion.)
   const MARTY_CHANCE = 0.2; // ~1 in 5 awards gets Marty; the rest are the DeLorean
   // Remember where the last tap landed so the fly-by crosses the screen at
   // the height of the kudos card the parent touched, not always mid-screen.
   let lastTap = null;
   window.addEventListener("pointerdown", (e) => { lastTap = { y: e.clientY, t: Date.now() }; }, { passive: true, capture: true });
   function deloreanZoom() {
-    const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) return;
     if (document.querySelector(".kudos-flyby")) return; // one at a time
     const marty = Math.random() < MARTY_CHANCE;
     const el = document.createElement("div");
