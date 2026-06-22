@@ -598,12 +598,13 @@
   }
 
   // ---- Kudos fly-by --------------------------------------------------------
-  // A quick confirmation flourish when a grown-up hands out kudos, rotating
-  // between two riders: the camp DeLorean (smoke pouring off the back) and
-  // Marty skating across on his board. Only ever one rider on screen at a
-  // time — rapid taps don't stack a traffic jam. Honors the user's
-  // reduced-motion preference (the toast still confirms the award).
-  let flybyNext = 0; // 0 = DeLorean, 1 = Marty — alternates each award
+  // A quick confirmation flourish when a grown-up hands out kudos. The camp
+  // DeLorean (smoke pouring off the back) is the star and streaks across on
+  // nearly every award; once in a while Marty skates across on his board as a
+  // surprise cameo instead. Only ever one rider on screen at a time — rapid
+  // taps don't stack a traffic jam. Honors the user's reduced-motion
+  // preference (the toast still confirms the award).
+  const MARTY_CHANCE = 0.2; // ~1 in 5 awards gets Marty; the rest are the DeLorean
   // Remember where the last tap landed so the fly-by crosses the screen at
   // the height of the kudos card the parent touched, not always mid-screen.
   let lastTap = null;
@@ -612,8 +613,7 @@
     const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) return;
     if (document.querySelector(".kudos-flyby")) return; // one at a time
-    const marty = flybyNext === 1;
-    flybyNext = (flybyNext + 1) % 2;
+    const marty = Math.random() < MARTY_CHANCE;
     const el = document.createElement("div");
     // The DeLorean glyph faces left (fire trails stream off to the right), so
     // it rides right→left; Marty faces right and rides left→right.
