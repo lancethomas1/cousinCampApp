@@ -82,10 +82,10 @@ or any static host.
 
 ## Put it on a phone (no App Store needed)
 
-The app is already set up to install to the home screen with its own icon
-(via `site.webmanifest`), so it looks and launches like a real app — no App
-Store, no download. Open the [campers' link](https://lancethomas1.github.io/cousinCampApp/)
-and:
+The app installs to the home screen with its own icon (via `site.webmanifest`)
+and works **offline** after the first visit (via a service worker, `sw.js`), so
+it looks and launches like a real app — no App Store, no download. Open the
+[campers' link](https://lancethomas1.github.io/cousinCampApp/) and:
 
 - **iPhone/iPad (Safari):** tap **Share (⬆️) → Add to Home Screen → Add**.
 - **Android (Chrome):** tap **⋮ → Install app** (or *Add to Home Screen*).
@@ -162,6 +162,7 @@ ISO `YYYY-MM-DD`.
 | `data.js` | Camp schedule, campers, kudos & badges (edit me!) |
 | `firebase-config.js` | Your Firebase project config (for shared mode) |
 | `firestore.rules` | Security rules for the shared database |
+| `sw.js` | Service worker — caches the app shell so both apps load & run offline |
 | `icons/` | App icons (clock for campers, medal for grown-ups) — favicons, iOS home-screen, PWA |
 | `site.webmanifest` / `parent.webmanifest` | PWA manifests so each app installs to the home screen with its own icon |
 | `SETUP.md` | How to turn on the shared camp |
