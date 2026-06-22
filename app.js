@@ -162,11 +162,13 @@
     // The dessert is a surprise that changes daily, so only name a specific
     // treat when a day chose to spell one out (dayDessert returns null if not).
     const treat = dayDessert(date);
-    // Fill the bar by per-check progress so every completed task moves it, not
-    // just whole-cousin completions. This hits 100% precisely when every check
-    // is done — i.e. when the crew has earned the dessert — so it still reads as
-    // the all-or-nothing goal while giving visible, task-by-task momentum.
-    const pct = totalChecks ? Math.round((doneChecks / totalChecks) * 100) : 0;
+    // Fill the bar one activity at a time: each unit is a whole activity the
+    // ENTIRE crew has finished (e.g. everyone prepped for Capoeira = 1/total).
+    // It hits 100% precisely when the crew has finished every activity — i.e.
+    // earned the dessert — so it still reads as the all-or-nothing goal while
+    // advancing visibly as the crew clears each activity together.
+    const crewDoneActs = prepToday.filter((a) => CAMPERS.every((c) => isPrepared(c.id, a))).length;
+    const pct = prepToday.length ? Math.round((crewDoneActs / prepToday.length) * 100) : 0;
     const remaining = total - ready;
 
     return `
