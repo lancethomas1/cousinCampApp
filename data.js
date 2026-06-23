@@ -22,7 +22,7 @@ const CAMPERS = [
   { id: "zoe",     name: "Zoey",    emoji: "🌈", color: "#f39c12", parents: "Jason & Sera", photo: "photos/zoe.jpg" },
   { id: "leo",     name: "Leo",     emoji: "🦁", color: "#16a085", parents: "Lance & Betsy", photo: "photos/leo.jpg" },
   { id: "ava",     name: "Ava",     emoji: "🌸", color: "#d63384", parents: "Shannon & Vinny", photo: "photos/ava.jpg" },
-  { id: "noel",    name: "Noel",    emoji: "🐥", color: "#00b894", parents: "Jason & Sera", photo: "photos/noel.jpg" },
+  { id: "noel",    name: "Noelle",  emoji: "🐥", color: "#00b894", parents: "Jason & Sera", photo: "photos/noel.jpg" },
 ];
 
 // Extra grown-ups who help run camp but have no kids of their own here
