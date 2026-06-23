@@ -429,6 +429,30 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
   border: 1px solid var(--line);
 }
 
+/* Card-wide "All ready" shortcut: a prominent, full-width button that ticks
+   every prep item done for all the cousins shown on this card. Sits just above
+   the per-item rows as the one-tap way to get everyone prepped at once. */
+.prep-allready-btn {
+  display: block;
+  width: calc(100% - 28px);
+  margin: 2px 14px 12px;
+  padding: 11px 14px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--deep);
+  background: var(--gold);
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: transform .08s, background .15s, color .15s;
+}
+.prep-allready-btn:active { transform: scale(.97); }
+.prep-allready-btn.ready {
+  color: var(--ink-soft);
+  background: var(--inset);
+  border: 1px solid var(--line);
+}
+
 /* ---- Combined assignments timeline ------------------------------------
    The Assignments tab is one chronological list of .activity-card duties:
    meals to cook, activities to lead, and today's prep all in order. Two
@@ -478,7 +502,8 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
 .activity-card.assign-past:not(.expanded) .cd-role,
 .activity-card.assign-past:not(.expanded) .prep-item-label,
 .activity-card.assign-past:not(.expanded) .kidrow,
-.activity-card.assign-past:not(.expanded) .prep-all-btn { display: none; }
+.activity-card.assign-past:not(.expanded) .prep-all-btn,
+.activity-card.assign-past:not(.expanded) .prep-allready-btn { display: none; }
 .activity-card.assign-past:not(.expanded) .activity-body {
   display: flex;
   align-items: baseline;
