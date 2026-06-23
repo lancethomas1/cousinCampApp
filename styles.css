@@ -397,6 +397,27 @@ h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; margin: 0; }
 }
 .activity-card.info .activity-title { font-size: 16px; color: var(--ink-soft); }
 
+/* The current/next activity on the Today tab — the moment the app opens to.
+   A lavender accent ring and a small ribbon lift it out of the day's list. */
+.activity-card.is-next {
+  border-color: var(--sun);
+  box-shadow: 0 0 0 2px var(--sun), var(--shadow-lg);
+  opacity: 1; /* stay fully lit even when the spotlight lands on an info slot */
+}
+.next-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .8px;
+  text-transform: uppercase;
+  color: var(--deep);
+  background: var(--sun);
+}
+.next-badge.now { background: var(--grass); }
+
 /* Prepared cards — the points-earning activities. A gold accent and a
    prep-checklist label set them apart from plain reference cards. */
 .activity-card.prep { border-left: 4px solid var(--gold); }
