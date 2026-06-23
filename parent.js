@@ -409,6 +409,34 @@
       makeCollapsible(el, head);
     }
 
+    // Card-wide shortcut: mark every cousin shown ready for *all* of this
+    // activity's prep in one tap. Honors the same leader-vs-parent rule as the
+    // faces above — `campers` is already narrowed to your own kids on a
+    // parent-supervised task, or everyone when you're the activity's leader.
+    const allReadyBtn = document.createElement("button");
+    allReadyBtn.type = "button";
+    allReadyBtn.className = "prep-allready-btn";
+    const isAllReady = () =>
+      a.prep.length > 0 &&
+      campers.every((c) => a.prep.every((_, i) => isDone(c.id, prepKey(a.id, i))));
+    const syncAllReady = () => {
+      const ready = isAllReady();
+      allReadyBtn.classList.toggle("ready", ready);
+      allReadyBtn.setAttribute("aria-pressed", ready ? "true" : "false");
+      allReadyBtn.textContent = ready ? "↩︎ Undo all ready" : "✅ All ready";
+    };
+    syncAllReady();
+    allReadyBtn.addEventListener("click", () => {
+      const turningOn = !isAllReady();
+      if (turningOn) {
+        const r = allReadyBtn.getBoundingClientRect();
+        chronoBurst(r.left + r.width / 2, r.top + r.height / 2);
+        toast(`🎒 All ready: ${a.title}`);
+      }
+      Store.setPrepAll(a.id, a.prep.length, campers.map((c) => c.id), turningOn);
+    });
+    el.appendChild(allReadyBtn);
+
     a.prep.forEach((item, i) => {
       const key = prepKey(a.id, i);
       const label = document.createElement("div");

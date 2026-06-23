@@ -149,6 +149,30 @@
         save(LS.done, state.done);
       }
     },
+    // Tick *every* prep item of an activity done — or undone — for a whole set
+    // of campers in one write, so a grown-up can mark all their kids ready for
+    // all of a task's prep in a single tap (vs. the per-item "Everyone" button).
+    async setPrepAll(activityId, itemCount, camperIds, on) {
+      const keys = [];
+      for (let i = 0; i < itemCount; i++) keys.push(prepKey(activityId, i));
+      const apply = (done) => {
+        camperIds.forEach((cid) => {
+          const m = { ...(done[cid] || {}) };
+          keys.forEach((k) => { if (on) m[k] = true; else delete m[k]; });
+          done[cid] = m;
+        });
+      };
+      const next = { ...state.done };
+      apply(next);
+      state.done = next;
+      rerender(); // optimistic
+      if (Sync.mode === "shared") {
+        try { await sharedWrite((n) => apply(n.done)); }
+        catch (e) { toast("Couldn't save — try again"); }
+      } else {
+        save(LS.done, state.done);
+      }
+    },
     // Append a parent award (kudos / bonus / badge) to a camper's log.
     async award(camperId, award) {
       const entry = { id: uid(), ts: Date.now(), ...award };
