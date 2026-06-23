@@ -107,6 +107,45 @@
     return box;
   }
 
+  // ---- "What's next?" focus (time-aware) ----------------------------------
+  // The Today tab orients the kids around the current moment: it highlights the
+  // activity happening now (or the next one coming up) and scrolls straight to
+  // it when the tab opens, so nobody has to hunt through the full day's list.
+  //
+  // Activity times are display strings ("8:15 AM"); the schedule array isn't
+  // strictly time-sorted (e.g. an 8:15 capoeira can precede 8:10 "get dressed"),
+  // so we compare parsed minutes rather than array order.
+  function parseTimeToMinutes(t) {
+    const m = /^(\d{1,2}):(\d{2})\s*(AM|PM)$/i.exec(String(t).trim());
+    if (!m) return null;
+    let h = Number(m[1]) % 12;
+    if (/PM/i.test(m[3])) h += 12;
+    return h * 60 + Number(m[2]);
+  }
+  function nowMinutes() {
+    const d = new Date();
+    return d.getHours() * 60 + d.getMinutes();
+  }
+  // Pick the activity to spotlight: the one in progress (latest start time at or
+  // before now) if there is one, otherwise the soonest upcoming one. Before the
+  // day begins this is the first activity; after it ends, the last. Returns
+  // { activity, status } where status is "now" (started) or "next" (upcoming),
+  // or null if the day has no time-stamped activities.
+  function focusActivity(day) {
+    const now = nowMinutes();
+    let current = null, currentMin = -Infinity;
+    let next = null, nextMin = Infinity;
+    day.activities.forEach((a) => {
+      const m = parseTimeToMinutes(a.time);
+      if (m == null) return;
+      if (m <= now && m > currentMin) { currentMin = m; current = a; }
+      if (m > now && m < nextMin) { nextMin = m; next = a; }
+    });
+    if (current) return { activity: current, status: "now" };
+    if (next) return { activity: next, status: "next" };
+    return null;
+  }
+
   // ---- TODAY view ---------------------------------------------------------
   function renderToday() {
     const iso = todayISO();
@@ -127,7 +166,18 @@
     `;
     frag.appendChild(hero);
 
-    day.activities.forEach((a) => frag.appendChild(activityRow({ ...a, date: iso })));
+    const focus = focusActivity(day);
+    day.activities.forEach((a) => {
+      const row = activityRow({ ...a, date: iso });
+      if (focus && a.id === focus.activity.id) {
+        row.classList.add("is-next");
+        const badge = document.createElement("div");
+        badge.className = "next-badge" + (focus.status === "now" ? " now" : "");
+        badge.textContent = focus.status === "now" ? "● Happening now" : "▸ Up next";
+        row.insertBefore(badge, row.firstChild);
+      }
+      frag.appendChild(row);
+    });
     view.replaceChildren(frag);
   }
 
@@ -614,13 +664,38 @@
     syncStickyHero();
   }
 
-  // Jump back to the top and re-evaluate the sticky hero — used on route
-  // changes so a new tab always starts at the top with the hero expanded.
+  // Position the view for a freshly-entered route — used on route changes.
+  // Most tabs start at the top with the hero expanded; the Today tab instead
+  // jumps to the activity happening now / coming up next so the current moment
+  // is on screen without scrolling. Runs only on route entry (see go()/
+  // hashchange/boot), never on data-update re-renders, so check-ins don't yank
+  // the page around.
   function resetScroll() {
-    view.scrollTop = 0;
-    window.scrollTo(0, 0);
+    const nextCard = state.route === "today" ? view.querySelector(".activity-card.is-next") : null;
+    if (nextCard) {
+      scrollCardBelowSticky(nextCard);
+    } else {
+      view.scrollTop = 0;
+      window.scrollTo(0, 0);
+    }
     syncStickyHero();
     syncActivePill();
+  }
+
+  // Scroll a card to just beneath the pinned app-header + Today hero. The hero
+  // collapses to its compact height once the page scrolls, so we measure it in
+  // that state to land the card right under the sticky stack. If the target is
+  // already near the top (e.g. the first activity, before the day starts) we
+  // leave the hero expanded and stay put.
+  function scrollCardBelowSticky(el) {
+    const hero = view.querySelector(".hero");
+    const headerH = appHeader ? appHeader.offsetHeight : 0;
+    const wasCompact = hero ? hero.classList.contains("compact") : false;
+    if (hero && !wasCompact) hero.classList.add("compact");
+    const stickH = headerH + (hero ? hero.offsetHeight : 0);
+    const y = el.getBoundingClientRect().top + window.scrollY - stickH - 12;
+    if (hero && !wasCompact && y <= 24) hero.classList.remove("compact");
+    window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
   }
 
   // ---- Sticky "Today" hero ------------------------------------------------
@@ -672,5 +747,12 @@
   const initial = location.hash.replace("#", "");
   state.route = routes[initial] ? initial : "today";
   render();
+  resetScroll();           // land on the current/next activity when opening Today
   initShared();            // join the shared camp (or stay local)
+
+  // Keep the Today spotlight current as the day rolls on: once a minute, while
+  // the Today tab is open, re-render so "Happening now / Up next" advances to
+  // the right activity. This only moves the highlight — it never scrolls — so
+  // it won't disturb a camper mid-scroll.
+  setInterval(() => { if (state.route === "today") render(); }, 60 * 1000);
 })();
