@@ -10,12 +10,12 @@
   "use strict";
 
   const C = window.CampCore;
-  const { CAMPERS, KUDOS, CHEERS, BONUS_QUICK, PARENT_BADGES, SCHEDULE } = C.data;
+  const { CAMPERS, PARENT_BADGES, SCHEDULE } = C.data;
   const {
     state, setRender, initShared, Store,
     pointsFor, kudosCountFor, parentBadgesFor, hasParentBadge, awardsFor, awarderTally,
     camperById,
-    targetCamper, setTarget, giveKudos, giveBonus, toggleParentBadge, undoAward,
+    targetCamper, setTarget, toggleParentBadge, undoAward,
     allParentNames, grownupRoster, currentParent, ownKidIds, isOwnKid, setParent, clearParent,
     assignmentsFor, isParentSupervised,
     hasPrep, prepKey, isDone, todayISO, chronoBurst,
@@ -561,69 +561,14 @@
       </div>`;
     frag.appendChild(banner);
 
-    // --- Kudos board -------------------------------------------------------
-    const kudosWrap = document.createElement("div");
-    kudosWrap.innerHTML = `<h3 class="section-title">🙌 Give Kudos</h3>
-      <p class="section-note">Tap a card to award it to ${escapeHtml(me.name)}.</p>`;
-    const kGrid = document.createElement("div");
-    kGrid.className = "kudos-grid";
-    // Point-bearing kudos first, then the playful 0-point cheer cards. The pts
-    // chip only shows when a card actually awards points (cheers say "cheer").
-    KUDOS.concat(CHEERS).forEach((k) => {
-      const tile = document.createElement("button");
-      tile.type = "button";
-      tile.className = "kudos-tile";
-      tile.innerHTML = `
-        <div class="kt-emoji">${k.emoji}</div>
-        <div class="kt-label">${escapeHtml(k.label)}</div>
-        <div class="kt-desc">${escapeHtml(k.desc)}</div>
-        <div class="kt-pts">${k.points ? `+${k.points}` : "👏 cheer"}</div>`;
-      tile.addEventListener("click", () => giveKudos(k.id));
-      kGrid.appendChild(tile);
-    });
-    kudosWrap.appendChild(kGrid);
-    frag.appendChild(kudosWrap);
-
-    // --- Bonus points ------------------------------------------------------
-    const bonusWrap = document.createElement("div");
-    bonusWrap.innerHTML = `<h3 class="section-title">➕ Bonus Points</h3>
-      <p class="section-note">Add a custom amount with an optional note.</p>`;
-    const bonusCard = document.createElement("div");
-    bonusCard.className = "bonus-card";
-    const noteInput = document.createElement("input");
-    noteInput.type = "text";
-    noteInput.className = "bonus-note";
-    noteInput.placeholder = "What's it for? (optional)";
-    noteInput.maxLength = 60;
-    const quickRow = document.createElement("div");
-    quickRow.className = "bonus-quick";
-    BONUS_QUICK.forEach((n) => {
-      const qb = document.createElement("button");
-      qb.type = "button";
-      qb.className = "bonus-btn";
-      qb.textContent = `+${n}`;
-      qb.addEventListener("click", () => { giveBonus(n, noteInput.value); noteInput.value = ""; });
-      quickRow.appendChild(qb);
-    });
-    const customRow = document.createElement("div");
-    customRow.className = "bonus-custom";
-    const amtInput = document.createElement("input");
-    amtInput.type = "number";
-    amtInput.className = "bonus-amt";
-    amtInput.placeholder = "Custom";
-    amtInput.step = "1";
-    const giveBtn = document.createElement("button");
-    giveBtn.type = "button";
-    giveBtn.className = "btn";
-    giveBtn.textContent = "Give";
-    giveBtn.addEventListener("click", () => {
-      giveBonus(amtInput.value, noteInput.value);
-      amtInput.value = ""; noteInput.value = "";
-    });
-    customRow.append(amtInput, giveBtn);
-    bonusCard.append(noteInput, quickRow, customRow);
-    bonusWrap.appendChild(bonusCard);
-    frag.appendChild(bonusWrap);
+    // --- Kudos & bonus points: turned off --------------------------------
+    // Handing out points and kudos is disabled, so the "Give Kudos" board and
+    // the "Bonus Points" entry are no longer shown. Existing totals above still
+    // display, and special badges below (0-point) remain available.
+    const offWrap = document.createElement("div");
+    offWrap.innerHTML = `<h3 class="section-title">🙅 Points &amp; Kudos Off</h3>
+      <p class="section-note">Giving points and kudos is turned off. You can still award special badges below.</p>`;
+    frag.appendChild(offWrap);
 
     // --- Special badges ----------------------------------------------------
     const badgeWrap = document.createElement("div");
