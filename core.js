@@ -546,13 +546,11 @@
   }
 
   // Award actions — persist through Store so they sync in shared mode.
+  // Adding points & kudos is turned off: giving kudos and bonus points are
+  // disabled so no one can hand out new points or kudos. Existing awards still
+  // show; cousin cheers and special badges (both 0-point) are unaffected.
   function giveKudos(kudosId) {
-    const c = targetCamper(); if (!c || blockOwnKid(c)) return;
-    const k = cardById(kudosId); if (!k) return;
-    const pts = k.points || 0;
-    toast(pts ? `${k.emoji} ${k.label} for ${c.name} +${pts}` : `${k.emoji} ${k.label} for ${c.name}`);
-    deloreanZoom();
-    Store.award(c.id, { type: "kudos", refId: k.id, emoji: k.emoji, label: k.label, points: pts, by: state.parent || null });
+    toast("Points & kudos are turned off 🙅");
   }
   // A cousin-to-cousin cheer from the campers' app. Recognition only — worth
   // 0 points so kids can't trade points to game the leaderboard. Recorded as
@@ -570,12 +568,7 @@
     return true;
   }
   function giveBonus(points, note) {
-    const c = targetCamper(); if (!c || blockOwnKid(c)) return;
-    const pts = Math.round(Number(points) || 0);
-    if (!pts) { toast("Enter some points first"); return; }
-    const clean = (note || "").trim();
-    toast(`${pts > 0 ? "+" : ""}${pts} for ${c.name}${clean ? " — " + clean : ""}`);
-    Store.award(c.id, { type: "bonus", emoji: pts < 0 ? "➖" : "➕", label: "Bonus points", points: pts, note: clean, by: state.parent || null });
+    toast("Points & kudos are turned off 🙅");
   }
   function toggleParentBadge(badgeId) {
     const c = targetCamper(); if (!c || blockOwnKid(c)) return;
